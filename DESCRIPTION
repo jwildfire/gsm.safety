@@ -1,0 +1,16 @@
+Package: gsm.safety
+Title: Safety Visualizations for Good Statistical Monitoring Workflows
+Version: 0.0.0.9000
+Authors@R: c(
+    person("obot", role = c("aut", "cre"), email = "obot@users.noreply.github.com")
+  )
+Description: Experimental bridge package for generating clinical safety visualization artifacts from Good Statistical Monitoring workflows.
+License: Apache License (>= 2)
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Imports:
+    gsm.core
+Suggests:
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3

@@ -13,7 +13,17 @@ This repository is a newly scaffolded prototype package. It currently contains:
 - A `testthat` harness for early package checks
 - GitHub Actions R CMD check for pull requests and pushes to `main`
 
-The package API is not implemented yet; the first development milestone is to define the GSM-to-SafetyGraphics data contract.
+The package API is just beginning. The first implemented surface defines the initial GSM-to-SafetyGraphics data contract using existing `gsm.mapping` fields wherever possible.
+
+## Initial data contract
+
+The package currently maps GSM `lData` tables to SafetyGraphics domain names without renaming columns:
+
+- `Mapped_SUBJ` → `dm`
+- `Mapped_AE` → `aes`
+- `Mapped_LB` → `labs` when available
+
+Use `sg_default_table_map()` for the table map, `sg_default_mapping()` for SafetyGraphics mapping keys, and `sg_field_contract()` for the required/optional field table. The contract is pass-through first: derived fields and alternate names should be added only after a documented adapter decision.
 
 ## Development
 

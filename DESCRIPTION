@@ -6,6 +6,8 @@ Authors@R: c(
   )
 Description: Experimental bridge package for generating clinical safety visualization artifacts from Good Statistical Monitoring workflows.
 License: Apache License (>= 2)
+URL: https://github.com/obot-claw/gsm.safety
+BugReports: https://github.com/obot-claw/gsm.safety/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
@@ -13,4 +15,6 @@ Imports:
     gsm.core
 Suggests:
     testthat (>= 3.0.0)
+Remotes:
+    gilead-biostats/gsm.core
 Config/testthat/edition: 3

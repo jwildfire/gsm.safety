@@ -6,9 +6,30 @@ Initial direction: build a lightweight GSM extension/plugin package that bridges
 
 ## Current status
 
-This repository is newly created and currently contains the initial integration design:
+This repository is a newly scaffolded prototype package. It currently contains:
 
 - [Integration design](docs/integration-design.md)
+- Minimal package metadata in `DESCRIPTION`
+- A `testthat` harness for early package checks
+- GitHub Actions R CMD check for pull requests and pushes to `main`
+
+The package API is not implemented yet; the first development milestone is to define the GSM-to-SafetyGraphics data contract.
+
+## Development
+
+This project intentionally does **not** use `renv` yet. The dependency surface is still changing, and the MVP should first establish the core package/API boundaries before adding lockfile maintenance.
+
+Run local checks with:
+
+```r
+rcmdcheck::rcmdcheck(args = "--no-manual")
+```
+
+or from a shell with R installed:
+
+```sh
+R CMD check --no-manual gsm.safety
+```
 
 ## Proposed MVP
 

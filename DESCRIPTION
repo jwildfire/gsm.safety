@@ -14,7 +14,8 @@ RoxygenNote: 7.3.2
 Imports:
     gsm.core,
     htmlwidgets,
-    safetyCharts
+    safetyCharts,
+    Tendril
 Suggests:
     testthat (>= 3.0.0),
     workr,

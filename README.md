@@ -8,8 +8,8 @@ Initial direction: build a lightweight GSM extension/plugin package that bridges
 
 This repository is a newly scaffolded prototype package. It currently contains:
 
-- [Integration design](docs/integration-design.md)
-- [AE Explorer gap analysis](docs/ae-explorer-gap-analysis.md)
+- [Integration design](design/integration-design.md)
+- [AE Explorer gap analysis](design/ae-explorer-gap-analysis.md)
 - A `workr`-shaped AE Explorer report workflow at `inst/workflow/3_reports/ae_explorer.yaml`
 - A static AE Explorer HTML report renderer used as the first workflow artifact
 - A pkgdown vignette example for the AE Explorer report output

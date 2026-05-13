@@ -43,18 +43,6 @@
 <li>
   <a href="reference/index.html">Reference</a>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-    Articles
-
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-<li>
-      <a href="articles/ae-explorer-example.html">AE Explorer report example</a>
-    </li>
-  </ul>
-</li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
@@ -89,21 +77,27 @@
 <li><a href="design/ae-explorer-gap-analysis.html">AE Explorer gap analysis</a></li>
 <li>A <code>workr</code>-shaped AE Explorer report workflow at <code>inst/workflow/3_reports/ae_explorer.yaml</code>
 </li>
-<li>A static AE Explorer HTML report renderer used as the first workflow artifact</li>
-<li>A pkgdown vignette example for the AE Explorer report output</li>
+<li>An interactive SafetyCharts AE Explorer HTML report artifact</li>
+<li>A pkgdown menu example for the AE Explorer report output</li>
 <li>GitHub Actions R CMD check, pkgdown, coverage, and workflow-template checks</li>
 </ul>
-<p>The first implemented API is intentionally lightweight: it validates mapped AE data and renders a static AE Explorer summary report. The next milestone is to replace the static summary with the selected SafetyGraphics-style chart artifact while preserving the same workflow contract.</p>
+<p>The first implemented API validates mapped AE data and renders an interactive AE Explorer report with <code><a href="https://rdrr.io/pkg/safetyCharts/man/aeExplorer.html" class="external-link">safetyCharts::aeExplorer()</a></code>. The next milestone is to harden the GSM-to-SafetyCharts mapping contract against real <code>gsm.mapping</code> outputs.</p>
 </div>
 <div class="section level2">
 <h2 id="development">Development<a class="anchor" aria-label="anchor" href="#development"></a>
 </h2>
 <p>This project intentionally does <strong>not</strong> use <code>renv</code> yet. The dependency surface is still changing, and the MVP should first establish the core package/API boundaries before adding lockfile maintenance.</p>
-<p>Run local checks with:</p>
+<p>Run the AE Explorer workflow example with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>, <span class="st">"run-ae-explorer-workflow.R"</span>, package <span class="op">=</span> <span class="st">"gsm.safety"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>From a source checkout, use:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"inst/examples/run-ae-explorer-workflow.R"</span><span class="op">)</span></span></code></pre></div>
+<p>Run local checks with:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">rcmdcheck</span><span class="fu">::</span><span class="fu"><a href="http://r-lib.github.io/rcmdcheck/reference/rcmdcheck.html" class="external-link">rcmdcheck</a></span><span class="op">(</span>args <span class="op">=</span> <span class="st">"--no-manual"</span><span class="op">)</span></span></code></pre></div>
 <p>or from a shell with R installed:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="ex">R</span> CMD check <span class="at">--no-manual</span> gsm.safety</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="ex">R</span> CMD check <span class="at">--no-manual</span> gsm.safety</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="proposed-mvp">Proposed MVP<a class="anchor" aria-label="anchor" href="#proposed-mvp"></a>

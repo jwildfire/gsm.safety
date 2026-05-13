@@ -8,7 +8,7 @@ Initial direction: build a lightweight GSM extension/plugin package that bridges
 
 This repository is a newly scaffolded prototype package. It currently contains:
 
-- [Integration design](docs/integration-design.md)
+- [Integration design](design/integration-design.md)
 - Minimal package metadata in `DESCRIPTION`
 - A `testthat` harness for early package checks
 - GitHub Actions R CMD check for pull requests and pushes to `main`

@@ -40,3 +40,13 @@ steps:
       lData: lData
       lSettings: AeExplorerSettings
       lMeta: lMeta
+  - output: strOutputDir
+    name: getwd
+  - output: Report
+    name: gsm.safety::Report_AE_Explorer
+    params:
+      lData: lData
+      lSettings: AeExplorerSettings
+      lManifest: AeExplorerManifest
+      strOutputDir: strOutputDir
+      strOutputFile: ID

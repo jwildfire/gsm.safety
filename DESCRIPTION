@@ -14,7 +14,10 @@ RoxygenNote: 7.3.2
 Imports:
     gsm.core
 Suggests:
+    knitr,
+    rmarkdown,
     testthat (>= 3.0.0)
+VignetteBuilder: knitr
 Remotes:
     gilead-biostats/gsm.core
 Config/testthat/edition: 3

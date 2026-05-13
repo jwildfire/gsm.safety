@@ -9,11 +9,13 @@ Initial direction: build a lightweight GSM extension/plugin package that bridges
 This repository is a newly scaffolded prototype package. It currently contains:
 
 - [Integration design](docs/integration-design.md)
-- Minimal package metadata in `DESCRIPTION`
-- A `testthat` harness for early package checks
-- GitHub Actions R CMD check for pull requests and pushes to `main`
+- [AE Explorer gap analysis](docs/ae-explorer-gap-analysis.md)
+- A `workr`-shaped AE Explorer report workflow at `inst/workflow/3_reports/ae_explorer.yaml`
+- A static AE Explorer HTML report renderer used as the first workflow artifact
+- A pkgdown vignette example for the AE Explorer report output
+- GitHub Actions R CMD check, pkgdown, coverage, and workflow-template checks
 
-The package API is not implemented yet; the first development milestone is to define the GSM-to-SafetyGraphics data contract.
+The first implemented API is intentionally lightweight: it validates mapped AE data and renders a static AE Explorer summary report. The next milestone is to replace the static summary with the selected SafetyGraphics-style chart artifact while preserving the same workflow contract.
 
 ## Development
 

@@ -1,0 +1,52 @@
+---
+title: "AE Explorer report example"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{AE Explorer report example}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+This article shows the first `gsm.safety` AE Explorer report artifact. The report
+is intentionally static for now: it validates mapped AE inputs and summarizes
+adverse events by preferred term and body system. The workflow shape matches the
+`workr` report pattern used by GSM packages.
+
+```{r}
+lSpec <- list(
+  Mapped_SUBJ = list(subjid = list(type = "character")),
+  Mapped_AE = list(
+    subjid = list(type = "character"),
+    mdrpt_nsv = list(type = "character"),
+    mdrsoc_nsv = list(type = "character")
+  )
+)
+
+lData <- gsm.safety::MakeAeExplorerExampleData()
+lSettings <- gsm.safety::MakeAeExplorerSettings(lSpec)
+lManifest <- gsm.safety::MakeAeExplorerManifest(
+  lData = lData,
+  lSettings = lSettings,
+  lMeta = list(Type = "Report", ID = "ae_explorer", Output = "html")
+)
+
+lReport <- gsm.safety::Report_AE_Explorer(
+  lData = lData,
+  lSettings = lSettings,
+  lManifest = lManifest,
+  strOutputDir = tempdir(),
+  strOutputFile = "ae_explorer_example"
+)
+
+lReport$path
+```
+
+The generated HTML report is embedded below as a pkgdown example preview.
+
+```{r, results = "asis", echo = FALSE}
+cat(lReport$html)
+```

@@ -12,6 +12,9 @@ on:
         description: Tag to release
         required: true
 
+permissions:
+  contents: write
+  pull-requests: write
 jobs:
   call-release-workflow:
     uses: Gilead-BioStats/gsm.utils/.github/workflows/r-releaser.yaml@actions-v1

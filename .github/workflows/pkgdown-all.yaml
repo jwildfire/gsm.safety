@@ -24,6 +24,9 @@ on:
         description: "Whether pkgdown should operate in dev mode."
         type: boolean
         default: false
+permissions:
+  contents: write
+  pull-requests: write
 jobs:
   call-pkgdown-core:
     uses: Gilead-BioStats/gsm.utils/.github/workflows/pkgdown-core.yaml@actions-v1

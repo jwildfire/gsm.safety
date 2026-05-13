@@ -55,7 +55,7 @@ test_that("AE Explorer workflow functions render a report", {
   expect_equal(manifest$status, "ready")
   expect_true(file.exists(report$path))
   expect_s3_class(report$widget, "htmlwidget")
-  expect_match(readLines(report$path, warn = FALSE), "aeExplorer")
+  expect_true(any(grepl("aeExplorer", readLines(report$path, warn = FALSE), fixed = TRUE)))
   expect_equal(report$summaries$terms$n[report$summaries$terms$value == "Headache"], 2L)
 })
 

@@ -22,5 +22,6 @@ Suggests:
 Remotes:
     gilead-biostats/gsm.core,
     SafetyGraphics/safetyCharts,
+    AstraZeneca/Tendril,
     Gilead-BioStats/workr
 Config/testthat/edition: 3

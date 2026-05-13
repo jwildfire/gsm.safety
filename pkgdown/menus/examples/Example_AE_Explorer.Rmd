@@ -1,20 +1,19 @@
 ---
-title: "AE Explorer report example"
-output: rmarkdown::html_vignette
-vignette: >
-  %\VignetteIndexEntry{AE Explorer report example}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+title: "AE Explorer"
+author: "gsm.safety Example"
+description: "Interactive AE Explorer report rendered from mapped GSM safety data."
+index: 1
+date: "`r format(Sys.time(), '%B %d, %Y %H:%M:%S %Z')`"
+output: html_document
 ---
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
 
-This article shows the first `gsm.safety` AE Explorer report artifact. The report
-is intentionally static for now: it validates mapped AE inputs and summarizes
-adverse events by preferred term and body system. The workflow shape matches the
-`workr` report pattern used by GSM packages.
+This example renders the interactive AE Explorer report artifact from a small
+mapped subject/adverse-event data set. The same renderer is called by the
+`inst/workflow/3_reports/ae_explorer.yaml` workflow.
 
 ```{r}
 lSpec <- list(
@@ -45,8 +44,6 @@ lReport <- gsm.safety::Report_AE_Explorer(
 lReport$path
 ```
 
-The generated HTML report is embedded below as a pkgdown example preview.
-
-```{r, results = "asis", echo = FALSE}
-cat(lReport$html)
+```{r, echo = FALSE}
+lReport$widget
 ```

@@ -21,6 +21,18 @@ The first implemented API validates mapped AE data and renders an interactive AE
 
 This project intentionally does **not** use `renv` yet. The dependency surface is still changing, and the MVP should first establish the core package/API boundaries before adding lockfile maintenance.
 
+Run the AE Explorer workflow example with:
+
+```r
+source(system.file("examples", "run-ae-explorer-workflow.R", package = "gsm.safety"))
+```
+
+From a source checkout, use:
+
+```r
+source("inst/examples/run-ae-explorer-workflow.R")
+```
+
 Run local checks with:
 
 ```r

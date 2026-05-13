@@ -1,7 +1,7 @@
 % Generated manually for early scaffold; roxygen2 can refresh later.
 \name{Report_AE_Explorer}
 \alias{Report_AE_Explorer}
-\title{Render a static AE Explorer report}
+\title{Render an interactive AE Explorer report}
 \usage{
 Report_AE_Explorer(
   lData,
@@ -18,9 +18,9 @@ Report_AE_Explorer(
 \item{strOutputDir}{Directory where the HTML report should be written.}
 \item{strOutputFile}{Output file stem or filename. \code{.html} is appended when absent.}
 }
-\value{A list with the report path, HTML, manifest, and summary tables.}
+\value{A list with the report path, htmlwidget, manifest, and summary tables.}
 \description{
-Render a lightweight static AE Explorer report that validates mapped AE inputs,
-summarizes adverse events by preferred term and body system, and writes an HTML
-artifact for workflow and pkgdown examples.
+Render an interactive AE Explorer report with \code{safetyCharts::aeExplorer()},
+validate mapped AE inputs, and write a standalone HTML artifact for workflow and
+pkgdown examples.
 }

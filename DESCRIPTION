@@ -12,12 +12,15 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Imports:
-    gsm.core
+    gsm.core,
+    htmlwidgets,
+    safetyCharts
 Suggests:
-    knitr,
-    rmarkdown,
-    testthat (>= 3.0.0)
-VignetteBuilder: knitr
+    testthat (>= 3.0.0),
+    workr,
+    yaml
 Remotes:
-    gilead-biostats/gsm.core
+    gilead-biostats/gsm.core,
+    SafetyGraphics/safetyCharts,
+    Gilead-BioStats/workr
 Config/testthat/edition: 3

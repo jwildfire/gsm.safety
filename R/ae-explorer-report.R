@@ -78,13 +78,12 @@ MakeAeExplorerManifest <- function(lData, lSettings, lMeta = list()) {
   )
 }
 
-#' Render a static AE Explorer report
+#' Render an interactive AE Explorer report
 #'
-#' This first report artifact is intentionally lightweight: it validates the
-#' mapped AE inputs, summarizes adverse events by preferred term and body
-#' system, and writes a static HTML report that can be attached to a workflow
-#' run or shown in pkgdown examples. It is a report-shaped bridge toward the
-#' eventual interactive AE Explorer implementation.
+#' This report artifact validates mapped AE inputs, calls
+#' [safetyCharts::aeExplorer()] to create the interactive AE Explorer widget,
+#' and writes a standalone HTML file that can be attached to a workflow run or
+#' shown in pkgdown examples.
 #'
 #' @param lData A named list containing `Mapped_SUBJ` and `Mapped_AE` data frames.
 #' @param lSettings AE Explorer settings from [MakeAeExplorerSettings()].
@@ -93,7 +92,7 @@ MakeAeExplorerManifest <- function(lData, lSettings, lMeta = list()) {
 #' @param strOutputFile Output file stem or filename. `.html` is appended when
 #'   absent.
 #'
-#' @return A list with the report path, HTML, manifest, and summary tables.
+#' @return A list with the report path, htmlwidget, manifest, and summary tables.
 #' @export
 Report_AE_Explorer <- function(lData,
                                lSettings,
@@ -122,28 +121,24 @@ Report_AE_Explorer <- function(lData,
 
   term_summary <- count_values(df_ae, aes_settings$term_col)
   body_system_summary <- count_values(df_ae, aes_settings$bodsys_col)
-  subject_count <- length(unique(df_dm[[dm_settings$id_col]]))
-  ae_subject_count <- length(unique(df_ae[[aes_settings$id_col]]))
-
-  html <- build_ae_explorer_html(
-    report_id = lManifest$report_id %||% "ae_explorer",
-    subject_count = subject_count,
-    ae_subject_count = ae_subject_count,
-    ae_count = nrow(df_ae),
-    term_summary = term_summary,
-    body_system_summary = body_system_summary,
-    gaps = lManifest$gaps
-  )
 
   if (!grepl("[.]html?$", strOutputFile, ignore.case = TRUE)) {
     strOutputFile <- paste0(strOutputFile, ".html")
   }
   strOutputPath <- file.path(strOutputDir, strOutputFile)
-  writeLines(html, strOutputPath, useBytes = TRUE)
+
+  widget <- safetyCharts::aeExplorer(
+    data = list(
+      dm = df_dm,
+      aes = df_ae
+    ),
+    mapping = lSettings$settings
+  )
+  htmlwidgets::saveWidget(widget, file = strOutputPath, selfcontained = TRUE)
 
   list(
     path = normalizePath(strOutputPath, winslash = "/", mustWork = FALSE),
-    html = html,
+    widget = widget,
     manifest = lManifest,
     summaries = list(
       terms = term_summary,
@@ -201,87 +196,6 @@ count_values <- function(df, column) {
     row.names = NULL,
     stringsAsFactors = FALSE
   )
-}
-
-build_ae_explorer_html <- function(report_id,
-                                   subject_count,
-                                   ae_subject_count,
-                                   ae_count,
-                                   term_summary,
-                                   body_system_summary,
-                                   gaps) {
-  paste(
-    "<!doctype html>",
-    "<html lang=\"en\">",
-    "<head>",
-    "<meta charset=\"utf-8\">",
-    paste0("<title>", html_escape(report_id), "</title>"),
-    "<style>body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;line-height:1.45;margin:2rem;max-width:960px}table{border-collapse:collapse;width:100%;margin-bottom:1.5rem}th,td{border:1px solid #ddd;padding:.45rem;text-align:left}th{background:#f6f8fa}.metric{display:inline-block;margin-right:1rem;padding:.75rem 1rem;background:#f6f8fa;border-radius:.4rem}.gap{color:#6a4b00}</style>",
-    "</head>",
-    "<body>",
-    paste0("<h1>", html_escape(report_id), "</h1>"),
-    "<p>This static AE Explorer example validates mapped AE inputs and summarizes adverse events by preferred term and body system.</p>",
-    "<section>",
-    "<h2>Overview</h2>",
-    paste0("<div class=\"metric\"><strong>Subjects:</strong> ", subject_count, "</div>"),
-    paste0("<div class=\"metric\"><strong>Subjects with AEs:</strong> ", ae_subject_count, "</div>"),
-    paste0("<div class=\"metric\"><strong>AE records:</strong> ", ae_count, "</div>"),
-    "</section>",
-    "<section>",
-    "<h2>Preferred terms</h2>",
-    html_table(term_summary, c("Preferred term", "AE records")),
-    "</section>",
-    "<section>",
-    "<h2>Body systems</h2>",
-    html_table(body_system_summary, c("Body system", "AE records")),
-    "</section>",
-    "<section>",
-    "<h2>Known mapping gaps</h2>",
-    html_list(gaps, class = "gap"),
-    "</section>",
-    "</body>",
-    "</html>",
-    sep = "\n"
-  )
-}
-
-html_table <- function(df, headers) {
-  rows <- apply(df, 1, function(row) {
-    paste0("<tr><td>", html_escape(row[[1]]), "</td><td>", html_escape(row[[2]]), "</td></tr>")
-  })
-  paste(
-    "<table>",
-    paste0("<thead><tr><th>", html_escape(headers[[1]]), "</th><th>", html_escape(headers[[2]]), "</th></tr></thead>"),
-    "<tbody>",
-    paste(rows, collapse = "\n"),
-    "</tbody>",
-    "</table>",
-    sep = "\n"
-  )
-}
-
-html_list <- function(x, class = NULL) {
-  if (length(x) == 0) {
-    return("<p>None.</p>")
-  }
-  class_attr <- if (is.null(class)) "" else paste0(" class=\"", html_escape(class), "\"")
-  items <- paste0(
-    "<li>",
-    html_escape(names(x)),
-    ifelse(nzchar(names(x)), ": ", ""),
-    html_escape(unname(x)),
-    "</li>"
-  )
-  paste0("<ul", class_attr, ">\n", paste(items, collapse = "\n"), "\n</ul>")
-}
-
-html_escape <- function(x) {
-  x <- as.character(x)
-  x <- gsub("&", "&amp;", x, fixed = TRUE)
-  x <- gsub("<", "&lt;", x, fixed = TRUE)
-  x <- gsub(">", "&gt;", x, fixed = TRUE)
-  x <- gsub('"', "&quot;", x, fixed = TRUE)
-  x
 }
 
 `%||%` <- function(x, y) {

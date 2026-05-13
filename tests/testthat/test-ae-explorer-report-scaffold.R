@@ -37,6 +37,9 @@ test_that("AE Explorer workflow functions render a report", {
     lMeta = list(Type = "Report", ID = "ae_explorer", Output = "html")
   )
 
+  skip_if_not_installed("safetyCharts")
+  skip_if_not_installed("htmlwidgets")
+
   report <- Report_AE_Explorer(
     lData = lData,
     lSettings = lSettings,
@@ -51,8 +54,8 @@ test_that("AE Explorer workflow functions render a report", {
   expect_true("treatment_col" %in% names(manifest$gaps))
   expect_equal(manifest$status, "ready")
   expect_true(file.exists(report$path))
-  expect_match(report$html, "Preferred terms", fixed = TRUE)
-  expect_match(report$html, "Headache", fixed = TRUE)
+  expect_s3_class(report$widget, "htmlwidget")
+  expect_match(readLines(report$path, warn = FALSE), "aeExplorer")
   expect_equal(report$summaries$terms$n[report$summaries$terms$value == "Headache"], 2L)
 })
 

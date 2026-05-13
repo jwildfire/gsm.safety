@@ -56,10 +56,7 @@ mappings, but the optional filters are important for a useful first report.
 
 ## Recommendation for the first implementation slice
 
-- Add an AE Explorer report YAML scaffold that declares the known direct
-  mappings and records the open gaps.
-- Allow the first report to run without treatment grouping by using an explicit
-  placeholder group, matching the SafetyCharts wrapper behavior when no
-  treatment column is provided.
-- Do not invent treatment arm or AE outcome derivations in `gsm.safety` until the
-  source mapping strategy is agreed.
+- Add an AE Explorer report YAML scaffold that is a valid `workr` workflow: top-level `meta`, `spec`, and ordered `steps`.
+- Keep report configuration and gap metadata in R functions called by workflow steps, rather than inventing non-`workr` YAML sections.
+- Allow the first report to run without treatment grouping by carrying `treatment_col: NULL` in the report settings; downstream rendering can use the SafetyCharts placeholder behavior when no treatment column is provided.
+- Do not invent treatment arm or AE outcome derivations in `gsm.safety` until the source mapping strategy is agreed.

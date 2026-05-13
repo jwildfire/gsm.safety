@@ -1,68 +1,42 @@
 meta:
   Type: Report
   ID: ae_explorer
+  Output: html
+  Name: AE Explorer Report
   Description: AE Explorer report scaffold for SafetyGraphics-style adverse event review
   ParentIssue: 10
-  Priority: 1
 spec:
-  inputs:
-    Mapped_SUBJ:
-      description: Subject-level data from gsm.mapping.
+  Mapped_SUBJ:
+    _all:
       required: true
-      fields:
-        subjid:
-          maps_to: dm.id_col
-          required: true
-        treatment:
-          maps_to: dm.treatment_col
-          required: false
-          status: gap
-          note: No clear treatment/group field identified in current Mapped_SUBJ.
-    Mapped_AE:
-      description: Adverse-event-level data from gsm.mapping.
+    subjid:
+      type: character
+  Mapped_AE:
+    _all:
       required: true
-      fields:
-        subjid:
-          maps_to: aes.id_col
-          required: true
-        mdrpt_nsv:
-          maps_to: aes.term_col
-          required: true
-        mdrsoc_nsv:
-          maps_to: aes.bodsys_col
-          required: true
-        aeser:
-          maps_to: aeexplorer.filters.seriousness
-          required: false
-        aetoxgr:
-          maps_to: aeexplorer.filters.severity
-          required: false
-          note: Candidate severity/toxicity-grade filter; confirm semantics before treating as AESEV.
-        aerel:
-          maps_to: aeexplorer.filters.relationship
-          required: false
-        aeout:
-          maps_to: aeexplorer.filters.outcome
-          required: false
-          status: gap
-          note: No current Mapped_AE outcome field identified; placeholder for gap tracking.
-report:
-  package: safetyCharts
-  wrapper: aeExplorer
-  init: init_aeExplorer
-  widget: aeExplorer
-  domains:
-    dm: Mapped_SUBJ
-    aes: Mapped_AE
-  settings:
-    dm:
-      id_col: subjid
-      treatment_col: null
-    aes:
-      id_col: subjid
-      term_col: mdrpt_nsv
-      bodsys_col: mdrsoc_nsv
-open_questions:
-  - Where should treatment arm/grouping come from for AE Explorer?
-  - Should AE outcome be added to gsm.mapping, derived locally, or remain optional/user-supplied?
-  - Is aetoxgr the intended severity filter for this report?
+    subjid:
+      type: character
+    mdrpt_nsv:
+      type: character
+    mdrsoc_nsv:
+      type: character
+    aeser:
+      type: character
+      required: false
+    aetoxgr:
+      type: integer
+      required: false
+    aerel:
+      type: character
+      required: false
+steps:
+  - output: AeExplorerSettings
+    name: gsm.safety::MakeAeExplorerSettings
+    params:
+      lSpec: lSpec
+  - output: AeExplorerManifest
+    name: gsm.safety::MakeAeExplorerManifest
+    params:
+      lData: lData
+      lSettings: AeExplorerSettings
+      lMeta: lMeta

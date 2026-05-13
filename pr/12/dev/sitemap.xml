@@ -1,14 +1,14 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
-<url><loc>/CONTRIBUTING.html</loc></url>
-<url><loc>/LICENSE-text.html</loc></url>
-<url><loc>/authors.html</loc></url>
-<url><loc>/examples/Example_AE_Explorer.html</loc></url>
-<url><loc>/index.html</loc></url>
-<url><loc>/reference/MakeAeExplorerExampleData.html</loc></url>
-<url><loc>/reference/MakeAeExplorerManifest.html</loc></url>
-<url><loc>/reference/MakeAeExplorerSettings.html</loc></url>
-<url><loc>/reference/Report_AE_Explorer.html</loc></url>
-<url><loc>/reference/gsm.safety-package.html</loc></url>
-<url><loc>/reference/index.html</loc></url>
+<url><loc>https://obot-claw.github.io/gsm.safety/dev/CONTRIBUTING.html</loc></url>
+<url><loc>https://obot-claw.github.io/gsm.safety/dev/LICENSE-text.html</loc></url>
+<url><loc>https://obot-claw.github.io/gsm.safety/dev/authors.html</loc></url>
+<url><loc>https://obot-claw.github.io/gsm.safety/dev/examples/Example_AE_Explorer.html</loc></url>
+<url><loc>https://obot-claw.github.io/gsm.safety/dev/index.html</loc></url>
+<url><loc>https://obot-claw.github.io/gsm.safety/dev/reference/MakeAeExplorerExampleData.html</loc></url>
+<url><loc>https://obot-claw.github.io/gsm.safety/dev/reference/MakeAeExplorerManifest.html</loc></url>
+<url><loc>https://obot-claw.github.io/gsm.safety/dev/reference/MakeAeExplorerSettings.html</loc></url>
+<url><loc>https://obot-claw.github.io/gsm.safety/dev/reference/Report_AE_Explorer.html</loc></url>
+<url><loc>https://obot-claw.github.io/gsm.safety/dev/reference/gsm.safety-package.html</loc></url>
+<url><loc>https://obot-claw.github.io/gsm.safety/dev/reference/index.html</loc></url>
 </urlset>
 

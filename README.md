@@ -11,11 +11,11 @@ This repository is a newly scaffolded prototype package. It currently contains:
 - [Integration design](design/integration-design.md)
 - [AE Explorer gap analysis](design/ae-explorer-gap-analysis.md)
 - A `workr`-shaped AE Explorer report workflow at `inst/workflow/3_reports/ae_explorer.yaml`
-- A static AE Explorer HTML report renderer used as the first workflow artifact
-- A pkgdown vignette example for the AE Explorer report output
+- An interactive SafetyCharts AE Explorer HTML report artifact
+- A pkgdown menu example for the AE Explorer report output
 - GitHub Actions R CMD check, pkgdown, coverage, and workflow-template checks
 
-The first implemented API is intentionally lightweight: it validates mapped AE data and renders a static AE Explorer summary report. The next milestone is to replace the static summary with the selected SafetyGraphics-style chart artifact while preserving the same workflow contract.
+The first implemented API validates mapped AE data and renders an interactive AE Explorer report with `safetyCharts::aeExplorer()`. The next milestone is to harden the GSM-to-SafetyCharts mapping contract against real `gsm.mapping` outputs.
 
 ## Development
 

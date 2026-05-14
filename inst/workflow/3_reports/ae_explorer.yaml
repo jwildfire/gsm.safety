@@ -1,0 +1,70 @@
+meta:
+  Type: Report
+  ID: ae_explorer
+  Output: html
+  Name: AE Explorer Report
+  Description: AE Explorer report scaffold for SafetyGraphics-style adverse event review
+  ParentIssue: 10
+  domains:
+    dm: Mapped_SUBJ
+    aes: Mapped_AE
+  widgetSettings:
+    dm:
+      id_col: subjid
+      treatment_col: sex
+    aes:
+      id_col: subjid
+      term_col: mdrpt_nsv
+      bodsys_col: mdrsoc_nsv
+  optionalFilters:
+    seriousness: aeser
+    severity: aetoxgr
+    relationship: aerel
+  knownGaps:
+    aeout: No current Mapped_AE outcome field identified.
+spec:
+  Mapped_SUBJ:
+    _all:
+      required: true
+    subjid:
+      type: character
+    sex:
+      type: character
+      required: false
+  Mapped_AE:
+    _all:
+      required: true
+    subjid:
+      type: character
+    mdrpt_nsv:
+      type: character
+    mdrsoc_nsv:
+      type: character
+    aeser:
+      type: character
+      required: false
+    aetoxgr:
+      type: integer
+      required: false
+    aerel:
+      type: character
+      required: false
+steps:
+  - output: AeExplorerData
+    name: list
+    params:
+      dm: Mapped_SUBJ
+      aes: Mapped_AE
+  - output: InitializedAeExplorer
+    name: safetyCharts::init_aeExplorer
+    params:
+      data: AeExplorerData
+      settings: widgetSettings
+  - output: strOutputDir
+    name: getwd
+  - output: Report
+    name: gsm.safety::RenderAeExplorerWidget
+    params:
+      lInitialized: InitializedAeExplorer
+      strOutputDir: strOutputDir
+      strOutputFile: ID

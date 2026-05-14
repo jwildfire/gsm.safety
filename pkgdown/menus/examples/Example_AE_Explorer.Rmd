@@ -1,0 +1,50 @@
+---
+title: "AE Explorer"
+author: "gsm.safety Example"
+description: "Interactive AE Explorer report rendered from mapped GSM safety data."
+index: 1
+date: "`r format(Sys.time(), '%B %d, %Y %H:%M:%S %Z')`"
+output: html_document
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+This example renders the interactive AE Explorer report artifact from a small
+mapped subject/adverse-event data set. The widget settings are read from the
+same workflow YAML used by the `workr` example.
+
+```{r}
+workflow_path <- system.file(
+  "workflow", "3_reports", "ae_explorer.yaml",
+  package = "gsm.safety"
+)
+if (!nzchar(workflow_path)) {
+  workflow_path <- file.path("inst", "workflow", "3_reports", "ae_explorer.yaml")
+}
+
+lWorkflow <- yaml::read_yaml(workflow_path)
+lData <- gsm.safety::MakeExampleData()
+aeData <- list(
+  dm = lData$Mapped_SUBJ,
+  aes = lData$Mapped_AE
+)
+
+initialized <- safetyCharts::init_aeExplorer(
+  data = aeData,
+  settings = lWorkflow$meta$widgetSettings
+)
+
+lReport <- gsm.safety::RenderAeExplorerWidget(
+  lInitialized = initialized,
+  strOutputDir = tempdir(),
+  strOutputFile = "ae_explorer_example"
+)
+
+lReport$path
+```
+
+```{r, echo = FALSE}
+lReport$widget
+```

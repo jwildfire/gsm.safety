@@ -9,15 +9,42 @@ Initial direction: build a lightweight GSM extension/plugin package that bridges
 This repository is a newly scaffolded prototype package. It currently contains:
 
 - [Integration design](design/integration-design.md)
-- Minimal package metadata in `DESCRIPTION`
-- A `testthat` harness for early package checks
-- GitHub Actions R CMD check for pull requests and pushes to `main`
+- [AE Explorer gap analysis](design/ae-explorer-gap-analysis.md)
+- A `workr`-shaped AE Explorer report workflow at `inst/workflow/3_reports/ae_explorer.yaml`
+- An interactive SafetyCharts AE Explorer HTML report artifact
+- Pkgdown menu examples for both direct widget rendering and YAML-driven workflow execution
+- GitHub Actions R CMD check, pkgdown, coverage, and workflow-template checks
 
-The package API is not implemented yet; the first development milestone is to define the GSM-to-SafetyGraphics data contract.
+The first implemented workflow keeps the report contract in YAML and uses `MakeExampleData()` for reproducible `gsm.datasim`-backed examples:
+
+1. `meta$domains` maps GSM workflow data names, currently `Mapped_SUBJ` and `Mapped_AE`, to the `safetyCharts` AE Explorer domain names `dm` and `aes`.
+2. `meta$widgetSettings` stores the AE Explorer column mapping used by `safetyCharts`, including `sex` as the current AE Explorer grouping variable.
+3. The workflow creates the `list(dm = Mapped_SUBJ, aes = Mapped_AE)` structure expected by `safetyCharts` directly in YAML.
+4. `safetyCharts::init_aeExplorer()` initializes the widget data/settings.
+5. `gsm.safety::RenderAeExplorerWidget()` renders the initialized widget with `safetyCharts::render_widget()` and writes a standalone HTML report.
+
+The YAML is now the authoritative configuration, and the generated HTML widget is the report artifact. The next milestone is to harden the GSM-to-SafetyCharts mapping contract against real `gsm.mapping` outputs and continue hardening the `gsm.datasim`-based example data path.
 
 ## Development
 
 This project intentionally does **not** use `renv` yet. The dependency surface is still changing, and the MVP should first establish the core package/API boundaries before adding lockfile maintenance.
+
+Run the AE Explorer workflow example with:
+
+```r
+source(system.file("examples", "run-ae-explorer-workflow.R", package = "gsm.safety"))
+```
+
+From a source checkout, use:
+
+```r
+source("inst/examples/run-ae-explorer-workflow.R")
+```
+
+The pkgdown examples mirror those two supported paths:
+
+- direct render: read the YAML settings, call `safetyCharts::init_aeExplorer()`, then save the widget.
+- workflow render: call `workr::RunWorkflow()` using `inst/workflow/3_reports/ae_explorer.yaml`.
 
 Run local checks with:
 

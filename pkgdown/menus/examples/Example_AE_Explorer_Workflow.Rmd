@@ -1,0 +1,55 @@
+---
+title: "AE Explorer Workflow"
+author: "gsm.safety Example"
+description: "Interactive AE Explorer report rendered by running the workr YAML workflow."
+index: 2
+date: "`r format(Sys.time(), '%B %d, %Y %H:%M:%S %Z')`"
+output: html_document
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+This example runs the AE Explorer report through the same `workr` YAML workflow
+that a tester or downstream package can execute directly:
+`inst/workflow/3_reports/ae_explorer.yaml`. The YAML stores `meta$widgetSettings`,
+calls `safetyCharts::init_aeExplorer()`, then saves the initialized widget as a
+standalone HTML report.
+
+```{r}
+workflow_path <- system.file(
+  "workflow", "3_reports", "ae_explorer.yaml",
+  package = "gsm.safety"
+)
+if (!nzchar(workflow_path)) {
+  workflow_path <- file.path("inst", "workflow", "3_reports", "ae_explorer.yaml")
+}
+
+lWorkflow <- yaml::read_yaml(workflow_path)
+lData <- gsm.safety::MakeExampleData()
+```
+
+The workflow YAML is the report contract. It maps GSM workflow data into the
+`safetyCharts` AE Explorer shape, initializes the widget with
+`safetyCharts::init_aeExplorer()`, and writes the rendered HTML report.
+
+```{r}
+cat(paste(readLines(workflow_path, warn = FALSE), collapse = "\n"))
+```
+
+Run the workflow with the example mapped data:
+
+```{r}
+lReport <- workr::RunWorkflow(
+  lWorkflow = lWorkflow,
+  lData = lData,
+  bReturnResult = TRUE
+)
+
+lReport$path
+```
+
+```{r, echo = FALSE}
+lReport$widget
+```

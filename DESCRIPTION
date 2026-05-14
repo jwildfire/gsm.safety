@@ -12,9 +12,22 @@ Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Imports:
-    gsm.core
+    gsm.core,
+    htmlwidgets,
+    safetyCharts,
+    Tendril
 Suggests:
-    testthat (>= 3.0.0)
+    gsm.datasim,
+    testthat (>= 3.0.0),
+    workr,
+    yaml
 Remotes:
-    gilead-biostats/gsm.core
+    gsm.core=Gilead-BioStats/gsm.core@main,
+    gsm.datasim=Gilead-BioStats/gsm.datasim@dev,
+    gsm.kri=Gilead-BioStats/gsm.kri@main,
+    gsm.mapping=Gilead-BioStats/gsm.mapping@main,
+    gsm.reporting=Gilead-BioStats/gsm.reporting@main,
+    SafetyGraphics/safetyCharts,
+    AstraZeneca/Tendril,
+    Gilead-BioStats/workr
 Config/testthat/edition: 3

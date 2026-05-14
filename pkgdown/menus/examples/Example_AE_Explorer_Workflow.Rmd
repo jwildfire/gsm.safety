@@ -27,7 +27,7 @@ if (!nzchar(workflow_path)) {
 }
 
 lWorkflow <- yaml::read_yaml(workflow_path)
-lData <- gsm.safety::MakeAeExplorerExampleData()
+lData <- gsm.safety::MakeExampleData()
 ```
 
 The workflow YAML is the report contract. It maps GSM workflow data into the

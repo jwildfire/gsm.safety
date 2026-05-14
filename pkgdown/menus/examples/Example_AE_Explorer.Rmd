@@ -25,7 +25,7 @@ if (!nzchar(workflow_path)) {
 }
 
 lWorkflow <- yaml::read_yaml(workflow_path)
-lData <- gsm.safety::MakeAeExplorerExampleData()
+lData <- gsm.safety::MakeExampleData()
 aeData <- list(
   dm = lData$Mapped_SUBJ,
   aes = lData$Mapped_AE

@@ -15,16 +15,17 @@ test_that("AE Explorer report scaffold is workr-shaped", {
   expect_true(any(grepl("spec:", report_text, fixed = TRUE)))
   expect_true(any(grepl("steps:", report_text, fixed = TRUE)))
   expect_true(any(grepl("widgetSettings:", report_text, fixed = TRUE)))
+  expect_true(any(grepl("treatment_col: sex", report_text, fixed = TRUE)))
   expect_true(any(grepl("name: list", report_text, fixed = TRUE)))
   expect_true(any(grepl("safetyCharts::init_aeExplorer", report_text, fixed = TRUE)))
   expect_true(any(grepl("gsm.safety::RenderAeExplorerWidget", report_text, fixed = TRUE)))
 })
 
 
-test_that("AE Explorer example data comes from gsm.datasim with expected mapped columns", {
+test_that("example data comes from gsm.datasim with expected mapped columns", {
   skip_if_not_installed("gsm.datasim")
 
-  lData <- MakeAeExplorerExampleData(nSubjects = 6, nSites = 2, nAe = 8, seed = 11)
+  lData <- MakeExampleData(nSubjects = 6, nSites = 2, nAe = 8, seed = 11)
 
   expect_named(lData, c("Mapped_SUBJ", "Mapped_AE"))
   expect_true(all(c("subjid", "sex") %in% names(lData$Mapped_SUBJ)))
@@ -34,28 +35,25 @@ test_that("AE Explorer example data comes from gsm.datasim with expected mapped 
 })
 
 
-test_that("AE Explorer workflow functions render a report", {
+test_that("AE Explorer workflow renderer saves an initialized widget", {
   skip_if_not_installed("gsm.datasim")
-  lSpec <- list(
-    Mapped_SUBJ = list(
-      subjid = list(type = "character"),
-      sex = list(type = "character")
-    ),
-    Mapped_AE = list(
-      subjid = list(type = "character"),
-      mdrpt_nsv = list(type = "character"),
-      mdrsoc_nsv = list(type = "character")
-    )
-  )
-  lSettings <- MakeAeExplorerSettings(lSpec)
-  lData <- MakeAeExplorerExampleData()
-
   skip_if_not_installed("safetyCharts")
   skip_if_not_installed("htmlwidgets")
 
-  report <- Report_AE_Explorer(
-    lData = lData,
-    lSettings = lSettings,
+  lData <- MakeExampleData()
+  initialized <- safetyCharts::init_aeExplorer(
+    data = list(
+      dm = lData$Mapped_SUBJ,
+      aes = lData$Mapped_AE
+    ),
+    settings = list(
+      dm = list(id_col = "subjid", treatment_col = "sex"),
+      aes = list(id_col = "subjid", term_col = "mdrpt_nsv", bodsys_col = "mdrsoc_nsv")
+    )
+  )
+
+  report <- RenderAeExplorerWidget(
+    lInitialized = initialized,
     strOutputDir = tempdir(),
     strOutputFile = "ae_explorer_test"
   )
@@ -63,41 +61,4 @@ test_that("AE Explorer workflow functions render a report", {
   expect_true(file.exists(report$path))
   expect_s3_class(report$widget, "htmlwidget")
   expect_true(any(grepl("aeExplorer", readLines(report$path, warn = FALSE), fixed = TRUE)))
-  expect_true(nrow(report$summaries$terms) > 0)
-})
-
-test_that("AE Explorer report validates required domains and columns", {
-  skip_if_not_installed("gsm.datasim")
-  lSpec <- list(
-    Mapped_SUBJ = list(
-      subjid = list(type = "character"),
-      sex = list(type = "character")
-    ),
-    Mapped_AE = list(
-      subjid = list(type = "character"),
-      mdrpt_nsv = list(type = "character"),
-      mdrsoc_nsv = list(type = "character")
-    )
-  )
-  lSettings <- MakeAeExplorerSettings(lSpec)
-
-  expect_error(
-    Report_AE_Explorer(
-      lData = list(Mapped_SUBJ = data.frame(subjid = "01", sex = "F")),
-      lSettings = lSettings,
-      strOutputDir = tempdir()
-    ),
-    "Mapped_AE"
-  )
-
-  bad_data <- MakeAeExplorerExampleData()
-  bad_data$Mapped_AE$mdrpt_nsv <- NULL
-  expect_error(
-    Report_AE_Explorer(
-      lData = bad_data,
-      lSettings = lSettings,
-      strOutputDir = tempdir()
-    ),
-    "mdrpt_nsv"
-  )
 })

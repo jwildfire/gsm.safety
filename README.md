@@ -15,7 +15,7 @@ This repository is a newly scaffolded prototype package. It currently contains:
 - Pkgdown menu examples for both direct widget rendering and YAML-driven workflow execution
 - GitHub Actions R CMD check, pkgdown, coverage, and workflow-template checks
 
-The first implemented workflow keeps the report contract in YAML:
+The first implemented workflow keeps the report contract in YAML and uses `MakeExampleData()` for reproducible `gsm.datasim`-backed examples:
 
 1. `meta$domains` maps GSM workflow data names, currently `Mapped_SUBJ` and `Mapped_AE`, to the `safetyCharts` AE Explorer domain names `dm` and `aes`.
 2. `meta$widgetSettings` stores the AE Explorer column mapping used by `safetyCharts`, including `sex` as the current AE Explorer grouping variable.

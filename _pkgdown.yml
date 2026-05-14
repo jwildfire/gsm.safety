@@ -16,7 +16,5 @@ navbar:
 reference:
   - title: AE Explorer report
     contents:
-      - MakeAeExplorerSettings
       - RenderAeExplorerWidget
-      - Report_AE_Explorer
-      - MakeAeExplorerExampleData
+      - MakeExampleData

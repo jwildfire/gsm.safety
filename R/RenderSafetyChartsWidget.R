@@ -26,6 +26,12 @@ RenderSafetyChartsWidget <- function(lInitialized,
     lInitialized$data,
     lInitialized$settings
   )
+  widget <- htmlwidgets::prependContent(
+    widget,
+    htmltools::tags$script(
+      htmltools::HTML("var Shiny = window.Shiny || null; window.Shiny = Shiny;")
+    )
+  )
   htmlwidgets::saveWidget(widget, file = strOutputPath, selfcontained = TRUE)
 
   list(

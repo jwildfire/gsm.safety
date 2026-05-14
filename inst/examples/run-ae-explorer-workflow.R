@@ -21,6 +21,10 @@ if (!nzchar(workflow_path)) {
 lWorkflow <- yaml::read_yaml(workflow_path)
 lData <- gsm.safety::MakeAeExplorerExampleData()
 
+cat("AE Explorer workflow YAML:\n\n")
+cat(paste(readLines(workflow_path, warn = FALSE), collapse = "\n"))
+cat("\n\nRunning workflow...\n")
+
 lReport <- workr::RunWorkflow(
   lWorkflow = lWorkflow,
   lData = lData,

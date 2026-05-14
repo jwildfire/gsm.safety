@@ -28,7 +28,19 @@ if (!nzchar(workflow_path)) {
 
 lWorkflow <- yaml::read_yaml(workflow_path)
 lData <- gsm.safety::MakeAeExplorerExampleData()
+```
 
+The workflow YAML is the report contract. It maps GSM workflow data into the
+`safetyCharts` AE Explorer shape, initializes the widget with
+`safetyCharts::init_aeExplorer()`, and writes the rendered HTML report.
+
+```{r}
+cat(paste(readLines(workflow_path, warn = FALSE), collapse = "\n"))
+```
+
+Run the workflow with the example mapped data:
+
+```{r}
 lReport <- workr::RunWorkflow(
   lWorkflow = lWorkflow,
   lData = lData,

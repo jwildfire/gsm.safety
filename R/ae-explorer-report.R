@@ -186,20 +186,18 @@ MakeAeExplorerExampleData <- function(nSubjects = 12,
     count_formula = function(config) nAe
   )
 
-  raw_data <- gsm.datasim::generate_study_data(config, verbose = FALSE)
+  generated_data <- gsm.datasim::generate_study_data(config, verbose = FALSE)
+  raw_data <- find_ae_example_raw_data(generated_data)
 
-  df_subj <- raw_data$Raw_SUBJ
-  df_ae <- raw_data$Raw_AE
-
-  required_raw <- c("Raw_SUBJ", "Raw_AE")
-  missing_raw <- setdiff(required_raw, names(raw_data))
-  if (length(missing_raw) > 0) {
+  if (is.null(raw_data)) {
     stop(
-      "gsm.datasim did not generate required dataset(s): ",
-      paste(missing_raw, collapse = ", "),
+      "gsm.datasim did not generate a snapshot containing Raw_SUBJ and Raw_AE.",
       call. = FALSE
     )
   }
+
+  df_subj <- raw_data$Raw_SUBJ
+  df_ae <- raw_data$Raw_AE
 
   if (!("sex" %in% names(df_subj))) {
     df_subj$sex <- sample(c("F", "M"), nrow(df_subj), replace = TRUE)
@@ -236,6 +234,24 @@ MakeAeExplorerExampleData <- function(nSubjects = 12,
       stringsAsFactors = FALSE
     )
   )
+}
+
+find_ae_example_raw_data <- function(x) {
+  if (is.list(x) && all(c("Raw_SUBJ", "Raw_AE") %in% names(x))) {
+    return(x)
+  }
+  if (!is.list(x)) {
+    return(NULL)
+  }
+
+  for (item in rev(x)) {
+    result <- find_ae_example_raw_data(item)
+    if (!is.null(result)) {
+      return(result)
+    }
+  }
+
+  NULL
 }
 
 required_columns <- function(df, columns, domain) {

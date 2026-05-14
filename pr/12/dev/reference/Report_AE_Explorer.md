@@ -1,9 +1,12 @@
 # Render an interactive AE Explorer report
 
-Render an interactive AE Explorer report with
-[`safetyCharts::aeExplorer()`](https://rdrr.io/pkg/safetyCharts/man/aeExplorer.html),
-validate mapped AE inputs, and write a standalone HTML artifact for
-workflow and pkgdown examples.
+Render an interactive AE Explorer report by validating mapped AE inputs,
+initializing settings with
+[`safetyCharts::init_aeExplorer()`](https://rdrr.io/pkg/safetyCharts/man/init_aeExplorer.html),
+rendering the widget with
+[`safetyCharts::render_widget()`](https://rdrr.io/pkg/safetyCharts/man/render_widget.html),
+and writing a standalone HTML artifact for workflow and pkgdown
+examples.
 
 ## Usage
 
@@ -11,7 +14,6 @@ workflow and pkgdown examples.
 Report_AE_Explorer(
   lData,
   lSettings,
-  lManifest,
   strOutputDir = getwd(),
   strOutputFile = "ae_explorer"
 )
@@ -28,11 +30,6 @@ Report_AE_Explorer(
   AE Explorer settings from
   [`MakeAeExplorerSettings()`](https://obot-claw.github.io/gsm.safety/dev/reference/MakeAeExplorerSettings.md).
 
-- lManifest:
-
-  AE Explorer manifest from
-  [`MakeAeExplorerManifest()`](https://obot-claw.github.io/gsm.safety/dev/reference/MakeAeExplorerManifest.md).
-
 - strOutputDir:
 
   Directory where the HTML report should be written.
@@ -43,4 +40,4 @@ Report_AE_Explorer(
 
 ## Value
 
-A list with the report path, htmlwidget, manifest, and summary tables.
+A list with the report path, htmlwidget, and summary tables.

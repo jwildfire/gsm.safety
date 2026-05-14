@@ -68,10 +68,23 @@
 <li>A <code>workr</code>-shaped AE Explorer report workflow at <code>inst/workflow/3_reports/ae_explorer.yaml</code>
 </li>
 <li>An interactive SafetyCharts AE Explorer HTML report artifact</li>
-<li>A pkgdown menu example for the AE Explorer report output</li>
+<li>Pkgdown menu examples for both direct widget rendering and YAML-driven workflow execution</li>
 <li>GitHub Actions R CMD check, pkgdown, coverage, and workflow-template checks</li>
 </ul>
-<p>The first implemented API validates mapped AE data and renders an interactive AE Explorer report with <code><a href="https://rdrr.io/pkg/safetyCharts/man/aeExplorer.html" class="external-link">safetyCharts::aeExplorer()</a></code>. The next milestone is to harden the GSM-to-SafetyCharts mapping contract against real <code>gsm.mapping</code> outputs.</p>
+<p>The first implemented workflow keeps the report contract in YAML:</p>
+<ol style="list-style-type: decimal">
+<li>
+<code>meta$domains</code> maps GSM workflow data names, currently <code>Mapped_SUBJ</code> and <code>Mapped_AE</code>, to the <code>safetyCharts</code> AE Explorer domain names <code>dm</code> and <code>aes</code>.</li>
+<li>
+<code>meta$widgetSettings</code> stores the AE Explorer column mapping used by <code>safetyCharts</code>.</li>
+<li>
+<code><a href="reference/MakeAeExplorerData.html">gsm.safety::MakeAeExplorerData()</a></code> reshapes the GSM <code>lData</code> list into the <code>list(dm = ..., aes = ...)</code> structure expected by <code>safetyCharts</code>.</li>
+<li>
+<code><a href="https://rdrr.io/pkg/safetyCharts/man/init_aeExplorer.html" class="external-link">safetyCharts::init_aeExplorer()</a></code> initializes the widget data/settings.</li>
+<li>
+<code><a href="reference/RenderAeExplorerWidget.html">gsm.safety::RenderAeExplorerWidget()</a></code> renders the initialized widget with <code><a href="https://rdrr.io/pkg/safetyCharts/man/render_widget.html" class="external-link">safetyCharts::render_widget()</a></code> and writes a standalone HTML report.</li>
+</ol>
+<p>The YAML is now the authoritative configuration, and the generated HTML widget is the report artifact. The next milestone is to harden the GSM-to-SafetyCharts mapping contract against real <code>gsm.mapping</code> outputs and replace the temporary example fixture with <code>gsm.datasim</code> data.</p>
 </div>
 <div class="section level2">
 <h2 id="development">Development<a class="anchor" aria-label="anchor" href="#development"></a>
@@ -83,6 +96,11 @@
 <p>From a source checkout, use:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"inst/examples/run-ae-explorer-workflow.R"</span><span class="op">)</span></span></code></pre></div>
+<p>The pkgdown examples mirror those two supported paths:</p>
+<ul>
+<li>direct render: read the YAML settings, call <code><a href="https://rdrr.io/pkg/safetyCharts/man/init_aeExplorer.html" class="external-link">safetyCharts::init_aeExplorer()</a></code>, then save the widget.</li>
+<li>workflow render: call <code><a href="https://gilead-biostats.github.io/workr/reference/RunWorkflow.html" class="external-link">workr::RunWorkflow()</a></code> using <code>inst/workflow/3_reports/ae_explorer.yaml</code>.</li>
+</ul>
 <p>Run local checks with:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">rcmdcheck</span><span class="fu">::</span><span class="fu"><a href="http://r-lib.github.io/rcmdcheck/reference/rcmdcheck.html" class="external-link">rcmdcheck</a></span><span class="op">(</span>args <span class="op">=</span> <span class="st">"--no-manual"</span><span class="op">)</span></span></code></pre></div>

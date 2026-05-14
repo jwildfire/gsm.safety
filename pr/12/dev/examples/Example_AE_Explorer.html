@@ -3962,44 +3962,45 @@ display: none;
 
 <h1 class="title toc-ignore">AE Explorer</h1>
 <h4 class="author">gsm.safety Example</h4>
-<h4 class="date">May 13, 2026 15:42:31 UTC</h4>
+<h4 class="date">May 14, 2026 01:37:23 UTC</h4>
 
 </div>
 
 
 <p>This example renders the interactive AE Explorer report artifact from
-a small mapped subject/adverse-event data set. The same renderer is
-called by the <code>inst/workflow/3_reports/ae_explorer.yaml</code>
-workflow.</p>
-<pre class="r"><code>lSpec &lt;- list(
-  Mapped_SUBJ = list(subjid = list(type = &quot;character&quot;)),
-  Mapped_AE = list(
-    subjid = list(type = &quot;character&quot;),
-    mdrpt_nsv = list(type = &quot;character&quot;),
-    mdrsoc_nsv = list(type = &quot;character&quot;)
-  )
+a small mapped subject/adverse-event data set. The widget settings are
+read from the same workflow YAML used by the <code>workr</code>
+example.</p>
+<pre class="r"><code>workflow_path &lt;- system.file(
+  &quot;workflow&quot;, &quot;3_reports&quot;, &quot;ae_explorer.yaml&quot;,
+  package = &quot;gsm.safety&quot;
 )
+if (!nzchar(workflow_path)) {
+  workflow_path &lt;- file.path(&quot;inst&quot;, &quot;workflow&quot;, &quot;3_reports&quot;, &quot;ae_explorer.yaml&quot;)
+}
 
+lWorkflow &lt;- yaml::read_yaml(workflow_path)
 lData &lt;- gsm.safety::MakeAeExplorerExampleData()
-lSettings &lt;- gsm.safety::MakeAeExplorerSettings(lSpec)
-lManifest &lt;- gsm.safety::MakeAeExplorerManifest(
+aeData &lt;- gsm.safety::MakeAeExplorerData(
   lData = lData,
-  lSettings = lSettings,
-  lMeta = list(Type = &quot;Report&quot;, ID = &quot;ae_explorer&quot;, Output = &quot;html&quot;)
+  lMeta = lWorkflow$meta
 )
 
-lReport &lt;- gsm.safety::Report_AE_Explorer(
-  lData = lData,
-  lSettings = lSettings,
-  lManifest = lManifest,
+initialized &lt;- safetyCharts::init_aeExplorer(
+  data = aeData,
+  settings = lWorkflow$meta$widgetSettings
+)
+
+lReport &lt;- gsm.safety::RenderAeExplorerWidget(
+  lInitialized = initialized,
   strOutputDir = tempdir(),
   strOutputFile = &quot;ae_explorer_example&quot;
 )
 
 lReport$path
-#&gt; [1] &quot;/tmp/RtmpB6V5JH/ae_explorer_example.html&quot;</code></pre>
-<div class="aeExplorer html-widget html-fill-item" id="htmlwidget-ae724c4b24bec1d3d07a" style="width:672px;height:480px;"></div>
-<script type="application/json" data-for="htmlwidget-ae724c4b24bec1d3d07a">{"x":{"data":{"subjid":["SUBJ-001","SUBJ-001","SUBJ-002","SUBJ-003","SUBJ-004","SUBJ-005","SUBJ-006"],"group_placeholder":["All","All","All","All","All","All","All"],"mdrpt_nsv":["Headache","Nausea","Headache","Fatigue","Nausea",null,"Dizziness"],"mdrsoc_nsv":["Nervous system disorders","Gastrointestinal disorders","Nervous system disorders","General disorders","Gastrointestinal disorders",null,"Nervous system disorders"],"aeser":["N","N","N","N","Y",null,"N"],"aetoxgr":[1,1,2,1,3,null,1],"aerel":["Possible","Possible","Unrelated","Possible","Probable",null,"Unrelated"]},"rSettings":{"variables":{"major":"mdrsoc_nsv","minor":"mdrpt_nsv","group":"group_placeholder","id":"subjid","filters":[],"details":[]},"variableOptions":{"group":null},"defaults":{"placeholderFlag":{"valueCol":"mdrsoc_nsv","values":["",null]},"groupCols":false,"useVariableControls":false}},"settings":{"variables":{"major":"mdrsoc_nsv","minor":"mdrpt_nsv","group":"group_placeholder","id":"subjid","filters":[],"details":[]},"variableOptions":{"group":null},"defaults":{"placeholderFlag":{"valueCol":"mdrsoc_nsv","values":["",null]},"groupCols":false,"useVariableControls":false}}},"evals":[],"jsHooks":[]}</script>
+#&gt; [1] &quot;/tmp/RtmpRpu6dT/ae_explorer_example.html&quot;</code></pre>
+<div class="aeExplorer html-widget html-fill-item" id="htmlwidget-be30bf3eb37c7fc70973" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-be30bf3eb37c7fc70973">{"x":{"data":{"subjid":["SUBJ-001","SUBJ-001","SUBJ-002","SUBJ-003","SUBJ-004","SUBJ-005","SUBJ-006"],"group_placeholder":["All","All","All","All","All","All","All"],"mdrpt_nsv":["Headache","Nausea","Headache","Fatigue","Nausea",null,"Dizziness"],"mdrsoc_nsv":["Nervous system disorders","Gastrointestinal disorders","Nervous system disorders","General disorders","Gastrointestinal disorders",null,"Nervous system disorders"],"aeser":["N","N","N","N","Y",null,"N"],"aetoxgr":[1,1,2,1,3,null,1],"aerel":["Possible","Possible","Unrelated","Possible","Probable",null,"Unrelated"]},"rSettings":{"variables":{"major":"mdrsoc_nsv","minor":"mdrpt_nsv","group":"group_placeholder","id":"subjid","filters":[],"details":[]},"variableOptions":{"group":null},"defaults":{"placeholderFlag":{"valueCol":"mdrsoc_nsv","values":["",null]},"groupCols":false,"useVariableControls":false}},"settings":{"variables":{"major":"mdrsoc_nsv","minor":"mdrpt_nsv","group":"group_placeholder","id":"subjid","filters":[],"details":[]},"variableOptions":{"group":null},"defaults":{"placeholderFlag":{"valueCol":"mdrsoc_nsv","values":["",null]},"groupCols":false,"useVariableControls":false}}},"evals":[],"jsHooks":[]}</script>
 
 
 

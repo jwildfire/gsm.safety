@@ -23,15 +23,32 @@ contains:
 - A `workr`-shaped AE Explorer report workflow at
   `inst/workflow/3_reports/ae_explorer.yaml`
 - An interactive SafetyCharts AE Explorer HTML report artifact
-- A pkgdown menu example for the AE Explorer report output
+- Pkgdown menu examples for both direct widget rendering and YAML-driven
+  workflow execution
 - GitHub Actions R CMD check, pkgdown, coverage, and workflow-template
   checks
 
-The first implemented API validates mapped AE data and renders an
-interactive AE Explorer report with
-[`safetyCharts::aeExplorer()`](https://rdrr.io/pkg/safetyCharts/man/aeExplorer.html).
-The next milestone is to harden the GSM-to-SafetyCharts mapping contract
-against real `gsm.mapping` outputs.
+The first implemented workflow keeps the report contract in YAML:
+
+1.  `meta$domains` maps GSM workflow data names, currently `Mapped_SUBJ`
+    and `Mapped_AE`, to the `safetyCharts` AE Explorer domain names `dm`
+    and `aes`.
+2.  `meta$widgetSettings` stores the AE Explorer column mapping used by
+    `safetyCharts`.
+3.  [`gsm.safety::MakeAeExplorerData()`](https://obot-claw.github.io/gsm.safety/dev/reference/MakeAeExplorerData.md)
+    reshapes the GSM `lData` list into the `list(dm = ..., aes = ...)`
+    structure expected by `safetyCharts`.
+4.  [`safetyCharts::init_aeExplorer()`](https://rdrr.io/pkg/safetyCharts/man/init_aeExplorer.html)
+    initializes the widget data/settings.
+5.  [`gsm.safety::RenderAeExplorerWidget()`](https://obot-claw.github.io/gsm.safety/dev/reference/RenderAeExplorerWidget.md)
+    renders the initialized widget with
+    [`safetyCharts::render_widget()`](https://rdrr.io/pkg/safetyCharts/man/render_widget.html)
+    and writes a standalone HTML report.
+
+The YAML is now the authoritative configuration, and the generated HTML
+widget is the report artifact. The next milestone is to harden the
+GSM-to-SafetyCharts mapping contract against real `gsm.mapping` outputs
+and replace the temporary example fixture with `gsm.datasim` data.
 
 ## Development
 
@@ -52,6 +69,15 @@ From a source checkout, use:
 
 source("inst/examples/run-ae-explorer-workflow.R")
 ```
+
+The pkgdown examples mirror those two supported paths:
+
+- direct render: read the YAML settings, call
+  [`safetyCharts::init_aeExplorer()`](https://rdrr.io/pkg/safetyCharts/man/init_aeExplorer.html),
+  then save the widget.
+- workflow render: call
+  [`workr::RunWorkflow()`](https://gilead-biostats.github.io/workr/reference/RunWorkflow.html)
+  using `inst/workflow/3_reports/ae_explorer.yaml`.
 
 Run local checks with:
 

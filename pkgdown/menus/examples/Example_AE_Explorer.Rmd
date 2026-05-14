@@ -4,7 +4,9 @@ author: "gsm.safety Example"
 description: "Interactive AE Explorer report rendered from mapped GSM safety data."
 index: 1
 date: "`r format(Sys.time(), '%B %d, %Y %H:%M:%S %Z', tz = 'America/New_York')`"
-output: html_document
+output:
+  html_document:
+    code_folding: hide
 ---
 
 ```{r, include = FALSE}
@@ -46,6 +48,6 @@ lReport <- gsm.safety::RenderSafetyChartsWidget(
 lReport$path
 ```
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, out.width = "95%", out.height = "700px"}
 lReport$widget
 ```

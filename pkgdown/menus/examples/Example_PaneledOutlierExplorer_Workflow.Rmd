@@ -4,7 +4,9 @@ author: "gsm.safety Example"
 description: "Interactive Paneled Outlier Explorer report rendered by running the workr YAML workflow."
 index: 20
 date: "`r format(Sys.time(), '%B %d, %Y %H:%M:%S %Z', tz = 'America/New_York')`"
-output: html_document
+output:
+  html_document:
+    code_folding: hide
 ---
 
 ```{r, include = FALSE}
@@ -31,9 +33,14 @@ lData <- gsm.safety::MakeExampleData()
 
 The workflow YAML is the report contract:
 
-```{r}
-cat(paste(readLines(workflow_path, warn = FALSE), collapse = "\n"))
+<details>
+<summary>Workflow YAML</summary>
+
+```{r, echo = FALSE, results = "asis"}
+writeLines(c("```yaml", readLines(workflow_path, warn = FALSE), "```"))
 ```
+
+</details>
 
 Run the workflow with the example mapped data:
 
@@ -47,6 +54,6 @@ lReport <- workr::RunWorkflow(
 lReport$path
 ```
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, out.width = "95%", out.height = "700px"}
 lReport$widget
 ```

@@ -43,7 +43,7 @@ for reproducible `gsm.datasim`-backed examples:
     structure expected by `safetyCharts` directly in YAML.
 4.  [`safetyCharts::init_aeExplorer()`](https://rdrr.io/pkg/safetyCharts/man/init_aeExplorer.html)
     initializes the widget data/settings.
-5.  [`gsm.safety::RenderAeExplorerWidget()`](https://obot-claw.github.io/gsm.safety/dev/reference/RenderAeExplorerWidget.md)
+5.  [`gsm.safety::RenderSafetyChartsWidget()`](https://obot-claw.github.io/gsm.safety/dev/reference/RenderSafetyChartsWidget.md)
     renders the initialized widget with
     [`safetyCharts::render_widget()`](https://rdrr.io/pkg/safetyCharts/man/render_widget.html)
     and writes a standalone HTML report.

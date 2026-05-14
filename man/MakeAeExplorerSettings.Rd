@@ -9,7 +9,7 @@ MakeAeExplorerSettings(lSpec)
 \item{lSpec}{A \code{workr} workflow spec for the AE Explorer report.}
 }
 \value{
-A list of domain mappings and known gaps for AE Explorer.
+A list of domain mappings, widget settings, and known gaps for AE Explorer.
 }
 \description{
 Create AE Explorer report settings from a \code{workr} spec.

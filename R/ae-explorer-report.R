@@ -60,7 +60,7 @@ RenderAeExplorerWidget <- function(lInitialized,
 #'
 #' @param lSpec A `workr` workflow spec for the AE Explorer report.
 #'
-#' @return A list of domain mappings and known gaps for AE Explorer.
+#' @return A list of domain mappings, widget settings, and known gaps for AE Explorer.
 #' @export
 MakeAeExplorerSettings <- function(lSpec) {
   if (is.null(lSpec$Mapped_SUBJ) || is.null(lSpec$Mapped_AE)) {
@@ -75,7 +75,7 @@ MakeAeExplorerSettings <- function(lSpec) {
     settings = list(
       dm = list(
         id_col = "subjid",
-        treatment_col = NULL
+        treatment_col = "sex"
       ),
       aes = list(
         id_col = "subjid",
@@ -89,7 +89,6 @@ MakeAeExplorerSettings <- function(lSpec) {
       relationship = "aerel"
     ),
     gaps = c(
-      treatment_col = "No clear treatment/group field identified in current Mapped_SUBJ.",
       aeout = "No current Mapped_AE outcome field identified."
     )
   )
@@ -173,6 +172,7 @@ MakeAeExplorerExampleData <- function() {
   list(
     Mapped_SUBJ = data.frame(
       subjid = sprintf("SUBJ-%03d", 1:6),
+      sex = c("F", "M", "F", "M", "F", "M"),
       stringsAsFactors = FALSE
     ),
     Mapped_AE = data.frame(

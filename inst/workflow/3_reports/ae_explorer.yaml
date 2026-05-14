@@ -11,7 +11,7 @@ meta:
   widgetSettings:
     dm:
       id_col: subjid
-      treatment_col:
+      treatment_col: sex
     aes:
       id_col: subjid
       term_col: mdrpt_nsv
@@ -21,7 +21,6 @@ meta:
     severity: aetoxgr
     relationship: aerel
   knownGaps:
-    treatment_col: No clear treatment/group field identified in current Mapped_SUBJ.
     aeout: No current Mapped_AE outcome field identified.
 spec:
   Mapped_SUBJ:
@@ -29,6 +28,9 @@ spec:
       required: true
     subjid:
       type: character
+    sex:
+      type: character
+      required: false
   Mapped_AE:
     _all:
       required: true

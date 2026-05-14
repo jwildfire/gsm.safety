@@ -29,13 +29,17 @@ test_that("AE Explorer data helper maps workflow domains to safetyCharts names",
   )
 
   expect_named(aeData, c("dm", "aes"))
+  expect_true("sex" %in% names(aeData$dm))
   expect_equal(names(aeData$dm), names(lData$Mapped_SUBJ))
   expect_equal(names(aeData$aes), names(lData$Mapped_AE))
 })
 
 test_that("AE Explorer workflow functions render a report", {
   lSpec <- list(
-    Mapped_SUBJ = list(subjid = list(type = "character")),
+    Mapped_SUBJ = list(
+      subjid = list(type = "character"),
+      sex = list(type = "character")
+    ),
     Mapped_AE = list(
       subjid = list(type = "character"),
       mdrpt_nsv = list(type = "character"),
@@ -63,7 +67,10 @@ test_that("AE Explorer workflow functions render a report", {
 
 test_that("AE Explorer report validates required domains and columns", {
   lSpec <- list(
-    Mapped_SUBJ = list(subjid = list(type = "character")),
+    Mapped_SUBJ = list(
+      subjid = list(type = "character"),
+      sex = list(type = "character")
+    ),
     Mapped_AE = list(
       subjid = list(type = "character"),
       mdrpt_nsv = list(type = "character"),
@@ -74,7 +81,7 @@ test_that("AE Explorer report validates required domains and columns", {
 
   expect_error(
     Report_AE_Explorer(
-      lData = list(Mapped_SUBJ = data.frame(subjid = "01")),
+      lData = list(Mapped_SUBJ = data.frame(subjid = "01", sex = "F")),
       lSettings = lSettings,
       strOutputDir = tempdir()
     ),

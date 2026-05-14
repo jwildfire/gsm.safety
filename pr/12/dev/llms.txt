@@ -34,7 +34,8 @@ The first implemented workflow keeps the report contract in YAML:
     and `Mapped_AE`, to the `safetyCharts` AE Explorer domain names `dm`
     and `aes`.
 2.  `meta$widgetSettings` stores the AE Explorer column mapping used by
-    `safetyCharts`.
+    `safetyCharts`, including `sex` as the current AE Explorer grouping
+    variable.
 3.  [`gsm.safety::MakeAeExplorerData()`](https://obot-claw.github.io/gsm.safety/dev/reference/MakeAeExplorerData.md)
     reshapes the GSM `lData` list into the `list(dm = ..., aes = ...)`
     structure expected by `safetyCharts`.

@@ -3962,7 +3962,7 @@ display: none;
 
 <h1 class="title toc-ignore">AE Explorer Workflow</h1>
 <h4 class="author">gsm.safety Example</h4>
-<h4 class="date">May 14, 2026 01:44:51 UTC</h4>
+<h4 class="date">May 14, 2026 01:49:18 UTC</h4>
 
 </div>
 
@@ -4001,7 +4001,7 @@ rendered HTML report.</p>
 #&gt;   widgetSettings:
 #&gt;     dm:
 #&gt;       id_col: subjid
-#&gt;       treatment_col:
+#&gt;       treatment_col: sex
 #&gt;     aes:
 #&gt;       id_col: subjid
 #&gt;       term_col: mdrpt_nsv
@@ -4011,7 +4011,6 @@ rendered HTML report.</p>
 #&gt;     severity: aetoxgr
 #&gt;     relationship: aerel
 #&gt;   knownGaps:
-#&gt;     treatment_col: No clear treatment/group field identified in current Mapped_SUBJ.
 #&gt;     aeout: No current Mapped_AE outcome field identified.
 #&gt; spec:
 #&gt;   Mapped_SUBJ:
@@ -4019,6 +4018,9 @@ rendered HTML report.</p>
 #&gt;       required: true
 #&gt;     subjid:
 #&gt;       type: character
+#&gt;     sex:
+#&gt;       type: character
+#&gt;       required: false
 #&gt;   Mapped_AE:
 #&gt;     _all:
 #&gt;       required: true
@@ -4092,8 +4094,8 @@ rendered HTML report.</p>
 
 lReport$path
 #&gt; [1] &quot;/home/runner/work/gsm.safety/gsm.safety/pkgdown/menus/examples/ae_explorer.html&quot;</code></pre>
-<div class="aeExplorer html-widget html-fill-item" id="htmlwidget-e3e8907beb656789b0fb" style="width:672px;height:480px;"></div>
-<script type="application/json" data-for="htmlwidget-e3e8907beb656789b0fb">{"x":{"data":{"subjid":["SUBJ-001","SUBJ-001","SUBJ-002","SUBJ-003","SUBJ-004","SUBJ-005","SUBJ-006"],"group_placeholder":["All","All","All","All","All","All","All"],"mdrpt_nsv":["Headache","Nausea","Headache","Fatigue","Nausea",null,"Dizziness"],"mdrsoc_nsv":["Nervous system disorders","Gastrointestinal disorders","Nervous system disorders","General disorders","Gastrointestinal disorders",null,"Nervous system disorders"],"aeser":["N","N","N","N","Y",null,"N"],"aetoxgr":[1,1,2,1,3,null,1],"aerel":["Possible","Possible","Unrelated","Possible","Probable",null,"Unrelated"]},"rSettings":{"variables":{"major":"mdrsoc_nsv","minor":"mdrpt_nsv","group":"group_placeholder","id":"subjid","filters":[],"details":[]},"variableOptions":{"group":null},"defaults":{"placeholderFlag":{"valueCol":"mdrsoc_nsv","values":["",null]},"groupCols":false,"useVariableControls":false}},"settings":{"variables":{"major":"mdrsoc_nsv","minor":"mdrpt_nsv","group":"group_placeholder","id":"subjid","filters":[],"details":[]},"variableOptions":{"group":null},"defaults":{"placeholderFlag":{"valueCol":"mdrsoc_nsv","values":["",null]},"groupCols":false,"useVariableControls":false}}},"evals":[],"jsHooks":[]}</script>
+<div class="aeExplorer html-widget html-fill-item" id="htmlwidget-06cadc24d058350a2f37" style="width:672px;height:480px;"></div>
+<script type="application/json" data-for="htmlwidget-06cadc24d058350a2f37">{"x":{"data":{"subjid":["SUBJ-001","SUBJ-001","SUBJ-002","SUBJ-003","SUBJ-004","SUBJ-005","SUBJ-006"],"sex":["F","F","M","F","M","F","M"],"mdrpt_nsv":["Headache","Nausea","Headache","Fatigue","Nausea",null,"Dizziness"],"mdrsoc_nsv":["Nervous system disorders","Gastrointestinal disorders","Nervous system disorders","General disorders","Gastrointestinal disorders",null,"Nervous system disorders"],"aeser":["N","N","N","N","Y",null,"N"],"aetoxgr":[1,1,2,1,3,null,1],"aerel":["Possible","Possible","Unrelated","Possible","Probable",null,"Unrelated"]},"rSettings":{"variables":{"major":"mdrsoc_nsv","minor":"mdrpt_nsv","group":"sex","id":"subjid","filters":[],"details":[]},"variableOptions":{"group":null},"defaults":{"placeholderFlag":{"valueCol":"mdrsoc_nsv","values":["",null]}}},"settings":{"variables":{"major":"mdrsoc_nsv","minor":"mdrpt_nsv","group":"sex","id":"subjid","filters":[],"details":[]},"variableOptions":{"group":null},"defaults":{"placeholderFlag":{"valueCol":"mdrsoc_nsv","values":["",null]}}}},"evals":[],"jsHooks":[]}</script>
 
 
 

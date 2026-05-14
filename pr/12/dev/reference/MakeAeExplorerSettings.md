@@ -16,4 +16,5 @@ MakeAeExplorerSettings(lSpec)
 
 ## Value
 
-A list of domain mappings and known gaps for AE Explorer.
+A list of domain mappings, widget settings, and known gaps for AE
+Explorer.

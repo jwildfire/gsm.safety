@@ -1,0 +1,63 @@
+meta:
+  Type: Report
+  ID: paneled_outlier_explorer
+  Output: html
+  Name: Paneled Outlier Explorer Report
+  Description: Paneled Outlier Explorer report scaffold for SafetyCharts lab review
+  ParentIssue: 20
+  domains:
+    labs: Mapped_LB
+  widgetName: paneledOutlierExplorer
+  widgetSettings:
+    id_col: subjid
+    visit_col: visit
+    visitn_col: visitn
+    studyday_col: studyday
+    measure_col: measure
+    value_col: value
+    normal_col_low: normal_low
+    normal_col_high: normal_high
+    group_by: sex
+    group_cols:
+      - value_col: sex
+        label: Sex
+spec:
+  Mapped_LB:
+    _all:
+      required: true
+    subjid:
+      type: character
+    visit:
+      type: character
+    visitn:
+      type: integer
+    studyday:
+      type: integer
+    measure:
+      type: character
+    value:
+      type: numeric
+    normal_low:
+      type: numeric
+      required: false
+    normal_high:
+      type: numeric
+      required: false
+    sex:
+      type: character
+      required: false
+steps:
+  - output: InitializedWidget
+    name: safetyCharts::init_paneledOutlierExplorer
+    params:
+      data: Mapped_LB
+      settings: widgetSettings
+  - output: strOutputDir
+    name: getwd
+  - output: Report
+    name: gsm.safety::RenderSafetyChartsWidget
+    params:
+      lInitialized: InitializedWidget
+      strWidgetName: widgetName
+      strOutputDir: strOutputDir
+      strOutputFile: ID

@@ -1,0 +1,60 @@
+meta:
+  Type: Report
+  ID: safety_histogram
+  Output: html
+  Name: Safety Histogram Report
+  Description: Safety Histogram report scaffold for SafetyCharts lab review
+  ParentIssue: 22
+  domains:
+    labs: Mapped_LB
+  widgetName: safetyHistogram
+  widgetSettings:
+    id_col: subjid
+    measure_col: measure
+    value_col: value
+    normal_col_low: normal_low
+    normal_col_high: normal_high
+    group_by: sex
+    groups:
+      - value_col: sex
+        label: Sex
+spec:
+  Mapped_LB:
+    _all:
+      required: true
+    subjid:
+      type: character
+    visit:
+      type: character
+    visitn:
+      type: integer
+    studyday:
+      type: integer
+    measure:
+      type: character
+    value:
+      type: numeric
+    normal_low:
+      type: numeric
+      required: false
+    normal_high:
+      type: numeric
+      required: false
+    sex:
+      type: character
+      required: false
+steps:
+  - output: InitializedWidget
+    name: list
+    params:
+      data: Mapped_LB
+      settings: widgetSettings
+  - output: strOutputDir
+    name: getwd
+  - output: Report
+    name: gsm.safety::RenderSafetyChartsWidget
+    params:
+      lInitialized: InitializedWidget
+      strWidgetName: widgetName
+      strOutputDir: strOutputDir
+      strOutputFile: ID

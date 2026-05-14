@@ -10,18 +10,17 @@ This repository is a newly scaffolded prototype package. It currently contains:
 
 - [Integration design](design/integration-design.md)
 - [AE Explorer gap analysis](design/ae-explorer-gap-analysis.md)
-- A `workr`-shaped AE Explorer report workflow at `inst/workflow/3_reports/ae_explorer.yaml`
-- An interactive SafetyCharts AE Explorer HTML report artifact
-- Pkgdown menu examples for both direct widget rendering and YAML-driven workflow execution
+- `workr`-shaped report workflows under `inst/workflow/3_reports/` for AE Explorer, AE Timelines, Hep Explorer, Nep Explorer, Paneled Outlier Explorer, Safety Delta Delta, Safety Histogram, Safety Outlier Explorer, Safety Results Over Time, and Safety Shift Plot
+- Interactive SafetyCharts HTML report artifacts rendered through `safetyCharts::render_widget()`
+- Pkgdown menu examples that run the report YAML workflows with `workr::RunWorkflow()`
 - GitHub Actions R CMD check, pkgdown, coverage, and workflow-template checks
 
-The first implemented workflow keeps the report contract in YAML and uses `MakeExampleData()` for reproducible `gsm.datasim`-backed examples:
+The implemented workflows keep the report contract in YAML and use `MakeExampleData()` for reproducible `gsm.datasim`-backed examples:
 
-1. `meta$domains` maps GSM workflow data names, currently `Mapped_SUBJ` and `Mapped_AE`, to the `safetyCharts` AE Explorer domain names `dm` and `aes`.
-2. `meta$widgetSettings` stores the AE Explorer column mapping used by `safetyCharts`, including `sex` as the current AE Explorer grouping variable.
-3. The workflow creates the `list(dm = Mapped_SUBJ, aes = Mapped_AE)` structure expected by `safetyCharts` directly in YAML.
-4. `safetyCharts::init_aeExplorer()` initializes the widget data/settings.
-5. `gsm.safety::RenderSafetyChartsWidget()` renders the initialized widget with `safetyCharts::render_widget()` and writes a standalone HTML report.
+1. `meta$domains` maps GSM workflow data names, currently `Mapped_SUBJ`, `Mapped_AE`, and `Mapped_LB`, to the domain shapes expected by each `safetyCharts` widget.
+2. `meta$widgetSettings` stores the widget column mapping used by `safetyCharts`, including `sex` as the current example grouping variable when supported.
+3. Workflows call the relevant `safetyCharts::init_*()` helper when one exists; widgets without an init helper pass data/settings directly to the renderer.
+4. `gsm.safety::RenderSafetyChartsWidget()` renders the widget with `safetyCharts::render_widget()` and writes a standalone HTML report.
 
 The YAML is now the authoritative configuration, and the generated HTML widget is the report artifact. The next milestone is to harden the GSM-to-SafetyCharts mapping contract against real `gsm.mapping` outputs and continue hardening the `gsm.datasim`-based example data path.
 
@@ -41,10 +40,7 @@ From a source checkout, use:
 source("inst/examples/run-ae-explorer-workflow.R")
 ```
 
-The pkgdown examples mirror those two supported paths:
-
-- direct render: read the YAML settings, call `safetyCharts::init_aeExplorer()`, then save the widget.
-- workflow render: call `workr::RunWorkflow()` using `inst/workflow/3_reports/ae_explorer.yaml`.
+The pkgdown examples use `workr::RunWorkflow()` against the workflow YAML files and render the returned htmlwidget output.
 
 Run local checks with:
 

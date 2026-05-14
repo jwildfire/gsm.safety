@@ -1,0 +1,52 @@
+---
+title: "Safety Results Over Time Workflow"
+author: "gsm.safety Example"
+description: "Interactive Safety Results Over Time report rendered by running the workr YAML workflow."
+index: 24
+date: "`r format(Sys.time(), '%B %d, %Y %H:%M:%S %Z')`"
+output: html_document
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+This example runs the Safety Results Over Time report through a `workr` YAML workflow:
+`inst/workflow/3_reports/safety_results_over_time.yaml`. The YAML stores the widget settings,
+initializes the widget when a safetyCharts `init_*` helper is available, and
+writes the rendered HTML report with `gsm.safety::RenderSafetyChartsWidget()`.
+
+```{r}
+workflow_path <- system.file(
+  "workflow", "3_reports", "safety_results_over_time.yaml",
+  package = "gsm.safety"
+)
+if (!nzchar(workflow_path)) {
+  workflow_path <- file.path("inst", "workflow", "3_reports", "safety_results_over_time.yaml")
+}
+
+lWorkflow <- yaml::read_yaml(workflow_path)
+lData <- gsm.safety::MakeExampleData()
+```
+
+The workflow YAML is the report contract:
+
+```{r}
+cat(paste(readLines(workflow_path, warn = FALSE), collapse = "\n"))
+```
+
+Run the workflow with the example mapped data:
+
+```{r}
+lReport <- workr::RunWorkflow(
+  lWorkflow = lWorkflow,
+  lData = lData,
+  bReturnResult = TRUE
+)
+
+lReport$path
+```
+
+```{r, echo = FALSE}
+lReport$widget
+```

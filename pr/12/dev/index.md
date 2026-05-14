@@ -48,7 +48,7 @@ The first implemented workflow keeps the report contract in YAML:
 The YAML is now the authoritative configuration, and the generated HTML
 widget is the report artifact. The next milestone is to harden the
 GSM-to-SafetyCharts mapping contract against real `gsm.mapping` outputs
-and replace the temporary example fixture with `gsm.datasim` data.
+and continue hardening the `gsm.datasim`-based example data path.
 
 ## Development
 

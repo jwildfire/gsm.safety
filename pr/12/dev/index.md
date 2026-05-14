@@ -36,9 +36,8 @@ The first implemented workflow keeps the report contract in YAML:
 2.  `meta$widgetSettings` stores the AE Explorer column mapping used by
     `safetyCharts`, including `sex` as the current AE Explorer grouping
     variable.
-3.  [`gsm.safety::MakeAeExplorerData()`](https://obot-claw.github.io/gsm.safety/dev/reference/MakeAeExplorerData.md)
-    reshapes the GSM `lData` list into the `list(dm = ..., aes = ...)`
-    structure expected by `safetyCharts`.
+3.  The workflow creates the `list(dm = Mapped_SUBJ, aes = Mapped_AE)`
+    structure expected by `safetyCharts` directly in YAML.
 4.  [`safetyCharts::init_aeExplorer()`](https://rdrr.io/pkg/safetyCharts/man/init_aeExplorer.html)
     initializes the widget data/settings.
 5.  [`gsm.safety::RenderAeExplorerWidget()`](https://obot-claw.github.io/gsm.safety/dev/reference/RenderAeExplorerWidget.md)

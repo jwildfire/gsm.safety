@@ -77,8 +77,7 @@
 <code>meta$domains</code> maps GSM workflow data names, currently <code>Mapped_SUBJ</code> and <code>Mapped_AE</code>, to the <code>safetyCharts</code> AE Explorer domain names <code>dm</code> and <code>aes</code>.</li>
 <li>
 <code>meta$widgetSettings</code> stores the AE Explorer column mapping used by <code>safetyCharts</code>, including <code>sex</code> as the current AE Explorer grouping variable.</li>
-<li>
-<code><a href="reference/MakeAeExplorerData.html">gsm.safety::MakeAeExplorerData()</a></code> reshapes the GSM <code>lData</code> list into the <code>list(dm = ..., aes = ...)</code> structure expected by <code>safetyCharts</code>.</li>
+<li>The workflow creates the <code>list(dm = Mapped_SUBJ, aes = Mapped_AE)</code> structure expected by <code>safetyCharts</code> directly in YAML.</li>
 <li>
 <code><a href="https://rdrr.io/pkg/safetyCharts/man/init_aeExplorer.html" class="external-link">safetyCharts::init_aeExplorer()</a></code> initializes the widget data/settings.</li>
 <li>

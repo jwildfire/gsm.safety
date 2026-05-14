@@ -4,8 +4,6 @@
 
 - [`MakeAeExplorerSettings()`](https://obot-claw.github.io/gsm.safety/dev/reference/MakeAeExplorerSettings.md)
   : Create AE Explorer report settings from a workr spec
-- [`MakeAeExplorerData()`](https://obot-claw.github.io/gsm.safety/dev/reference/MakeAeExplorerData.md)
-  : Prepare AE Explorer data for safetyCharts
 - [`RenderAeExplorerWidget()`](https://obot-claw.github.io/gsm.safety/dev/reference/RenderAeExplorerWidget.md)
   : Save an initialized AE Explorer widget as standalone HTML
 - [`Report_AE_Explorer()`](https://obot-claw.github.io/gsm.safety/dev/reference/Report_AE_Explorer.md)

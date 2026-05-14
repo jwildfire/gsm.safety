@@ -15,9 +15,6 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 
 <style>
 .example-nav {
-  position: sticky;
-  top: 4.5rem;
-  z-index: 20;
   display: flex;
   justify-content: space-between;
   gap: 1rem;

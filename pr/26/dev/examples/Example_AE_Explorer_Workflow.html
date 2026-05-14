@@ -208,6 +208,83 @@ window.buildTabsets = function(tocID) {
 };
 
 </script>
+<script>
+window.initializeCodeFolding = function(show) {
+
+  // handlers for show-all and hide all
+  $("#rmd-show-all-code").click(function() {
+    $('div.r-code-collapse').each(function() {
+      $(this).collapse('show');
+    });
+  });
+  $("#rmd-hide-all-code").click(function() {
+    $('div.r-code-collapse').each(function() {
+      $(this).collapse('hide');
+    });
+  });
+
+  // index for unique code element ids
+  var currentIndex = 1;
+
+  // select all R code blocks
+  var rCodeBlocks = $('pre.r, pre.python, pre.bash, pre.sql, pre.cpp, pre.stan, pre.julia, pre.foldable');
+  rCodeBlocks.each(function() {
+    // skip if the block has fold-none class
+    if ($(this).hasClass('fold-none')) return;
+
+    // create a collapsable div to wrap the code in
+    var div = $('<div class="collapse r-code-collapse"></div>');
+    var showThis = (show || $(this).hasClass('fold-show')) && !$(this).hasClass('fold-hide');
+    var id = 'rcode-643E0F36' + currentIndex++;
+    div.attr('id', id);
+    $(this).before(div);
+    $(this).detach().appendTo(div);
+
+    // add a show code button right above
+    var showCodeText = $('<span>' + (showThis ? 'Hide' : 'Show') + '</span>');
+    var showCodeButton = $('<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm code-folding-btn pull-right float-right"></button>');
+    showCodeButton.append(showCodeText);
+    showCodeButton
+        .attr('data-toggle', 'collapse')
+        .attr('data-bs-toggle', 'collapse') // BS5
+        .attr('data-target', '#' + id)
+        .attr('data-bs-target', '#' + id)   // BS5
+        .attr('aria-expanded', showThis)
+        .attr('aria-controls', id);
+
+    var buttonRow = $('<div class="row"></div>');
+    var buttonCol = $('<div class="col-md-12"></div>');
+
+    buttonCol.append(showCodeButton);
+    buttonRow.append(buttonCol);
+
+    div.before(buttonRow);
+
+    // show the div if necessary
+    if (showThis) div.collapse('show');
+
+    // update state of button on show/hide
+    //   * Change text
+    //   * add a class for intermediate states styling
+    div.on('hide.bs.collapse', function () {
+      showCodeText.text('Show');
+      showCodeButton.addClass('btn-collapsing');
+    });
+    div.on('hidden.bs.collapse', function () {
+      showCodeButton.removeClass('btn-collapsing');
+    });
+    div.on('show.bs.collapse', function () {
+      showCodeText.text('Hide');
+      showCodeButton.addClass('btn-expanding');
+    });
+    div.on('shown.bs.collapse', function () {
+      showCodeButton.removeClass('btn-expanding');
+    });
+
+  });
+
+}
+</script>
 <style type="text/css">.hljs-literal {
 color: #990073;
 }
@@ -3942,6 +4019,9 @@ display: none;
 </style>
 
 <!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
 
 
 
@@ -3958,15 +4038,49 @@ display: none;
 
 <div id="header">
 
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
 
 
 <h1 class="title toc-ignore">AE Explorer Workflow</h1>
 <h4 class="author">gsm.safety Example</h4>
-<h4 class="date">May 14, 2026 13:41:40 UTC</h4>
+<h4 class="date">May 14, 2026 09:45:58 EDT</h4>
 
 </div>
 
 
+<style>
+.example-nav {
+position: sticky;
+top: 4.5rem;
+z-index: 20;
+display: flex;
+justify-content: space-between;
+gap: 1rem;
+margin: 0.75rem 0 1.25rem 0;
+padding: 0.5rem 0;
+background: var(--bs-body-bg, #fff);
+border-bottom: 1px solid var(--bs-border-color, #dee2e6);
+}
+.example-nav a {
+text-decoration: none;
+}
+.example-nav .example-nav-spacer {
+flex: 1 1 auto;
+}
+</style>
+<div class="example-nav" aria-label="Example navigation">
+<p><a class="btn btn-outline-secondary btn-sm" href="Example_AE_Explorer.html">←
+Previous: AE Explorer</a>
+<a class="btn btn-outline-secondary btn-sm" href="Example_AE_Timelines_Workflow.html">Next:
+AE Timelines Workflow →</a></p>
+</div>
 <p>This example runs the AE Explorer report through the same
 <code>workr</code> YAML workflow that a tester or downstream package can
 execute directly: <code>inst/workflow/3_reports/ae_explorer.yaml</code>.
@@ -3988,79 +4102,83 @@ lData &lt;- gsm.safety::MakeExampleData()</code></pre>
 into the <code>safetyCharts</code> AE Explorer shape, initializes the
 widget with <code>safetyCharts::init_aeExplorer()</code>, and writes the
 rendered HTML report with the generic renderer.</p>
-<pre class="r"><code>cat(paste(readLines(workflow_path, warn = FALSE), collapse = &quot;\n&quot;))
-#&gt; meta:
-#&gt;   Type: Report
-#&gt;   ID: ae_explorer
-#&gt;   Output: html
-#&gt;   Name: AE Explorer Report
-#&gt;   Description: AE Explorer report scaffold for SafetyGraphics-style adverse event review
-#&gt;   ParentIssue: 10
-#&gt;   domains:
-#&gt;     dm: Mapped_SUBJ
-#&gt;     aes: Mapped_AE
-#&gt;   widgetName: aeExplorer
-#&gt;   widgetSettings:
-#&gt;     dm:
-#&gt;       id_col: subjid
-#&gt;       treatment_col: sex
-#&gt;     aes:
-#&gt;       id_col: subjid
-#&gt;       term_col: mdrpt_nsv
-#&gt;       bodsys_col: mdrsoc_nsv
-#&gt;   optionalFilters:
-#&gt;     seriousness: aeser
-#&gt;     severity: aetoxgr
-#&gt;     relationship: aerel
-#&gt;   knownGaps:
-#&gt;     aeout: No current Mapped_AE outcome field identified.
-#&gt; spec:
-#&gt;   Mapped_SUBJ:
-#&gt;     _all:
-#&gt;       required: true
-#&gt;     subjid:
-#&gt;       type: character
-#&gt;     sex:
-#&gt;       type: character
-#&gt;       required: false
-#&gt;   Mapped_AE:
-#&gt;     _all:
-#&gt;       required: true
-#&gt;     subjid:
-#&gt;       type: character
-#&gt;     mdrpt_nsv:
-#&gt;       type: character
-#&gt;     mdrsoc_nsv:
-#&gt;       type: character
-#&gt;     aeser:
-#&gt;       type: character
-#&gt;       required: false
-#&gt;     aetoxgr:
-#&gt;       type: integer
-#&gt;       required: false
-#&gt;     aerel:
-#&gt;       type: character
-#&gt;       required: false
-#&gt; steps:
-#&gt;   - output: AeExplorerData
-#&gt;     name: list
-#&gt;     params:
-#&gt;       dm: Mapped_SUBJ
-#&gt;       aes: Mapped_AE
-#&gt;   - output: InitializedAeExplorer
-#&gt;     name: safetyCharts::init_aeExplorer
-#&gt;     params:
-#&gt;       data: AeExplorerData
-#&gt;       settings: widgetSettings
-#&gt;   - output: strOutputDir
-#&gt;     name: getwd
-#&gt;   - output: Report
-#&gt;     name: gsm.safety::RenderSafetyChartsWidget
-#&gt;     params:
-#&gt;       lInitialized: InitializedAeExplorer
-#&gt;       strWidgetName: widgetName
-#&gt;       strOutputDir: strOutputDir
-#&gt;       strOutputFile: ID</code></pre>
+<details>
+<summary>
+Workflow YAML
+</summary>
+<pre class="yaml"><code>meta:
+  Type: Report
+  ID: ae_explorer
+  Output: html
+  Name: AE Explorer Report
+  Description: AE Explorer report scaffold for SafetyGraphics-style adverse event review
+  ParentIssue: 10
+  domains:
+    dm: Mapped_SUBJ
+    aes: Mapped_AE
+  widgetName: aeExplorer
+  widgetSettings:
+    dm:
+      id_col: subjid
+      treatment_col: sex
+    aes:
+      id_col: subjid
+      term_col: mdrpt_nsv
+      bodsys_col: mdrsoc_nsv
+  optionalFilters:
+    seriousness: aeser
+    severity: aetoxgr
+    relationship: aerel
+  knownGaps:
+    aeout: No current Mapped_AE outcome field identified.
+spec:
+  Mapped_SUBJ:
+    _all:
+      required: true
+    subjid:
+      type: character
+    sex:
+      type: character
+      required: false
+  Mapped_AE:
+    _all:
+      required: true
+    subjid:
+      type: character
+    mdrpt_nsv:
+      type: character
+    mdrsoc_nsv:
+      type: character
+    aeser:
+      type: character
+      required: false
+    aetoxgr:
+      type: integer
+      required: false
+    aerel:
+      type: character
+      required: false
+steps:
+  - output: AeExplorerData
+    name: list
+    params:
+      dm: Mapped_SUBJ
+      aes: Mapped_AE
+  - output: InitializedAeExplorer
+    name: safetyCharts::init_aeExplorer
+    params:
+      data: AeExplorerData
+      settings: widgetSettings
+  - output: strOutputDir
+    name: getwd
+  - output: Report
+    name: gsm.safety::RenderSafetyChartsWidget
+    params:
+      lInitialized: InitializedAeExplorer
+      strWidgetName: widgetName
+      strOutputDir: strOutputDir
+      strOutputFile: ID</code></pre>
+</details>
 <p>Run the workflow with the example mapped data:</p>
 <pre class="r"><code>lReport &lt;- workr::RunWorkflow(
   lWorkflow = lWorkflow,
@@ -4098,8 +4216,8 @@ rendered HTML report with the generic renderer.</p>
 
 lReport$path
 #&gt; [1] &quot;/home/runner/work/gsm.safety/gsm.safety/pkgdown/menus/examples/ae_explorer.html&quot;</code></pre>
-<div class="aeExplorer html-widget html-fill-item" id="htmlwidget-fe5602fa5842d4492021" style="width:672px;height:480px;"></div>
-<script type="application/json" data-for="htmlwidget-fe5602fa5842d4492021">{"x":{"data":{"subjid":["S23378","S23378","S23378","S75249","S29247","S29247","S97278","S97278","S97278","S97278","S49467","S49467","S49467","S49467","S33500","S33500","S33500","S80521","S80521","S37674","S37674","S2329","S2329","S2329","S2329","S2329","S60857","S60857","S60857","S36759","S44747","S44747","S44747","S44747","S44747","S44747","S44747"],"sex":["F","F","F","M","M","M","M","M","M","M","F","F","F","F","F","F","F","M","M","M","M","F","F","F","F","F","F","F","F","F","M","M","M","M","M","M","M"],"mdrpt_nsv":["term1","term1","term1","term2","term1","term1","term1","term2","term2","term2","term1","term2","term2","term1","term2","term2","term1","term2","term2","term1","term1","term1","term1","term1","term1","term1","term1","term2","term2",null,"term1","term1","term1","term1","term2","term1","term1"],"mdrsoc_nsv":["soc2","soc2","soc2","soc1","soc1","soc1","soc1","soc2","soc2","soc1","soc2","soc1","soc1","soc1","soc1","soc1","soc1","soc2","soc2","soc1","soc2","soc2","soc2","soc1","soc2","soc2","soc1","soc2","soc1",null,"soc2","soc2","soc2","soc1","soc1","soc2","soc2"],"aeser":["Y","N","Y","Y","Y","Y","Y","Y","Y","Y","Y","N","N","Y","Y","N","Y","N","N","N","N","N","N","Y","N","Y","Y","Y","N",null,"N","Y","N","N","N","Y","Y"],"aetoxgr":[1,4,3,5,5,5,1,1,3,5,5,3,5,5,5,4,4,3,3,1,1,4,2,4,1,1,3,4,3,null,5,4,4,3,4,2,1],"aerel":["Y","N","Y","N","N","Y","N","Y","N","Y","N","N","Y","N","N","N","N","N","Y","Y","Y","Y","N","N","Y","N","Y","Y","N",null,"Y","N","N","N","N","Y","N"],"aeseq":[20,27,28,25,5,6,4,15,16,30,11,31,32,36,2,3,33,9,13,19,35,1,7,8,10,34,17,24,26,null,12,14,18,21,22,23,29],"aestdy":[77,43,29,109,55,95,59,32,71,99,33,62,42,67,88,103,112,71,112,12,65,42,93,20,10,22,36,2,98,null,93,6,108,118,72,116,15],"aeendy":[81,48,40,114,60,107,71,35,85,112,40,68,42,67,94,115,123,83,113,16,77,53,104,28,20,36,42,16,106,null,102,10,112,120,85,121,18],"aesev":["GRADE 1","GRADE 4","GRADE 3","GRADE 5","GRADE 5","GRADE 5","GRADE 1","GRADE 1","GRADE 3","GRADE 5","GRADE 5","GRADE 3","GRADE 5","GRADE 5","GRADE 5","GRADE 4","GRADE 4","GRADE 3","GRADE 3","GRADE 1","GRADE 1","GRADE 4","GRADE 2","GRADE 4","GRADE 1","GRADE 1","GRADE 3","GRADE 4","GRADE 3",null,"GRADE 5","GRADE 4","GRADE 4","GRADE 3","GRADE 4","GRADE 2","GRADE 1"]},"rSettings":{"variables":{"major":"mdrsoc_nsv","minor":"mdrpt_nsv","group":"sex","id":"subjid","filters":[],"details":[]},"variableOptions":{"group":null},"defaults":{"placeholderFlag":{"valueCol":"mdrsoc_nsv","values":["",null]}}},"settings":{"variables":{"major":"mdrsoc_nsv","minor":"mdrpt_nsv","group":"sex","id":"subjid","filters":[],"details":[]},"variableOptions":{"group":null},"defaults":{"placeholderFlag":{"valueCol":"mdrsoc_nsv","values":["",null]}}}},"evals":[],"jsHooks":[]}</script>
+<div class="aeExplorer html-widget html-fill-item" id="htmlwidget-f0ee438b367bac5fd90f" style="width:95%;height:700px;"></div>
+<script type="application/json" data-for="htmlwidget-f0ee438b367bac5fd90f">{"x":{"data":{"subjid":["S23378","S23378","S23378","S75249","S29247","S29247","S97278","S97278","S97278","S97278","S49467","S49467","S49467","S49467","S33500","S33500","S33500","S80521","S80521","S37674","S37674","S2329","S2329","S2329","S2329","S2329","S60857","S60857","S60857","S36759","S44747","S44747","S44747","S44747","S44747","S44747","S44747"],"sex":["F","F","F","M","M","M","M","M","M","M","F","F","F","F","F","F","F","M","M","M","M","F","F","F","F","F","F","F","F","F","M","M","M","M","M","M","M"],"mdrpt_nsv":["term1","term1","term1","term2","term1","term1","term1","term2","term2","term2","term1","term2","term2","term1","term2","term2","term1","term2","term2","term1","term1","term1","term1","term1","term1","term1","term1","term2","term2",null,"term1","term1","term1","term1","term2","term1","term1"],"mdrsoc_nsv":["soc2","soc2","soc2","soc1","soc1","soc1","soc1","soc2","soc2","soc1","soc2","soc1","soc1","soc1","soc1","soc1","soc1","soc2","soc2","soc1","soc2","soc2","soc2","soc1","soc2","soc2","soc1","soc2","soc1",null,"soc2","soc2","soc2","soc1","soc1","soc2","soc2"],"aeser":["Y","N","Y","Y","Y","Y","Y","Y","Y","Y","Y","N","N","Y","Y","N","Y","N","N","N","N","N","N","Y","N","Y","Y","Y","N",null,"N","Y","N","N","N","Y","Y"],"aetoxgr":[1,4,3,5,5,5,1,1,3,5,5,3,5,5,5,4,4,3,3,1,1,4,2,4,1,1,3,4,3,null,5,4,4,3,4,2,1],"aerel":["Y","N","Y","N","N","Y","N","Y","N","Y","N","N","Y","N","N","N","N","N","Y","Y","Y","Y","N","N","Y","N","Y","Y","N",null,"Y","N","N","N","N","Y","N"],"aeseq":[20,27,28,25,5,6,4,15,16,30,11,31,32,36,2,3,33,9,13,19,35,1,7,8,10,34,17,24,26,null,12,14,18,21,22,23,29],"aestdy":[77,43,29,109,55,95,59,32,71,99,33,62,42,67,88,103,112,71,112,12,65,42,93,20,10,22,36,2,98,null,93,6,108,118,72,116,15],"aeendy":[81,48,40,114,60,107,71,35,85,112,40,68,42,67,94,115,123,83,113,16,77,53,104,28,20,36,42,16,106,null,102,10,112,120,85,121,18],"aesev":["GRADE 1","GRADE 4","GRADE 3","GRADE 5","GRADE 5","GRADE 5","GRADE 1","GRADE 1","GRADE 3","GRADE 5","GRADE 5","GRADE 3","GRADE 5","GRADE 5","GRADE 5","GRADE 4","GRADE 4","GRADE 3","GRADE 3","GRADE 1","GRADE 1","GRADE 4","GRADE 2","GRADE 4","GRADE 1","GRADE 1","GRADE 3","GRADE 4","GRADE 3",null,"GRADE 5","GRADE 4","GRADE 4","GRADE 3","GRADE 4","GRADE 2","GRADE 1"]},"rSettings":{"variables":{"major":"mdrsoc_nsv","minor":"mdrpt_nsv","group":"sex","id":"subjid","filters":[],"details":[]},"variableOptions":{"group":null},"defaults":{"placeholderFlag":{"valueCol":"mdrsoc_nsv","values":["",null]}}},"settings":{"variables":{"major":"mdrsoc_nsv","minor":"mdrpt_nsv","group":"sex","id":"subjid","filters":[],"details":[]},"variableOptions":{"group":null},"defaults":{"placeholderFlag":{"valueCol":"mdrsoc_nsv","values":["",null]}}}},"evals":[],"jsHooks":[]}</script>
 
 
 
@@ -4134,6 +4252,11 @@ $(document).ready(function () {
 </script>
 
 <!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
 
 
 <!-- dynamically load mathjax for compatibility with self-contained -->

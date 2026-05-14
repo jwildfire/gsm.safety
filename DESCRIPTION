@@ -22,8 +22,11 @@ Suggests:
     workr,
     yaml
 Remotes:
-    gilead-biostats/gsm.core,
-    Gilead-BioStats/gsm.datasim,
+    gsm.core=Gilead-BioStats/gsm.core@main,
+    gsm.datasim=Gilead-BioStats/gsm.datasim@main,
+    gsm.kri=Gilead-BioStats/gsm.kri@main,
+    gsm.mapping=Gilead-BioStats/gsm.mapping@main,
+    gsm.reporting=Gilead-BioStats/gsm.reporting@main,
     SafetyGraphics/safetyCharts,
     AstraZeneca/Tendril,
     Gilead-BioStats/workr

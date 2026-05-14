@@ -13,6 +13,32 @@ output:
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
 
+<style>
+.example-nav {
+  position: sticky;
+  top: 4.5rem;
+  z-index: 20;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0.75rem 0 1.25rem 0;
+  padding: 0.5rem 0;
+  background: var(--bs-body-bg, #fff);
+  border-bottom: 1px solid var(--bs-border-color, #dee2e6);
+}
+.example-nav a {
+  text-decoration: none;
+}
+.example-nav .example-nav-spacer {
+  flex: 1 1 auto;
+}
+</style>
+
+<div class="example-nav" aria-label="Example navigation">
+<a class="btn btn-outline-secondary btn-sm" href="Example_AE_Timelines_Workflow.html">← Previous: AE Timelines Workflow</a>
+<a class="btn btn-outline-secondary btn-sm" href="Example_NepExplorer_Workflow.html">Next: Nep Explorer Workflow →</a>
+</div>
+
 This example runs the Hep Explorer report through a `workr` YAML workflow:
 `inst/workflow/3_reports/hep_explorer.yaml`. The YAML stores the widget settings,
 initializes the widget when a safetyCharts `init_*` helper is available, and

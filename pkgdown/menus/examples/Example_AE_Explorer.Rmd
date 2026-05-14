@@ -36,8 +36,9 @@ initialized <- safetyCharts::init_aeExplorer(
   settings = lWorkflow$meta$widgetSettings
 )
 
-lReport <- gsm.safety::RenderAeExplorerWidget(
+lReport <- gsm.safety::RenderSafetyChartsWidget(
   lInitialized = initialized,
+  strWidgetName = "aeExplorer",
   strOutputDir = tempdir(),
   strOutputFile = "ae_explorer_example"
 )

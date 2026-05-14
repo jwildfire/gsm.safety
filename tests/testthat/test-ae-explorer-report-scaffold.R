@@ -18,7 +18,7 @@ test_that("AE Explorer report scaffold is workr-shaped", {
   expect_true(any(grepl("treatment_col: sex", report_text, fixed = TRUE)))
   expect_true(any(grepl("name: list", report_text, fixed = TRUE)))
   expect_true(any(grepl("safetyCharts::init_aeExplorer", report_text, fixed = TRUE)))
-  expect_true(any(grepl("gsm.safety::RenderAeExplorerWidget", report_text, fixed = TRUE)))
+  expect_true(any(grepl("gsm.safety::RenderSafetyChartsWidget", report_text, fixed = TRUE)))
 })
 
 
@@ -55,8 +55,9 @@ test_that("AE Explorer workflow renderer saves an initialized widget", {
     )
   )
 
-  report <- RenderAeExplorerWidget(
+  report <- RenderSafetyChartsWidget(
     lInitialized = initialized,
+    strWidgetName = "aeExplorer",
     strOutputDir = tempdir(),
     strOutputFile = "ae_explorer_test"
   )

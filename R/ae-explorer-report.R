@@ -140,31 +140,99 @@ Report_AE_Explorer <- function(lData,
   )
 }
 
-#' Create small example data for the AE Explorer report
+#' Create example data for the AE Explorer report with gsm.datasim
+#'
+#' @param nSubjects Number of synthetic subjects to generate.
+#' @param nSites Number of synthetic sites to generate.
+#' @param nAe Number of synthetic adverse event records to generate.
+#' @param seed Random seed used to keep examples deterministic.
 #'
 #' @return A named list containing `Mapped_SUBJ` and `Mapped_AE` example data.
 #' @export
-MakeAeExplorerExampleData <- function() {
+MakeAeExplorerExampleData <- function(nSubjects = 12,
+                                      nSites = 3,
+                                      nAe = 24,
+                                      seed = 1) {
+  if (!requireNamespace("gsm.datasim", quietly = TRUE)) {
+    stop(
+      "Package 'gsm.datasim' is required to generate AE Explorer example data.",
+      call. = FALSE
+    )
+  }
+
+  if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)) {
+    old_seed <- get(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
+    on.exit(assign(".Random.seed", old_seed, envir = .GlobalEnv), add = TRUE)
+  } else {
+    on.exit(rm(".Random.seed", envir = .GlobalEnv), add = TRUE)
+  }
+  set.seed(seed)
+
+  config <- gsm.datasim::create_study_config(
+    study_id = "GSM-SAFETY-AE-EXAMPLE",
+    participant_count = nSubjects,
+    site_count = nSites
+  )
+  config <- gsm.datasim::set_temporal_config(
+    config,
+    start_date = "2023-01-01",
+    snapshot_count = 1,
+    snapshot_width = "months"
+  )
+  config <- gsm.datasim::add_dataset_config(
+    config,
+    "Raw_AE",
+    enabled = TRUE,
+    count_formula = function(config) nAe
+  )
+
+  raw_data <- gsm.datasim::generate_study_data(config, verbose = FALSE)
+
+  df_subj <- raw_data$Raw_SUBJ
+  df_ae <- raw_data$Raw_AE
+
+  required_raw <- c("Raw_SUBJ", "Raw_AE")
+  missing_raw <- setdiff(required_raw, names(raw_data))
+  if (length(missing_raw) > 0) {
+    stop(
+      "gsm.datasim did not generate required dataset(s): ",
+      paste(missing_raw, collapse = ", "),
+      call. = FALSE
+    )
+  }
+
+  if (!("sex" %in% names(df_subj))) {
+    df_subj$sex <- sample(c("F", "M"), nrow(df_subj), replace = TRUE)
+  }
+  if (!("mdrpt_nsv" %in% names(df_ae))) {
+    df_ae$mdrpt_nsv <- "Unspecified adverse event"
+  }
+  if (!("mdrsoc_nsv" %in% names(df_ae))) {
+    df_ae$mdrsoc_nsv <- "Unspecified system organ class"
+  }
+  if (!("aeser" %in% names(df_ae))) {
+    df_ae$aeser <- NA_character_
+  }
+  if (!("aetoxgr" %in% names(df_ae))) {
+    df_ae$aetoxgr <- NA_integer_
+  }
+  if (!("aerel" %in% names(df_ae))) {
+    df_ae$aerel <- NA_character_
+  }
+
   list(
     Mapped_SUBJ = data.frame(
-      subjid = sprintf("SUBJ-%03d", 1:6),
-      sex = c("F", "M", "F", "M", "F", "M"),
+      subjid = as.character(df_subj$subjid),
+      sex = as.character(df_subj$sex),
       stringsAsFactors = FALSE
     ),
     Mapped_AE = data.frame(
-      subjid = c("SUBJ-001", "SUBJ-001", "SUBJ-002", "SUBJ-003", "SUBJ-004", "SUBJ-006"),
-      mdrpt_nsv = c("Headache", "Nausea", "Headache", "Fatigue", "Nausea", "Dizziness"),
-      mdrsoc_nsv = c(
-        "Nervous system disorders",
-        "Gastrointestinal disorders",
-        "Nervous system disorders",
-        "General disorders",
-        "Gastrointestinal disorders",
-        "Nervous system disorders"
-      ),
-      aeser = c("N", "N", "N", "N", "Y", "N"),
-      aetoxgr = c(1L, 1L, 2L, 1L, 3L, 1L),
-      aerel = c("Possible", "Possible", "Unrelated", "Possible", "Probable", "Unrelated"),
+      subjid = as.character(df_ae$subjid),
+      mdrpt_nsv = as.character(df_ae$mdrpt_nsv),
+      mdrsoc_nsv = as.character(df_ae$mdrsoc_nsv),
+      aeser = as.character(df_ae$aeser),
+      aetoxgr = as.integer(df_ae$aetoxgr),
+      aerel = as.character(df_ae$aerel),
       stringsAsFactors = FALSE
     )
   )

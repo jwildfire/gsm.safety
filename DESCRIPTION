@@ -17,11 +17,13 @@ Imports:
     safetyCharts,
     Tendril
 Suggests:
+    gsm.datasim,
     testthat (>= 3.0.0),
     workr,
     yaml
 Remotes:
     gilead-biostats/gsm.core,
+    Gilead-BioStats/gsm.datasim,
     SafetyGraphics/safetyCharts,
     AstraZeneca/Tendril,
     Gilead-BioStats/workr

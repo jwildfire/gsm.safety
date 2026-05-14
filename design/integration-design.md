@@ -176,11 +176,11 @@ RunSafetyGraphics <- function(
   output_dir = "safetygraphics",
   customMapping = NULL,
   chart_types = c("plot", "plotly", "htmlwidget", "table", "html"),
-  return = c("manifest", "objects", "paths")
+  return = c("objects", "paths")
 )
 ```
 
-This is the primary function called by GSM YAML modules. It returns a manifest data frame/list suitable for downstream reports.
+This is the primary function called by GSM YAML modules. It returns generated chart objects and file paths suitable for downstream reports.
 
 Example module YAML:
 
@@ -200,7 +200,7 @@ spec:
     subjid:
       type: character
 steps:
-  - output: SafetyGraphics_Manifest
+  - output: SafetyGraphics_Artifacts
     name: gsm.safety::RunSafetyGraphics
     params:
       lData: lData
@@ -269,7 +269,7 @@ Scope:
 
 - Chart: `safetyCharts::safetyOutlierExplorer` or static outlier explorer if lab mapped data is available; otherwise `aeExplorer` because AE/SUBJ are already central to GSM KRI examples.
 - Input: `Mapped_SUBJ` + `Mapped_AE` for AE, or `Mapped_SUBJ` + `Mapped_LB` for labs.
-- Output: HTML widget file(s) plus a manifest object.
+- Output: HTML widget file(s) plus returned artifact paths/objects.
 - No Shiny module charts.
 - No full `safetyGraphicsApp()` launch inside GSM workflow.
 
@@ -286,7 +286,7 @@ Deliverables:
 
 - Generate a chart bundle for `aes`, `dm`, and `labs` where available.
 - Add an `index.html` for the bundle.
-- Provide a GSM report module that can link the bundle from a KRI report or return a manifest that `gsm.reporting`/`gsm.kri` can consume.
+- Provide a GSM report module that can link or embed the generated bundle from a KRI report.
 - Add validation reports that enumerate which SafetyGraphics charts were skipped and why.
 
 ### MVP 2: GSM-native SafetyGraphics charts
@@ -312,13 +312,13 @@ These should use a new custom SafetyGraphics domain such as `kri_results`, demon
 ### Golden/object tests
 
 - Store small fixture `lData` lists with `Mapped_SUBJ`, `Mapped_AE`, and optionally `Mapped_LB`.
-- Snapshot the manifest structure, row counts, chart IDs, and validation messages.
+- Snapshot the artifact structure, row counts, chart IDs, and validation messages.
 - For static ggplot outputs, use `vdiffr` cautiously. For htmlwidgets, prefer DOM/file existence and JSON payload sanity checks over brittle pixel snapshots.
 
 ### Integration tests
 
 - Run a minimal GSM mapping + KRI + safety module workflow from YAML.
-- Verify `gsm.core::RunWorkflow()`/`RunWorkflows()` can pass `lData` into `RunSafetyGraphics()` and receive a manifest.
+- Verify `gsm.core::RunWorkflow()`/`RunWorkflows()` can pass `lData` into `RunSafetyGraphics()` and receive generated artifact paths/objects.
 - Test absence/presence of optional chart packages.
 
 ### Shiny/module tests
@@ -342,6 +342,6 @@ If `gsm.safety` is intended for GCP/RBQM use, align with the GSM QC posture docu
 
 ## Recommendation
 
-Build `gsm.safety` as a **GSM extension/module package** with a small number of workflow-facing functions. The first milestone should be an AE or lab SafetyGraphics htmlwidget bundle generated from `Mapped_*` data through `gsm.core::RunWorkflow()`, returning a manifest that downstream GSM reports can link or embed.
+Build `gsm.safety` as a **GSM extension/module package** with a small number of workflow-facing functions. The first milestone should be an AE or lab SafetyGraphics htmlwidget bundle generated from `Mapped_*` data through `gsm.core::RunWorkflow()`, returning generated artifact paths/objects that downstream GSM reports can link or embed.
 
 This path keeps both ecosystems intact, makes validation feasible, and creates an incremental bridge: first existing SafetyGraphics charts from GSM mapped data, then GSM-native chart domains over `Reporting_*` data.

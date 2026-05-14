@@ -17,6 +17,7 @@ reference:
   - title: AE Explorer report
     contents:
       - MakeAeExplorerSettings
-      - MakeAeExplorerManifest
+      - MakeAeExplorerData
+      - RenderAeExplorerWidget
       - Report_AE_Explorer
       - MakeAeExplorerExampleData

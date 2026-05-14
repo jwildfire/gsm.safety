@@ -95,47 +95,6 @@ MakeAeExplorerSettings <- function(lSpec) {
   )
 }
 
-#' Create an AE Explorer report manifest
-#'
-#' @param lData A named list of workflow data frames.
-#' @param lSettings AE Explorer settings from [MakeAeExplorerSettings()].
-#' @param lMeta Workflow metadata.
-#'
-#' @return A manifest list describing the AE Explorer report configuration.
-#' @export
-MakeAeExplorerManifest <- function(lData, lSettings, lMeta = list()) {
-  required_domains <- unlist(lSettings$domains, use.names = FALSE)
-  missing_domains <- setdiff(required_domains, names(lData))
-  if (length(missing_domains) > 0) {
-    stop(
-      "AE Explorer missing required domain(s): ",
-      paste(missing_domains, collapse = ", "),
-      call. = FALSE
-    )
-  }
-
-  aes_settings <- lSettings$settings$aes
-  missing_columns <- required_columns(
-    lData[[lSettings$domains$aes]],
-    c(aes_settings$id_col, aes_settings$term_col, aes_settings$bodsys_col),
-    lSettings$domains$aes
-  )
-  if (length(missing_columns) > 0) {
-    stop(paste(missing_columns, collapse = "\n"), call. = FALSE)
-  }
-
-  list(
-    report_id = lMeta$ID %||% "ae_explorer",
-    report_type = lMeta$Type %||% "Report",
-    output = lMeta$Output %||% "html",
-    domains = lSettings$domains,
-    settings = lSettings$settings,
-    optional_filters = lSettings$optional_filters,
-    gaps = lSettings$gaps,
-    status = "ready"
-  )
-}
-
 #' Render an interactive AE Explorer report
 #'
 #' This report artifact validates mapped AE inputs, initializes AE Explorer
@@ -145,16 +104,14 @@ MakeAeExplorerManifest <- function(lData, lSettings, lMeta = list()) {
 #'
 #' @param lData A named list containing `Mapped_SUBJ` and `Mapped_AE` data frames.
 #' @param lSettings AE Explorer settings from [MakeAeExplorerSettings()].
-#' @param lManifest AE Explorer manifest from [MakeAeExplorerManifest()].
 #' @param strOutputDir Directory where the HTML report should be written.
 #' @param strOutputFile Output file stem or filename. `.html` is appended when
 #'   absent.
 #'
-#' @return A list with the report path, htmlwidget, manifest, and summary tables.
+#' @return A list with the report path, htmlwidget, and summary tables.
 #' @export
 Report_AE_Explorer <- function(lData,
                                lSettings,
-                               lManifest,
                                strOutputDir = getwd(),
                                strOutputFile = "ae_explorer") {
   if (!dir.exists(strOutputDir)) {
@@ -200,7 +157,6 @@ Report_AE_Explorer <- function(lData,
   c(
     report,
     list(
-      manifest = lManifest,
       summaries = list(
         terms = term_summary,
         body_systems = body_system_summary

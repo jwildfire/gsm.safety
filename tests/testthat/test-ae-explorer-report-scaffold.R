@@ -45,28 +45,16 @@ test_that("AE Explorer workflow functions render a report", {
   lSettings <- MakeAeExplorerSettings(lSpec)
   lData <- MakeAeExplorerExampleData()
 
-  manifest <- MakeAeExplorerManifest(
-    lData = lData,
-    lSettings = lSettings,
-    lMeta = list(Type = "Report", ID = "ae_explorer", Output = "html")
-  )
-
   skip_if_not_installed("safetyCharts")
   skip_if_not_installed("htmlwidgets")
 
   report <- Report_AE_Explorer(
     lData = lData,
     lSettings = lSettings,
-    lManifest = manifest,
     strOutputDir = tempdir(),
     strOutputFile = "ae_explorer_test"
   )
 
-  expect_equal(manifest$report_id, "ae_explorer")
-  expect_equal(manifest$domains$dm, "Mapped_SUBJ")
-  expect_equal(manifest$settings$aes$term_col, "mdrpt_nsv")
-  expect_true("treatment_col" %in% names(manifest$gaps))
-  expect_equal(manifest$status, "ready")
   expect_true(file.exists(report$path))
   expect_s3_class(report$widget, "htmlwidget")
   expect_true(any(grepl("aeExplorer", readLines(report$path, warn = FALSE), fixed = TRUE)))
@@ -85,14 +73,22 @@ test_that("AE Explorer report validates required domains and columns", {
   lSettings <- MakeAeExplorerSettings(lSpec)
 
   expect_error(
-    MakeAeExplorerManifest(list(Mapped_SUBJ = data.frame(subjid = "01")), lSettings),
+    Report_AE_Explorer(
+      lData = list(Mapped_SUBJ = data.frame(subjid = "01")),
+      lSettings = lSettings,
+      strOutputDir = tempdir()
+    ),
     "Mapped_AE"
   )
 
   bad_data <- MakeAeExplorerExampleData()
   bad_data$Mapped_AE$mdrpt_nsv <- NULL
   expect_error(
-    MakeAeExplorerManifest(bad_data, lSettings),
+    Report_AE_Explorer(
+      lData = bad_data,
+      lSettings = lSettings,
+      strOutputDir = tempdir()
+    ),
     "mdrpt_nsv"
   )
 })

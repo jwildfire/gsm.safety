@@ -1,3 +1,61 @@
+#' Prepare AE Explorer data for safetyCharts
+#'
+#' @param lData A named list containing mapped GSM safety data frames.
+#' @param lMeta Workflow metadata containing `domains` mappings.
+#'
+#' @return A named list with `dm` and `aes` data frames for safetyCharts.
+#' @export
+MakeAeExplorerData <- function(lData, lMeta = list()) {
+  domains <- lMeta$domains %||% list(dm = "Mapped_SUBJ", aes = "Mapped_AE")
+  missing_domains <- setdiff(unlist(domains, use.names = FALSE), names(lData))
+  if (length(missing_domains) > 0) {
+    stop(
+      "AE Explorer missing required domain(s): ",
+      paste(missing_domains, collapse = ", "),
+      call. = FALSE
+    )
+  }
+
+  list(
+    dm = lData[[domains$dm]],
+    aes = lData[[domains$aes]]
+  )
+}
+
+#' Save an initialized AE Explorer widget as standalone HTML
+#'
+#' @param lInitialized A list returned by [safetyCharts::init_aeExplorer()].
+#' @param strOutputDir Directory where the HTML report should be written.
+#' @param strOutputFile Output file stem or filename. `.html` is appended when absent.
+#'
+#' @return A list with the report path and htmlwidget.
+#' @export
+RenderAeExplorerWidget <- function(lInitialized,
+                                   strOutputDir = getwd(),
+                                   strOutputFile = "ae_explorer") {
+  if (!dir.exists(strOutputDir)) {
+    dir.create(strOutputDir, recursive = TRUE, showWarnings = FALSE)
+  }
+
+  if (!grepl("[.]html?$", strOutputFile, ignore.case = TRUE)) {
+    strOutputFile <- paste0(strOutputFile, ".html")
+  }
+  strOutputPath <- file.path(strOutputDir, strOutputFile)
+
+  widget <- safetyCharts::render_widget(
+    "aeExplorer",
+    lInitialized$data,
+    lInitialized$settings
+  )
+  htmlwidgets::saveWidget(widget, file = strOutputPath, selfcontained = TRUE)
+
+  list(
+    path = normalizePath(strOutputPath, winslash = "/", mustWork = FALSE),
+    widget = widget,
+    initialized = lInitialized
+  )
+}
+
 #' Create AE Explorer report settings from a workr spec
 #'
 #' @param lSpec A `workr` workflow spec for the AE Explorer report.
@@ -80,10 +138,10 @@ MakeAeExplorerManifest <- function(lData, lSettings, lMeta = list()) {
 
 #' Render an interactive AE Explorer report
 #'
-#' This report artifact validates mapped AE inputs, calls
-#' [safetyCharts::aeExplorer()] to create the interactive AE Explorer widget,
-#' and writes a standalone HTML file that can be attached to a workflow run or
-#' shown in pkgdown examples.
+#' This report artifact validates mapped AE inputs, initializes AE Explorer
+#' settings with [safetyCharts::init_aeExplorer()], renders the interactive
+#' widget with [safetyCharts::render_widget()], and writes a standalone HTML
+#' file that can be attached to a workflow run or shown in pkgdown examples.
 #'
 #' @param lData A named list containing `Mapped_SUBJ` and `Mapped_AE` data frames.
 #' @param lSettings AE Explorer settings from [MakeAeExplorerSettings()].
@@ -125,24 +183,28 @@ Report_AE_Explorer <- function(lData,
   if (!grepl("[.]html?$", strOutputFile, ignore.case = TRUE)) {
     strOutputFile <- paste0(strOutputFile, ".html")
   }
-  strOutputPath <- file.path(strOutputDir, strOutputFile)
 
-  widget <- safetyCharts::aeExplorer(
+  initialized <- safetyCharts::init_aeExplorer(
     data = list(
       dm = df_dm,
       aes = df_ae
     ),
-    mapping = lSettings$settings
+    settings = lSettings$settings
   )
-  htmlwidgets::saveWidget(widget, file = strOutputPath, selfcontained = TRUE)
+  report <- RenderAeExplorerWidget(
+    lInitialized = initialized,
+    strOutputDir = strOutputDir,
+    strOutputFile = strOutputFile
+  )
 
-  list(
-    path = normalizePath(strOutputPath, winslash = "/", mustWork = FALSE),
-    widget = widget,
-    manifest = lManifest,
-    summaries = list(
-      terms = term_summary,
-      body_systems = body_system_summary
+  c(
+    report,
+    list(
+      manifest = lManifest,
+      summaries = list(
+        terms = term_summary,
+        body_systems = body_system_summary
+      )
     )
   )
 }

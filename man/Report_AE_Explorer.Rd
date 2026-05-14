@@ -20,7 +20,8 @@ Report_AE_Explorer(
 }
 \value{A list with the report path, htmlwidget, manifest, and summary tables.}
 \description{
-Render an interactive AE Explorer report with \code{safetyCharts::aeExplorer()},
-validate mapped AE inputs, and write a standalone HTML artifact for workflow and
-pkgdown examples.
+Render an interactive AE Explorer report by validating mapped AE inputs,
+initializing settings with \code{safetyCharts::init_aeExplorer()}, rendering
+the widget with \code{safetyCharts::render_widget()}, and writing a standalone
+HTML artifact for workflow and pkgdown examples.
 }

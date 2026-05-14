@@ -12,31 +12,32 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
 
 This example renders the interactive AE Explorer report artifact from a small
-mapped subject/adverse-event data set. The same renderer is called by the
-`inst/workflow/3_reports/ae_explorer.yaml` workflow.
+mapped subject/adverse-event data set. The widget settings are read from the
+same workflow YAML used by the `workr` example.
 
 ```{r}
-lSpec <- list(
-  Mapped_SUBJ = list(subjid = list(type = "character")),
-  Mapped_AE = list(
-    subjid = list(type = "character"),
-    mdrpt_nsv = list(type = "character"),
-    mdrsoc_nsv = list(type = "character")
-  )
+workflow_path <- system.file(
+  "workflow", "3_reports", "ae_explorer.yaml",
+  package = "gsm.safety"
 )
+if (!nzchar(workflow_path)) {
+  workflow_path <- file.path("inst", "workflow", "3_reports", "ae_explorer.yaml")
+}
 
+lWorkflow <- yaml::read_yaml(workflow_path)
 lData <- gsm.safety::MakeAeExplorerExampleData()
-lSettings <- gsm.safety::MakeAeExplorerSettings(lSpec)
-lManifest <- gsm.safety::MakeAeExplorerManifest(
+aeData <- gsm.safety::MakeAeExplorerData(
   lData = lData,
-  lSettings = lSettings,
-  lMeta = list(Type = "Report", ID = "ae_explorer", Output = "html")
+  lMeta = lWorkflow$meta
 )
 
-lReport <- gsm.safety::Report_AE_Explorer(
-  lData = lData,
-  lSettings = lSettings,
-  lManifest = lManifest,
+initialized <- safetyCharts::init_aeExplorer(
+  data = aeData,
+  settings = lWorkflow$meta$widgetSettings
+)
+
+lReport <- gsm.safety::RenderAeExplorerWidget(
+  lInitialized = initialized,
   strOutputDir = tempdir(),
   strOutputFile = "ae_explorer_example"
 )

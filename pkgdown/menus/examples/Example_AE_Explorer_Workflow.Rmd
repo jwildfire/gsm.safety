@@ -13,7 +13,9 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 
 This example runs the AE Explorer report through the same `workr` YAML workflow
 that a tester or downstream package can execute directly:
-`inst/workflow/3_reports/ae_explorer.yaml`.
+`inst/workflow/3_reports/ae_explorer.yaml`. The YAML stores `meta$widgetSettings`,
+calls `safetyCharts::init_aeExplorer()`, then saves the initialized widget as a
+standalone HTML report.
 
 ```{r}
 workflow_path <- system.file(

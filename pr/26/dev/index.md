@@ -20,31 +20,32 @@ contains:
   design](https://obot-claw.github.io/gsm.safety/dev/design/integration-design.md)
 - [AE Explorer gap
   analysis](https://obot-claw.github.io/gsm.safety/dev/design/ae-explorer-gap-analysis.md)
-- A `workr`-shaped AE Explorer report workflow at
-  `inst/workflow/3_reports/ae_explorer.yaml`
-- An interactive SafetyCharts AE Explorer HTML report artifact
-- Pkgdown menu examples for both direct widget rendering and YAML-driven
-  workflow execution
+- `workr`-shaped report workflows under `inst/workflow/3_reports/` for
+  AE Explorer, AE Timelines, Hep Explorer, Nep Explorer, Paneled Outlier
+  Explorer, Safety Delta Delta, Safety Histogram, Safety Outlier
+  Explorer, Safety Results Over Time, and Safety Shift Plot
+- Interactive SafetyCharts HTML report artifacts rendered through
+  [`safetyCharts::render_widget()`](https://rdrr.io/pkg/safetyCharts/man/render_widget.html)
+- Pkgdown menu examples that run the report YAML workflows with
+  [`workr::RunWorkflow()`](https://gilead-biostats.github.io/workr/reference/RunWorkflow.html)
 - GitHub Actions R CMD check, pkgdown, coverage, and workflow-template
   checks
 
-The first implemented workflow keeps the report contract in YAML and
-uses
+The implemented workflows keep the report contract in YAML and use
 [`MakeExampleData()`](https://obot-claw.github.io/gsm.safety/dev/reference/MakeExampleData.md)
 for reproducible `gsm.datasim`-backed examples:
 
-1.  `meta$domains` maps GSM workflow data names, currently `Mapped_SUBJ`
-    and `Mapped_AE`, to the `safetyCharts` AE Explorer domain names `dm`
-    and `aes`.
-2.  `meta$widgetSettings` stores the AE Explorer column mapping used by
-    `safetyCharts`, including `sex` as the current AE Explorer grouping
-    variable.
-3.  The workflow creates the `list(dm = Mapped_SUBJ, aes = Mapped_AE)`
-    structure expected by `safetyCharts` directly in YAML.
-4.  [`safetyCharts::init_aeExplorer()`](https://rdrr.io/pkg/safetyCharts/man/init_aeExplorer.html)
-    initializes the widget data/settings.
-5.  [`gsm.safety::RenderSafetyChartsWidget()`](https://obot-claw.github.io/gsm.safety/dev/reference/RenderSafetyChartsWidget.md)
-    renders the initialized widget with
+1.  `meta$domains` maps GSM workflow data names, currently
+    `Mapped_SUBJ`, `Mapped_AE`, and `Mapped_LB`, to the domain shapes
+    expected by each `safetyCharts` widget.
+2.  `meta$widgetSettings` stores the widget column mapping used by
+    `safetyCharts`, including `sex` as the current example grouping
+    variable when supported.
+3.  Workflows call the relevant `safetyCharts::init_*()` helper when one
+    exists; widgets without an init helper pass data/settings directly
+    to the renderer.
+4.  [`gsm.safety::RenderSafetyChartsWidget()`](https://obot-claw.github.io/gsm.safety/dev/reference/RenderSafetyChartsWidget.md)
+    renders the widget with
     [`safetyCharts::render_widget()`](https://rdrr.io/pkg/safetyCharts/man/render_widget.html)
     and writes a standalone HTML report.
 
@@ -73,14 +74,10 @@ From a source checkout, use:
 source("inst/examples/run-ae-explorer-workflow.R")
 ```
 
-The pkgdown examples mirror those two supported paths:
-
-- direct render: read the YAML settings, call
-  [`safetyCharts::init_aeExplorer()`](https://rdrr.io/pkg/safetyCharts/man/init_aeExplorer.html),
-  then save the widget.
-- workflow render: call
-  [`workr::RunWorkflow()`](https://gilead-biostats.github.io/workr/reference/RunWorkflow.html)
-  using `inst/workflow/3_reports/ae_explorer.yaml`.
+The pkgdown examples use
+[`workr::RunWorkflow()`](https://gilead-biostats.github.io/workr/reference/RunWorkflow.html)
+against the workflow YAML files and render the returned htmlwidget
+output.
 
 Run local checks with:
 

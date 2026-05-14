@@ -39,6 +39,14 @@
 <li><a class="dropdown-item" href="examples/Example_AE_Explorer.html">AE Explorer</a></li>
     <li><a class="dropdown-item" href="examples/Example_AE_Explorer_Workflow.html">AE Explorer Workflow</a></li>
     <li><a class="dropdown-item" href="examples/Example_AE_Timelines_Workflow.html">AE Timelines Workflow</a></li>
+    <li><a class="dropdown-item" href="examples/Example_HepExplorer_Workflow.html">Hep Explorer Workflow</a></li>
+    <li><a class="dropdown-item" href="examples/Example_NepExplorer_Workflow.html">Nep Explorer Workflow</a></li>
+    <li><a class="dropdown-item" href="examples/Example_PaneledOutlierExplorer_Workflow.html">Paneled Outlier Explorer Workflow</a></li>
+    <li><a class="dropdown-item" href="examples/Example_SafetyDeltaDelta_Workflow.html">Safety Delta Delta Workflow</a></li>
+    <li><a class="dropdown-item" href="examples/Example_SafetyHistogram_Workflow.html">Safety Histogram Workflow</a></li>
+    <li><a class="dropdown-item" href="examples/Example_SafetyOutlierExplorer_Workflow.html">Safety Outlier Explorer Workflow</a></li>
+    <li><a class="dropdown-item" href="examples/Example_SafetyResultsOverTime_Workflow.html">Safety Results Over Time Workflow</a></li>
+    <li><a class="dropdown-item" href="examples/Example_SafetyShiftPlot_Workflow.html">Safety Shift Plot Workflow</a></li>
   </ul>
 </li>
       </ul>
@@ -66,23 +74,23 @@
 <ul>
 <li><a href="design/integration-design.html">Integration design</a></li>
 <li><a href="design/ae-explorer-gap-analysis.html">AE Explorer gap analysis</a></li>
-<li>A <code>workr</code>-shaped AE Explorer report workflow at <code>inst/workflow/3_reports/ae_explorer.yaml</code>
+<li>
+<code>workr</code>-shaped report workflows under <code>inst/workflow/3_reports/</code> for AE Explorer, AE Timelines, Hep Explorer, Nep Explorer, Paneled Outlier Explorer, Safety Delta Delta, Safety Histogram, Safety Outlier Explorer, Safety Results Over Time, and Safety Shift Plot</li>
+<li>Interactive SafetyCharts HTML report artifacts rendered through <code><a href="https://rdrr.io/pkg/safetyCharts/man/render_widget.html" class="external-link">safetyCharts::render_widget()</a></code>
 </li>
-<li>An interactive SafetyCharts AE Explorer HTML report artifact</li>
-<li>Pkgdown menu examples for both direct widget rendering and YAML-driven workflow execution</li>
+<li>Pkgdown menu examples that run the report YAML workflows with <code><a href="https://gilead-biostats.github.io/workr/reference/RunWorkflow.html" class="external-link">workr::RunWorkflow()</a></code>
+</li>
 <li>GitHub Actions R CMD check, pkgdown, coverage, and workflow-template checks</li>
 </ul>
-<p>The first implemented workflow keeps the report contract in YAML and uses <code><a href="reference/MakeExampleData.html">MakeExampleData()</a></code> for reproducible <code>gsm.datasim</code>-backed examples:</p>
+<p>The implemented workflows keep the report contract in YAML and use <code><a href="reference/MakeExampleData.html">MakeExampleData()</a></code> for reproducible <code>gsm.datasim</code>-backed examples:</p>
 <ol style="list-style-type: decimal">
 <li>
-<code>meta$domains</code> maps GSM workflow data names, currently <code>Mapped_SUBJ</code> and <code>Mapped_AE</code>, to the <code>safetyCharts</code> AE Explorer domain names <code>dm</code> and <code>aes</code>.</li>
+<code>meta$domains</code> maps GSM workflow data names, currently <code>Mapped_SUBJ</code>, <code>Mapped_AE</code>, and <code>Mapped_LB</code>, to the domain shapes expected by each <code>safetyCharts</code> widget.</li>
 <li>
-<code>meta$widgetSettings</code> stores the AE Explorer column mapping used by <code>safetyCharts</code>, including <code>sex</code> as the current AE Explorer grouping variable.</li>
-<li>The workflow creates the <code>list(dm = Mapped_SUBJ, aes = Mapped_AE)</code> structure expected by <code>safetyCharts</code> directly in YAML.</li>
+<code>meta$widgetSettings</code> stores the widget column mapping used by <code>safetyCharts</code>, including <code>sex</code> as the current example grouping variable when supported.</li>
+<li>Workflows call the relevant <code>safetyCharts::init_*()</code> helper when one exists; widgets without an init helper pass data/settings directly to the renderer.</li>
 <li>
-<code><a href="https://rdrr.io/pkg/safetyCharts/man/init_aeExplorer.html" class="external-link">safetyCharts::init_aeExplorer()</a></code> initializes the widget data/settings.</li>
-<li>
-<code><a href="reference/RenderSafetyChartsWidget.html">gsm.safety::RenderSafetyChartsWidget()</a></code> renders the initialized widget with <code><a href="https://rdrr.io/pkg/safetyCharts/man/render_widget.html" class="external-link">safetyCharts::render_widget()</a></code> and writes a standalone HTML report.</li>
+<code><a href="reference/RenderSafetyChartsWidget.html">gsm.safety::RenderSafetyChartsWidget()</a></code> renders the widget with <code><a href="https://rdrr.io/pkg/safetyCharts/man/render_widget.html" class="external-link">safetyCharts::render_widget()</a></code> and writes a standalone HTML report.</li>
 </ol>
 <p>The YAML is now the authoritative configuration, and the generated HTML widget is the report artifact. The next milestone is to harden the GSM-to-SafetyCharts mapping contract against real <code>gsm.mapping</code> outputs and continue hardening the <code>gsm.datasim</code>-based example data path.</p>
 </div>
@@ -96,11 +104,7 @@
 <p>From a source checkout, use:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"inst/examples/run-ae-explorer-workflow.R"</span><span class="op">)</span></span></code></pre></div>
-<p>The pkgdown examples mirror those two supported paths:</p>
-<ul>
-<li>direct render: read the YAML settings, call <code><a href="https://rdrr.io/pkg/safetyCharts/man/init_aeExplorer.html" class="external-link">safetyCharts::init_aeExplorer()</a></code>, then save the widget.</li>
-<li>workflow render: call <code><a href="https://gilead-biostats.github.io/workr/reference/RunWorkflow.html" class="external-link">workr::RunWorkflow()</a></code> using <code>inst/workflow/3_reports/ae_explorer.yaml</code>.</li>
-</ul>
+<p>The pkgdown examples use <code><a href="https://gilead-biostats.github.io/workr/reference/RunWorkflow.html" class="external-link">workr::RunWorkflow()</a></code> against the workflow YAML files and render the returned htmlwidget output.</p>
 <p>Run local checks with:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">rcmdcheck</span><span class="fu">::</span><span class="fu"><a href="http://r-lib.github.io/rcmdcheck/reference/rcmdcheck.html" class="external-link">rcmdcheck</a></span><span class="op">(</span>args <span class="op">=</span> <span class="st">"--no-manual"</span><span class="op">)</span></span></code></pre></div>

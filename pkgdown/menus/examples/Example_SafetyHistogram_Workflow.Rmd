@@ -3,7 +3,7 @@ title: "Safety Histogram Workflow"
 author: "gsm.safety Example"
 description: "Interactive Safety Histogram report rendered by running the workr YAML workflow."
 index: 22
-date: "`r format(Sys.time(), '%B %d, %Y %H:%M:%S %Z')`"
+date: "`r format(Sys.time(), '%B %d, %Y %H:%M:%S %Z', tz = 'America/New_York')`"
 output: html_document
 ---
 

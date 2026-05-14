@@ -3,7 +3,7 @@ title: "Safety Delta Delta Workflow"
 author: "gsm.safety Example"
 description: "Interactive Safety Delta Delta report rendered by running the workr YAML workflow."
 index: 21
-date: "`r format(Sys.time(), '%B %d, %Y %H:%M:%S %Z')`"
+date: "`r format(Sys.time(), '%B %d, %Y %H:%M:%S %Z', tz = 'America/New_York')`"
 output: html_document
 ---
 

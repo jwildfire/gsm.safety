@@ -3,7 +3,7 @@ title: "Nep Explorer Workflow"
 author: "gsm.safety Example"
 description: "Interactive Nep Explorer report rendered by running the workr YAML workflow."
 index: 19
-date: "`r format(Sys.time(), '%B %d, %Y %H:%M:%S %Z')`"
+date: "`r format(Sys.time(), '%B %d, %Y %H:%M:%S %Z', tz = 'America/New_York')`"
 output: html_document
 ---
 

@@ -3,7 +3,7 @@ title: "Safety Results Over Time Workflow"
 author: "gsm.safety Example"
 description: "Interactive Safety Results Over Time report rendered by running the workr YAML workflow."
 index: 24
-date: "`r format(Sys.time(), '%B %d, %Y %H:%M:%S %Z')`"
+date: "`r format(Sys.time(), '%B %d, %Y %H:%M:%S %Z', tz = 'America/New_York')`"
 output: html_document
 ---
 

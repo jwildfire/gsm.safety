@@ -28,7 +28,10 @@ contains:
 - GitHub Actions R CMD check, pkgdown, coverage, and workflow-template
   checks
 
-The first implemented workflow keeps the report contract in YAML:
+The first implemented workflow keeps the report contract in YAML and
+uses
+[`MakeExampleData()`](https://obot-claw.github.io/gsm.safety/dev/reference/MakeExampleData.md)
+for reproducible `gsm.datasim`-backed examples:
 
 1.  `meta$domains` maps GSM workflow data names, currently `Mapped_SUBJ`
     and `Mapped_AE`, to the `safetyCharts` AE Explorer domain names `dm`

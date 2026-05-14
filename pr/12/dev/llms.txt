@@ -28,7 +28,10 @@ contains:
 - GitHub Actions R CMD check, pkgdown, coverage, and workflow-template
   checks
 
-The first implemented workflow keeps the report contract in YAML:
+The first implemented workflow keeps the report contract in YAML and
+uses
+[`MakeExampleData()`](https://obot-claw.github.io/gsm.safety/dev/reference/MakeExampleData.md)
+for reproducible `gsm.datasim`-backed examples:
 
 1.  `meta$domains` maps GSM workflow data names, currently `Mapped_SUBJ`
     and `Mapped_AE`, to the `safetyCharts` AE Explorer domain names `dm`
@@ -109,12 +112,8 @@ Apache License 2.0.
 
 ## AE Explorer report
 
-- [`MakeAeExplorerSettings()`](https://obot-claw.github.io/gsm.safety/dev/reference/MakeAeExplorerSettings.md)
-  : Create AE Explorer report settings from a workr spec
 - [`RenderAeExplorerWidget()`](https://obot-claw.github.io/gsm.safety/dev/reference/RenderAeExplorerWidget.md)
   : Save an initialized AE Explorer widget as standalone HTML
-- [`Report_AE_Explorer()`](https://obot-claw.github.io/gsm.safety/dev/reference/Report_AE_Explorer.md)
-  : Render an interactive AE Explorer report
-- [`MakeAeExplorerExampleData()`](https://obot-claw.github.io/gsm.safety/dev/reference/MakeAeExplorerExampleData.md)
-  : Create example data for the AE Explorer report with gsm.datasim
+- [`MakeExampleData()`](https://obot-claw.github.io/gsm.safety/dev/reference/MakeExampleData.md)
+  : Create example data for safety renderers with gsm.datasim
 

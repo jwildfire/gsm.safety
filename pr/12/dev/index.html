@@ -71,7 +71,7 @@
 <li>Pkgdown menu examples for both direct widget rendering and YAML-driven workflow execution</li>
 <li>GitHub Actions R CMD check, pkgdown, coverage, and workflow-template checks</li>
 </ul>
-<p>The first implemented workflow keeps the report contract in YAML:</p>
+<p>The first implemented workflow keeps the report contract in YAML and uses <code><a href="reference/MakeExampleData.html">MakeExampleData()</a></code> for reproducible <code>gsm.datasim</code>-backed examples:</p>
 <ol style="list-style-type: decimal">
 <li>
 <code>meta$domains</code> maps GSM workflow data names, currently <code>Mapped_SUBJ</code> and <code>Mapped_AE</code>, to the <code>safetyCharts</code> AE Explorer domain names <code>dm</code> and <code>aes</code>.</li>

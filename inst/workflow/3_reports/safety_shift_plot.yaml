@@ -32,6 +32,9 @@ spec:
       type: character
     value:
       type: numeric
+    unit:
+      type: character
+      required: false
     sex:
       type: character
       required: false

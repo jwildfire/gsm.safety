@@ -101,10 +101,11 @@ MakeExampleData <- function(nSubjects = 12,
   )
 
   df_measure <- data.frame(
-    measure = c("ALT", "AST", "TB", "ALP", "CREAT"),
-    normal_low = c(0, 0, 0, 35, 0.5),
-    normal_high = c(40, 40, 1.2, 120, 1.3),
-    typical = c(24, 22, 0.7, 75, 0.9),
+    measure = c("ALT", "AST", "TB", "ALP", "CREAT", "EGFR"),
+    unit = c("U/L", "U/L", "mg/dL", "U/L", "mg/dL", "mL/min/1.73m2"),
+    normal_low = c(0, 0, 0, 35, 0.5, 60),
+    normal_high = c(40, 40, 1.2, 120, 1.3, 130),
+    typical = c(24, 22, 0.7, 75, 0.9, 95),
     stringsAsFactors = FALSE
   )
   df_visit <- data.frame(
@@ -134,6 +135,7 @@ MakeExampleData <- function(nSubjects = 12,
     ),
     2
   )
+  df_lb$baseline_flag <- ifelse(df_lb$visit == "Baseline", "Y", "N")
   df_lb$typical <- NULL
 
 
@@ -159,8 +161,10 @@ MakeExampleData <- function(nSubjects = 12,
       studyday = as.integer(df_lb$studyday),
       measure = as.character(df_lb$measure),
       value = as.numeric(df_lb$value),
+      unit = as.character(df_lb$unit),
       normal_low = as.numeric(df_lb$normal_low),
       normal_high = as.numeric(df_lb$normal_high),
+      baseline_flag = as.character(df_lb$baseline_flag),
       sex = as.character(df_lb$sex),
       stringsAsFactors = FALSE
     )

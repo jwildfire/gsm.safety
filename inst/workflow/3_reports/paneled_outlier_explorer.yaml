@@ -37,11 +37,17 @@ spec:
       type: character
     value:
       type: numeric
+    unit:
+      type: character
+      required: false
     normal_low:
       type: numeric
       required: false
     normal_high:
       type: numeric
+      required: false
+    baseline_flag:
+      type: character
       required: false
     sex:
       type: character

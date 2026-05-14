@@ -15,12 +15,31 @@ meta:
     studyday_col: studyday
     measure_col: measure
     value_col: value
+    unit_col: unit
     normal_col_low: normal_low
     normal_col_high: normal_high
-    group_by: sex
-    group_cols:
+    baseline_col: baseline_flag
+    baseline_value: Y
+    baseline:
+      value_col: baseline_flag
+      values:
+        - Y
+    measure_values:
+      creat: CREAT
+      egfr_creat: EGFR
+    filters:
       - value_col: sex
         label: Sex
+      - value_col: visit
+        label: Visit
+    groups:
+      - value_col: sex
+        label: Sex
+    details:
+      - value_col: visit
+        label: Visit
+      - value_col: studyday
+        label: Study Day
 spec:
   Mapped_LB:
     _all:
@@ -37,11 +56,17 @@ spec:
       type: character
     value:
       type: numeric
+    unit:
+      type: character
+      required: false
     normal_low:
       type: numeric
       required: false
     normal_high:
       type: numeric
+      required: false
+    baseline_flag:
+      type: character
       required: false
     sex:
       type: character

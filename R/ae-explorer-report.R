@@ -1,27 +1,3 @@
-#' Prepare AE Explorer data for safetyCharts
-#'
-#' @param lData A named list containing mapped GSM safety data frames.
-#' @param lMeta Workflow metadata containing `domains` mappings.
-#'
-#' @return A named list with `dm` and `aes` data frames for safetyCharts.
-#' @export
-MakeAeExplorerData <- function(lData, lMeta = list()) {
-  domains <- lMeta$domains %||% list(dm = "Mapped_SUBJ", aes = "Mapped_AE")
-  missing_domains <- setdiff(unlist(domains, use.names = FALSE), names(lData))
-  if (length(missing_domains) > 0) {
-    stop(
-      "AE Explorer missing required domain(s): ",
-      paste(missing_domains, collapse = ", "),
-      call. = FALSE
-    )
-  }
-
-  list(
-    dm = lData[[domains$dm]],
-    aes = lData[[domains$aes]]
-  )
-}
-
 #' Save an initialized AE Explorer widget as standalone HTML
 #'
 #' @param lInitialized A list returned by [safetyCharts::init_aeExplorer()].

@@ -15,24 +15,11 @@ test_that("AE Explorer report scaffold is workr-shaped", {
   expect_true(any(grepl("spec:", report_text, fixed = TRUE)))
   expect_true(any(grepl("steps:", report_text, fixed = TRUE)))
   expect_true(any(grepl("widgetSettings:", report_text, fixed = TRUE)))
-  expect_true(any(grepl("gsm.safety::MakeAeExplorerData", report_text, fixed = TRUE)))
+  expect_true(any(grepl("name: list", report_text, fixed = TRUE)))
   expect_true(any(grepl("safetyCharts::init_aeExplorer", report_text, fixed = TRUE)))
   expect_true(any(grepl("gsm.safety::RenderAeExplorerWidget", report_text, fixed = TRUE)))
 })
 
-
-test_that("AE Explorer data helper maps workflow domains to safetyCharts names", {
-  lData <- MakeAeExplorerExampleData()
-  aeData <- MakeAeExplorerData(
-    lData = lData,
-    lMeta = list(domains = list(dm = "Mapped_SUBJ", aes = "Mapped_AE"))
-  )
-
-  expect_named(aeData, c("dm", "aes"))
-  expect_true("sex" %in% names(aeData$dm))
-  expect_equal(names(aeData$dm), names(lData$Mapped_SUBJ))
-  expect_equal(names(aeData$aes), names(lData$Mapped_AE))
-})
 
 test_that("AE Explorer workflow functions render a report", {
   lSpec <- list(

@@ -26,9 +26,9 @@ if (!nzchar(workflow_path)) {
 
 lWorkflow <- yaml::read_yaml(workflow_path)
 lData <- gsm.safety::MakeAeExplorerExampleData()
-aeData <- gsm.safety::MakeAeExplorerData(
-  lData = lData,
-  lMeta = lWorkflow$meta
+aeData <- list(
+  dm = lData$Mapped_SUBJ,
+  aes = lData$Mapped_AE
 )
 
 initialized <- safetyCharts::init_aeExplorer(

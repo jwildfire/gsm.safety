@@ -19,7 +19,7 @@ The first implemented workflow keeps the report contract in YAML:
 
 1. `meta$domains` maps GSM workflow data names, currently `Mapped_SUBJ` and `Mapped_AE`, to the `safetyCharts` AE Explorer domain names `dm` and `aes`.
 2. `meta$widgetSettings` stores the AE Explorer column mapping used by `safetyCharts`, including `sex` as the current AE Explorer grouping variable.
-3. `gsm.safety::MakeAeExplorerData()` reshapes the GSM `lData` list into the `list(dm = ..., aes = ...)` structure expected by `safetyCharts`.
+3. The workflow creates the `list(dm = Mapped_SUBJ, aes = Mapped_AE)` structure expected by `safetyCharts` directly in YAML.
 4. `safetyCharts::init_aeExplorer()` initializes the widget data/settings.
 5. `gsm.safety::RenderAeExplorerWidget()` renders the initialized widget with `safetyCharts::render_widget()` and writes a standalone HTML report.
 

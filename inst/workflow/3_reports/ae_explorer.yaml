@@ -51,10 +51,10 @@ spec:
       required: false
 steps:
   - output: AeExplorerData
-    name: gsm.safety::MakeAeExplorerData
+    name: list
     params:
-      lData: lData
-      lMeta: lMeta
+      dm: Mapped_SUBJ
+      aes: Mapped_AE
   - output: InitializedAeExplorer
     name: safetyCharts::init_aeExplorer
     params:

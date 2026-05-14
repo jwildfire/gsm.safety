@@ -17,4 +17,5 @@ reference:
   - title: AE Explorer report
     contents:
       - RenderAeExplorerWidget
+      - RenderSafetyChartsWidget
       - MakeExampleData

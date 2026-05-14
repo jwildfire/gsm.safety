@@ -29,7 +29,10 @@ test_that("example data comes from gsm.datasim with expected mapped columns", {
 
   expect_named(lData, c("Mapped_SUBJ", "Mapped_AE"))
   expect_true(all(c("subjid", "sex") %in% names(lData$Mapped_SUBJ)))
-  expect_true(all(c("subjid", "mdrpt_nsv", "mdrsoc_nsv", "aeser", "aetoxgr", "aerel") %in% names(lData$Mapped_AE)))
+  expect_true(all(c(
+    "subjid", "mdrpt_nsv", "mdrsoc_nsv", "aeser", "aetoxgr", "aerel",
+    "aeseq", "aestdy", "aeendy", "aesev"
+  ) %in% names(lData$Mapped_AE)))
   expect_true(nrow(lData$Mapped_SUBJ) > 0)
   expect_true(nrow(lData$Mapped_AE) > 0)
 })

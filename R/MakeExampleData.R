@@ -75,6 +75,22 @@ MakeExampleData <- function(nSubjects = 12,
   if (!("aerel" %in% names(df_ae))) {
     df_ae$aerel <- NA_character_
   }
+  if (!("aeseq" %in% names(df_ae))) {
+    df_ae$aeseq <- seq_len(nrow(df_ae))
+  }
+  if (!("aestdy" %in% names(df_ae))) {
+    df_ae$aestdy <- sample(seq_len(120), nrow(df_ae), replace = TRUE)
+  }
+  if (!("aeendy" %in% names(df_ae))) {
+    df_ae$aeendy <- df_ae$aestdy + sample(0:14, nrow(df_ae), replace = TRUE)
+  }
+  if (!("aesev" %in% names(df_ae))) {
+    df_ae$aesev <- ifelse(
+      is.na(df_ae$aetoxgr),
+      "UNKNOWN",
+      paste0("GRADE ", df_ae$aetoxgr)
+    )
+  }
 
   list(
     Mapped_SUBJ = data.frame(
@@ -89,6 +105,10 @@ MakeExampleData <- function(nSubjects = 12,
       aeser = as.character(df_ae$aeser),
       aetoxgr = as.integer(df_ae$aetoxgr),
       aerel = as.character(df_ae$aerel),
+      aeseq = as.integer(df_ae$aeseq),
+      aestdy = as.integer(df_ae$aestdy),
+      aeendy = as.integer(df_ae$aeendy),
+      aesev = as.character(df_ae$aesev),
       stringsAsFactors = FALSE
     )
   )

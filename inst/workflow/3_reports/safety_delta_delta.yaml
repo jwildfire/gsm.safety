@@ -1,0 +1,55 @@
+meta:
+  Type: Report
+  ID: safety_delta_delta
+  Output: html
+  Name: Safety Delta Delta Report
+  Description: Safety Delta Delta report scaffold for SafetyCharts lab review
+  ParentIssue: 21
+  domains:
+    labs: Mapped_LB
+  widgetName: safetyDeltaDelta
+  widgetSettings:
+    id_col: subjid
+    visit_col: visit
+    visitn_col: visitn
+    measure_col: measure
+    value_col: value
+    group_by: sex
+    group_cols:
+      - value_col: sex
+        label: Sex
+spec:
+  Mapped_LB:
+    _all:
+      required: true
+    subjid:
+      type: character
+    visit:
+      type: character
+    visitn:
+      type: integer
+    measure:
+      type: character
+    value:
+      type: numeric
+    unit:
+      type: character
+      required: false
+    sex:
+      type: character
+      required: false
+steps:
+  - output: InitializedWidget
+    name: list
+    params:
+      data: Mapped_LB
+      settings: widgetSettings
+  - output: strOutputDir
+    name: getwd
+  - output: Report
+    name: gsm.safety::RenderSafetyChartsWidget
+    params:
+      lInitialized: InitializedWidget
+      strWidgetName: widgetName
+      strOutputDir: strOutputDir
+      strOutputFile: ID

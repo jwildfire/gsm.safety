@@ -3,13 +3,38 @@ title: "AE Explorer"
 author: "gsm.safety Example"
 description: "Interactive AE Explorer report rendered from mapped GSM safety data."
 index: 1
-date: "`r format(Sys.time(), '%B %d, %Y %H:%M:%S %Z')`"
-output: html_document
+date: "`r format(Sys.time(), '%B %d, %Y %H:%M:%S %Z', tz = 'America/New_York')`"
+output:
+  html_document:
+    code_folding: hide
 ---
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
+
+<style>
+.example-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0.75rem 0 1.25rem 0;
+  padding: 0.5rem 0;
+  background: var(--bs-body-bg, #fff);
+  border-bottom: 1px solid var(--bs-border-color, #dee2e6);
+}
+.example-nav a {
+  text-decoration: none;
+}
+.example-nav .example-nav-spacer {
+  flex: 1 1 auto;
+}
+</style>
+
+<div class="example-nav" aria-label="Example navigation">
+<span class="example-nav-spacer"></span>
+<a class="btn btn-outline-secondary btn-sm" href="Example_AE_Explorer_Workflow.html">Next: AE Explorer Workflow →</a>
+</div>
 
 This example renders the interactive AE Explorer report artifact from a small
 mapped subject/adverse-event data set. The widget settings are read from the
@@ -36,8 +61,9 @@ initialized <- safetyCharts::init_aeExplorer(
   settings = lWorkflow$meta$widgetSettings
 )
 
-lReport <- gsm.safety::RenderAeExplorerWidget(
+lReport <- gsm.safety::RenderSafetyChartsWidget(
   lInitialized = initialized,
+  strWidgetName = "aeExplorer",
   strOutputDir = tempdir(),
   strOutputFile = "ae_explorer_example"
 )
@@ -45,6 +71,6 @@ lReport <- gsm.safety::RenderAeExplorerWidget(
 lReport$path
 ```
 
-```{r, echo = FALSE}
+```{r, echo = FALSE, out.width = "95%", out.height = "700px"}
 lReport$widget
 ```

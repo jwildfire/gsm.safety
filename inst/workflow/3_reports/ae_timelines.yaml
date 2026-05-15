@@ -1,0 +1,53 @@
+meta:
+  Type: Report
+  ID: ae_timelines
+  Output: html
+  Name: AE Timelines Report
+  Description: AE Timelines report scaffold for SafetyGraphics-style adverse event chronology review
+  ParentIssue: 17
+  domains:
+    aes: Mapped_AE
+  widgetName: aeTimelines
+  widgetSettings:
+    id_col: subjid
+    stdy_col: aestdy
+    endy_col: aeendy
+    seq_col: aeseq
+    term_col: mdrpt_nsv
+    serious_col: aeser
+    severity_col: aesev
+spec:
+  Mapped_AE:
+    _all:
+      required: true
+    subjid:
+      type: character
+    aestdy:
+      type: integer
+    aeendy:
+      type: integer
+    aeseq:
+      type: integer
+    mdrpt_nsv:
+      type: character
+    aeser:
+      type: character
+      required: false
+    aesev:
+      type: character
+      required: false
+steps:
+  - output: InitializedAeTimelines
+    name: safetyCharts::init_aeTimelines
+    params:
+      data: Mapped_AE
+      settings: widgetSettings
+  - output: strOutputDir
+    name: getwd
+  - output: Report
+    name: gsm.safety::RenderSafetyChartsWidget
+    params:
+      lInitialized: InitializedAeTimelines
+      strWidgetName: widgetName
+      strOutputDir: strOutputDir
+      strOutputFile: ID

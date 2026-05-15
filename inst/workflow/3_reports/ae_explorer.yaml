@@ -8,6 +8,7 @@ meta:
   domains:
     dm: Mapped_SUBJ
     aes: Mapped_AE
+  widgetName: aeExplorer
   widgetSettings:
     dm:
       id_col: subjid
@@ -63,8 +64,9 @@ steps:
   - output: strOutputDir
     name: getwd
   - output: Report
-    name: gsm.safety::RenderAeExplorerWidget
+    name: gsm.safety::RenderSafetyChartsWidget
     params:
       lInitialized: InitializedAeExplorer
+      strWidgetName: widgetName
       strOutputDir: strOutputDir
       strOutputFile: ID

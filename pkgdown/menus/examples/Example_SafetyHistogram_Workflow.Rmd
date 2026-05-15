@@ -1,8 +1,8 @@
 ---
-title: "AE Explorer Workflow"
+title: "Safety Histogram Workflow"
 author: "gsm.safety Example"
-description: "Interactive AE Explorer report rendered by running the workr YAML workflow."
-index: 2
+description: "Interactive Safety Histogram report rendered by running the workr YAML workflow."
+index: 21
 date: "`r format(Sys.time(), '%B %d, %Y %H:%M:%S %Z', tz = 'America/New_York')`"
 output:
   html_document:
@@ -32,32 +32,29 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 </style>
 
 <div class="example-nav" aria-label="Example navigation">
-<a class="btn btn-outline-secondary btn-sm" href="Example_AE_Explorer.html">← Previous: AE Explorer</a>
-<a class="btn btn-outline-secondary btn-sm" href="Example_AE_Timelines_Workflow.html">Next: AE Timelines Workflow →</a>
+<a class="btn btn-outline-secondary btn-sm" href="Example_SafetyDeltaDelta_Workflow.html">← Previous: Safety Delta Delta Workflow</a>
+<a class="btn btn-outline-secondary btn-sm" href="Example_SafetyOutlierExplorer_Workflow.html">Next: Safety Outlier Explorer Workflow →</a>
 </div>
 
-This example runs the AE Explorer report through the same `workr` YAML workflow
-that a tester or downstream package can execute directly:
-`inst/workflow/3_reports/ae_explorer.yaml`. The YAML stores `meta$widgetSettings`,
-calls `safetyCharts::init_aeExplorer()`, then saves the initialized widget as a
-standalone HTML report with `gsm.safety::RenderSafetyChartsWidget()`.
+This example runs the Safety Histogram report through a `workr` YAML workflow:
+`inst/workflow/3_reports/safety_histogram.yaml`. The YAML stores the widget settings,
+initializes the widget when a safetyCharts `init_*` helper is available, and
+writes the rendered HTML report with `gsm.safety::RenderSafetyChartsWidget()`.
 
 ```{r}
 workflow_path <- system.file(
-  "workflow", "3_reports", "ae_explorer.yaml",
+  "workflow", "3_reports", "safety_histogram.yaml",
   package = "gsm.safety"
 )
 if (!nzchar(workflow_path)) {
-  workflow_path <- file.path("inst", "workflow", "3_reports", "ae_explorer.yaml")
+  workflow_path <- file.path("inst", "workflow", "3_reports", "safety_histogram.yaml")
 }
 
 lWorkflow <- yaml::read_yaml(workflow_path)
 lData <- gsm.safety::MakeExampleData()
 ```
 
-The workflow YAML is the report contract. It maps GSM workflow data into the
-`safetyCharts` AE Explorer shape, initializes the widget with
-`safetyCharts::init_aeExplorer()`, and writes the rendered HTML report with the generic renderer.
+The workflow YAML is the report contract:
 
 <details>
 <summary>Workflow YAML</summary>

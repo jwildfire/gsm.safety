@@ -18,7 +18,7 @@ test_that("AE Explorer report scaffold is workr-shaped", {
   expect_true(any(grepl("treatment_col: sex", report_text, fixed = TRUE)))
   expect_true(any(grepl("name: list", report_text, fixed = TRUE)))
   expect_true(any(grepl("safetyCharts::init_aeExplorer", report_text, fixed = TRUE)))
-  expect_true(any(grepl("gsm.safety::RenderAeExplorerWidget", report_text, fixed = TRUE)))
+  expect_true(any(grepl("gsm.safety::RenderSafetyChartsWidget", report_text, fixed = TRUE)))
 })
 
 
@@ -27,11 +27,19 @@ test_that("example data comes from gsm.datasim with expected mapped columns", {
 
   lData <- MakeExampleData(nSubjects = 6, nSites = 2, nAe = 8, seed = 11)
 
-  expect_named(lData, c("Mapped_SUBJ", "Mapped_AE"))
-  expect_true(all(c("subjid", "sex") %in% names(lData$Mapped_SUBJ)))
-  expect_true(all(c("subjid", "mdrpt_nsv", "mdrsoc_nsv", "aeser", "aetoxgr", "aerel") %in% names(lData$Mapped_AE)))
+  expect_named(lData, c("Mapped_SUBJ", "Mapped_AE", "Mapped_LB"))
+  expect_true(all(c("subjid", "sex", "age", "race") %in% names(lData$Mapped_SUBJ)))
+  expect_true(all(c(
+    "subjid", "mdrpt_nsv", "mdrsoc_nsv", "aeser", "aetoxgr", "aerel",
+    "aeseq", "aestdy", "aeendy", "aesev"
+  ) %in% names(lData$Mapped_AE)))
+  expect_true(all(c(
+    "subjid", "visit", "visitn", "studyday", "measure", "value",
+    "unit", "normal_low", "normal_high", "baseline_flag", "sex"
+  ) %in% names(lData$Mapped_LB)))
   expect_true(nrow(lData$Mapped_SUBJ) > 0)
   expect_true(nrow(lData$Mapped_AE) > 0)
+  expect_true(nrow(lData$Mapped_LB) > 0)
 })
 
 
@@ -52,8 +60,9 @@ test_that("AE Explorer workflow renderer saves an initialized widget", {
     )
   )
 
-  report <- RenderAeExplorerWidget(
+  report <- RenderSafetyChartsWidget(
     lInitialized = initialized,
+    strWidgetName = "aeExplorer",
     strOutputDir = tempdir(),
     strOutputFile = "ae_explorer_test"
   )

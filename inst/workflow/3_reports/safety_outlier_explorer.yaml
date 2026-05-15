@@ -1,0 +1,92 @@
+meta:
+  Type: Report
+  ID: safety_outlier_explorer
+  Output: html
+  Name: Safety Outlier Explorer Report
+  Description: Safety Outlier Explorer report scaffold for SafetyCharts lab review
+  ParentIssue: 23
+  domains:
+    dm: Mapped_SUBJ
+    labs: Mapped_LB
+  widgetName: safetyOutlierExplorer
+  widgetSettings:
+    dm:
+      id_col: subjid
+      age_col: age
+      sex_col: sex
+      race_col: race
+    labs:
+      id_col: subjid
+      visit_col: visit
+      visitn_col: visitn
+      studyday_col: studyday
+      measure_col: measure
+      value_col: value
+      normal_col_low: normal_low
+      normal_col_high: normal_high
+      group_by: sex
+      group_cols:
+        - value_col: sex
+          label: Sex
+spec:
+  Mapped_SUBJ:
+    _all:
+      required: true
+    subjid:
+      type: character
+    age:
+      type: integer
+      required: false
+    sex:
+      type: character
+      required: false
+    race:
+      type: character
+      required: false
+  Mapped_LB:
+    _all:
+      required: true
+    subjid:
+      type: character
+    visit:
+      type: character
+    visitn:
+      type: integer
+    studyday:
+      type: integer
+    measure:
+      type: character
+    value:
+      type: numeric
+    unit:
+      type: character
+      required: false
+    normal_low:
+      type: numeric
+      required: false
+    normal_high:
+      type: numeric
+      required: false
+    baseline_flag:
+      type: character
+      required: false
+steps:
+  - output: WidgetData
+    name: list
+    params:
+      dm: Mapped_SUBJ
+      labs: Mapped_LB
+  - output: InitializedWidget
+    name: safetyCharts::init_safetyOutlierExplorer
+    params:
+      data: WidgetData
+      settings: widgetSettings
+  - output: strOutputDir
+    name: getwd
+  - output: Report
+    name: gsm.safety::RenderSafetyChartsWidget
+    params:
+      lInitialized: InitializedWidget
+      strWidgetName: widgetName
+      strOutputDir: strOutputDir
+      strOutputFile: ID

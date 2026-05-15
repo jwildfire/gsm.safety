@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">gsm.safety</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.0.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +37,14 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-examples">
 <li><a class="dropdown-item" href="examples/Example_AE_Explorer.html">AE Explorer</a></li>
     <li><a class="dropdown-item" href="examples/Example_AE_Explorer_Workflow.html">AE Explorer Workflow</a></li>
+    <li><a class="dropdown-item" href="examples/Example_AE_Timelines_Workflow.html">AE Timelines Workflow</a></li>
+    <li><a class="dropdown-item" href="examples/Example_HepExplorer_Workflow.html">Hep Explorer Workflow</a></li>
+    <li><a class="dropdown-item" href="examples/Example_PaneledOutlierExplorer_Workflow.html">Paneled Outlier Explorer Workflow</a></li>
+    <li><a class="dropdown-item" href="examples/Example_SafetyDeltaDelta_Workflow.html">Safety Delta Delta Workflow</a></li>
+    <li><a class="dropdown-item" href="examples/Example_SafetyHistogram_Workflow.html">Safety Histogram Workflow</a></li>
+    <li><a class="dropdown-item" href="examples/Example_SafetyOutlierExplorer_Workflow.html">Safety Outlier Explorer Workflow</a></li>
+    <li><a class="dropdown-item" href="examples/Example_SafetyResultsOverTime_Workflow.html">Safety Results Over Time Workflow</a></li>
+    <li><a class="dropdown-item" href="examples/Example_SafetyShiftPlot_Workflow.html">Safety Shift Plot Workflow</a></li>
   </ul>
 </li>
       </ul>
@@ -55,50 +63,115 @@
   <main id="main" class="col-md-9"><div class="section level1">
 <div class="page-header"><h1 id="gsmsafety">gsm.safety<a class="anchor" aria-label="anchor" href="#gsmsafety"></a>
 </h1></div>
-<p><code>gsm.safety</code> is an early-stage R package concept for bringing clinical safety visualizations inspired by the SafetyGraphics ecosystem into Good Statistical Monitoring (<code>gsm.core</code>) workflows.</p>
-<p>Initial direction: build a lightweight GSM extension/plugin package that bridges GSM <code>lData</code> objects and mapped domains (<code>Mapped_SUBJ</code>, <code>Mapped_AE</code>, <code>Mapped_LB</code>, etc.) to selected SafetyGraphics-style chart artifacts. Avoid forking the full <code>safetyGraphics</code> Shiny app; start with workflow-generated report artifacts and optional <code>gsm.app</code> plugins later.</p>
+<p><code>gsm.safety</code> is an R package for generating clinical safety visualization artifacts from Good Statistical Monitoring workflows.</p>
+<p>The first release, <code>v0.1.0</code>, focuses on workflow-driven SafetyCharts HTML widget reports. Reports are defined in YAML, run with <code><a href="https://gilead-biostats.github.io/workr/reference/RunWorkflow.html" class="external-link">workr::RunWorkflow()</a></code>, and rendered with <code><a href="reference/RenderSafetyChartsWidget.html">gsm.safety::RenderSafetyChartsWidget()</a></code> using reproducible <code>gsm.datasim</code>-backed example data.</p>
 <div class="section level2">
 <h2 id="current-status">Current status<a class="anchor" aria-label="anchor" href="#current-status"></a>
 </h2>
-<p>This repository is a newly scaffolded prototype package. It currently contains:</p>
+<p>This repository contains:</p>
 <ul>
 <li><a href="design/integration-design.html">Integration design</a></li>
 <li><a href="design/ae-explorer-gap-analysis.html">AE Explorer gap analysis</a></li>
-<li>A <code>workr</code>-shaped AE Explorer report workflow at <code>inst/workflow/3_reports/ae_explorer.yaml</code>
+<li>
+<code>workr</code>-shaped report workflows under <code>inst/workflow/3_reports/</code>
 </li>
-<li>An interactive SafetyCharts AE Explorer HTML report artifact</li>
-<li>Pkgdown menu examples for both direct widget rendering and YAML-driven workflow execution</li>
+<li>Interactive SafetyCharts HTML report artifacts rendered through <code><a href="https://rdrr.io/pkg/safetyCharts/man/render_widget.html" class="external-link">safetyCharts::render_widget()</a></code>
+</li>
+<li>Pkgdown examples that run the report YAML workflows with <code><a href="https://gilead-biostats.github.io/workr/reference/RunWorkflow.html" class="external-link">workr::RunWorkflow()</a></code>
+</li>
 <li>GitHub Actions R CMD check, pkgdown, coverage, and workflow-template checks</li>
 </ul>
-<p>The first implemented workflow keeps the report contract in YAML and uses <code><a href="reference/MakeExampleData.html">MakeExampleData()</a></code> for reproducible <code>gsm.datasim</code>-backed examples:</p>
+<p>The package intentionally avoids wrapping the full SafetyGraphics Shiny app. The current scope is standalone report artifacts that can be generated from GSM-style mapped data. Nep Explorer is excluded from <code>v0.1.0</code> because the legacy htmlwidget path is no longer supported; future NEP support should be considered through a Shiny-app pipeline or a static graphic.</p>
+</div>
+<div class="section level2">
+<h2 id="available-widget-reports">Available widget reports<a class="anchor" aria-label="anchor" href="#available-widget-reports"></a>
+</h2>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="33%">
+<col width="33%">
+</colgroup>
+<thead><tr>
+<th>Widget report</th>
+<th>Workflow YAML</th>
+<th>Example</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>AE Explorer</td>
+<td><a href="inst/workflow/3_reports/ae_explorer.yaml"><code>ae_explorer.yaml</code></a></td>
+<td><a href="https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_AE_Explorer_Workflow.html">Example</a></td>
+</tr>
+<tr>
+<td>AE Timelines</td>
+<td><a href="inst/workflow/3_reports/ae_timelines.yaml"><code>ae_timelines.yaml</code></a></td>
+<td><a href="https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_AE_Timelines_Workflow.html">Example</a></td>
+</tr>
+<tr>
+<td>Hep Explorer</td>
+<td><a href="inst/workflow/3_reports/hep_explorer.yaml"><code>hep_explorer.yaml</code></a></td>
+<td><a href="https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_HepExplorer_Workflow.html">Example</a></td>
+</tr>
+<tr>
+<td>Paneled Outlier Explorer</td>
+<td><a href="inst/workflow/3_reports/paneled_outlier_explorer.yaml"><code>paneled_outlier_explorer.yaml</code></a></td>
+<td><a href="https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_PaneledOutlierExplorer_Workflow.html">Example</a></td>
+</tr>
+<tr>
+<td>Safety Delta Delta</td>
+<td><a href="inst/workflow/3_reports/safety_delta_delta.yaml"><code>safety_delta_delta.yaml</code></a></td>
+<td><a href="https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_SafetyDeltaDelta_Workflow.html">Example</a></td>
+</tr>
+<tr>
+<td>Safety Histogram</td>
+<td><a href="inst/workflow/3_reports/safety_histogram.yaml"><code>safety_histogram.yaml</code></a></td>
+<td><a href="https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_SafetyHistogram_Workflow.html">Example</a></td>
+</tr>
+<tr>
+<td>Safety Outlier Explorer</td>
+<td><a href="inst/workflow/3_reports/safety_outlier_explorer.yaml"><code>safety_outlier_explorer.yaml</code></a></td>
+<td><a href="https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_SafetyOutlierExplorer_Workflow.html">Example</a></td>
+</tr>
+<tr>
+<td>Safety Results Over Time</td>
+<td><a href="inst/workflow/3_reports/safety_results_over_time.yaml"><code>safety_results_over_time.yaml</code></a></td>
+<td><a href="https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_SafetyResultsOverTime_Workflow.html">Example</a></td>
+</tr>
+<tr>
+<td>Safety Shift Plot</td>
+<td><a href="inst/workflow/3_reports/safety_shift_plot.yaml"><code>safety_shift_plot.yaml</code></a></td>
+<td><a href="https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_SafetyShiftPlot_Workflow.html">Example</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section level2">
+<h2 id="workflow-approach">Workflow approach<a class="anchor" aria-label="anchor" href="#workflow-approach"></a>
+</h2>
+<p>The implemented workflows keep the report contract in YAML and use <code><a href="reference/MakeExampleData.html">MakeExampleData()</a></code> for reproducible examples:</p>
 <ol style="list-style-type: decimal">
 <li>
-<code>meta$domains</code> maps GSM workflow data names, currently <code>Mapped_SUBJ</code> and <code>Mapped_AE</code>, to the <code>safetyCharts</code> AE Explorer domain names <code>dm</code> and <code>aes</code>.</li>
+<code>meta$domains</code> maps GSM workflow data names, currently <code>Mapped_SUBJ</code>, <code>Mapped_AE</code>, and <code>Mapped_LB</code>, to the domain shapes expected by each SafetyCharts widget.</li>
 <li>
-<code>meta$widgetSettings</code> stores the AE Explorer column mapping used by <code>safetyCharts</code>, including <code>sex</code> as the current AE Explorer grouping variable.</li>
-<li>The workflow creates the <code>list(dm = Mapped_SUBJ, aes = Mapped_AE)</code> structure expected by <code>safetyCharts</code> directly in YAML.</li>
+<code>meta$widgetSettings</code> stores the widget column mapping used by <code>safetyCharts</code>, including <code>sex</code> as the current example grouping variable when supported.</li>
+<li>Workflows call the relevant <code>safetyCharts::init_*()</code> helper when one exists; widgets without an init helper pass data/settings directly to the renderer.</li>
 <li>
-<code><a href="https://rdrr.io/pkg/safetyCharts/man/init_aeExplorer.html" class="external-link">safetyCharts::init_aeExplorer()</a></code> initializes the widget data/settings.</li>
-<li>
-<code><a href="reference/RenderAeExplorerWidget.html">gsm.safety::RenderAeExplorerWidget()</a></code> renders the initialized widget with <code><a href="https://rdrr.io/pkg/safetyCharts/man/render_widget.html" class="external-link">safetyCharts::render_widget()</a></code> and writes a standalone HTML report.</li>
+<code><a href="reference/RenderSafetyChartsWidget.html">gsm.safety::RenderSafetyChartsWidget()</a></code> renders the widget with <code><a href="https://rdrr.io/pkg/safetyCharts/man/render_widget.html" class="external-link">safetyCharts::render_widget()</a></code> and writes a standalone HTML report.</li>
 </ol>
-<p>The YAML is now the authoritative configuration, and the generated HTML widget is the report artifact. The next milestone is to harden the GSM-to-SafetyCharts mapping contract against real <code>gsm.mapping</code> outputs and continue hardening the <code>gsm.datasim</code>-based example data path.</p>
+<p>The YAML is the authoritative configuration, and the generated HTML widget is the report artifact.</p>
 </div>
 <div class="section level2">
 <h2 id="development">Development<a class="anchor" aria-label="anchor" href="#development"></a>
 </h2>
-<p>This project intentionally does <strong>not</strong> use <code>renv</code> yet. The dependency surface is still changing, and the MVP should first establish the core package/API boundaries before adding lockfile maintenance.</p>
+<p>This project intentionally does <strong>not</strong> use <code>renv</code> yet. The dependency surface is still changing, and the first release should establish the core package/API boundaries before adding lockfile maintenance.</p>
 <p>Run the AE Explorer workflow example with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"examples"</span>, <span class="st">"run-ae-explorer-workflow.R"</span>, package <span class="op">=</span> <span class="st">"gsm.safety"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>From a source checkout, use:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html" class="external-link">source</a></span><span class="op">(</span><span class="st">"inst/examples/run-ae-explorer-workflow.R"</span><span class="op">)</span></span></code></pre></div>
-<p>The pkgdown examples mirror those two supported paths:</p>
-<ul>
-<li>direct render: read the YAML settings, call <code><a href="https://rdrr.io/pkg/safetyCharts/man/init_aeExplorer.html" class="external-link">safetyCharts::init_aeExplorer()</a></code>, then save the widget.</li>
-<li>workflow render: call <code><a href="https://gilead-biostats.github.io/workr/reference/RunWorkflow.html" class="external-link">workr::RunWorkflow()</a></code> using <code>inst/workflow/3_reports/ae_explorer.yaml</code>.</li>
-</ul>
+<p>The pkgdown examples use <code><a href="https://gilead-biostats.github.io/workr/reference/RunWorkflow.html" class="external-link">workr::RunWorkflow()</a></code> against the workflow YAML files and render the returned htmlwidget output.</p>
 <p>Run local checks with:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">rcmdcheck</span><span class="fu">::</span><span class="fu"><a href="http://r-lib.github.io/rcmdcheck/reference/rcmdcheck.html" class="external-link">rcmdcheck</a></span><span class="op">(</span>args <span class="op">=</span> <span class="st">"--no-manual"</span><span class="op">)</span></span></code></pre></div>
@@ -106,13 +179,14 @@
 <div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="ex">R</span> CMD check <span class="at">--no-manual</span> gsm.safety</span></code></pre></div>
 </div>
 <div class="section level2">
-<h2 id="proposed-mvp">Proposed MVP<a class="anchor" aria-label="anchor" href="#proposed-mvp"></a>
+<h2 id="next-milestones">Next milestones<a class="anchor" aria-label="anchor" href="#next-milestones"></a>
 </h2>
 <ol style="list-style-type: decimal">
-<li>Define a minimal package skeleton.</li>
-<li>Implement data-contract adapters from GSM mapped data to SafetyGraphics-style <code>domainData</code>.</li>
-<li>Render one AE-focused chart artifact from <code>Mapped_SUBJ</code> + <code>Mapped_AE</code> through a <code>gsm.core</code> workflow module.</li>
-<li>Add validation, tests, and a small reproducible fixture.</li>
+<li>Merge PR #26 and cut the first <code>v0.1.0</code> release with the available SafetyCharts widget reports.</li>
+<li>Harden the GSM-to-SafetyCharts mapping contract against real <code>gsm.mapping</code> outputs.</li>
+<li>Decide the dependency strategy for remote SafetyCharts/Tendril dependencies versus vendoring or reimplementation.</li>
+<li>Review FDA ST&amp;F / Duke-Margolis materials and create issues for static safety displays.</li>
+<li>Revisit NEP support as a Shiny app pipeline or static graphic rather than as a legacy htmlwidget.</li>
 </ol>
 </div>
 <div class="section level2">

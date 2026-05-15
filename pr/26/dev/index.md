@@ -21,9 +21,9 @@ contains:
 - [AE Explorer gap
   analysis](https://obot-claw.github.io/gsm.safety/dev/design/ae-explorer-gap-analysis.md)
 - `workr`-shaped report workflows under `inst/workflow/3_reports/` for
-  AE Explorer, AE Timelines, Hep Explorer, Nep Explorer, Paneled Outlier
-  Explorer, Safety Delta Delta, Safety Histogram, Safety Outlier
-  Explorer, Safety Results Over Time, and Safety Shift Plot
+  AE Explorer, AE Timelines, Hep Explorer, Paneled Outlier Explorer,
+  Safety Delta Delta, Safety Histogram, Safety Outlier Explorer, Safety
+  Results Over Time, and Safety Shift Plot
 - Interactive SafetyCharts HTML report artifacts rendered through
   [`safetyCharts::render_widget()`](https://rdrr.io/pkg/safetyCharts/man/render_widget.html)
 - Pkgdown menu examples that run the report YAML workflows with

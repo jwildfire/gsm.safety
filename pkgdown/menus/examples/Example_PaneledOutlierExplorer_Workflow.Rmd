@@ -2,7 +2,7 @@
 title: "Paneled Outlier Explorer Workflow"
 author: "gsm.safety Example"
 description: "Interactive Paneled Outlier Explorer report rendered by running the workr YAML workflow."
-index: 20
+index: 19
 date: "`r format(Sys.time(), '%B %d, %Y %H:%M:%S %Z', tz = 'America/New_York')`"
 output:
   html_document:
@@ -32,7 +32,7 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 </style>
 
 <div class="example-nav" aria-label="Example navigation">
-<a class="btn btn-outline-secondary btn-sm" href="Example_NepExplorer_Workflow.html">← Previous: Nep Explorer Workflow</a>
+<a class="btn btn-outline-secondary btn-sm" href="Example_HepExplorer_Workflow.html">← Previous: Hep Explorer Workflow</a>
 <a class="btn btn-outline-secondary btn-sm" href="Example_SafetyDeltaDelta_Workflow.html">Next: Safety Delta Delta Workflow →</a>
 </div>
 

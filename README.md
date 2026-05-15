@@ -10,7 +10,7 @@ This repository is a newly scaffolded prototype package. It currently contains:
 
 - [Integration design](design/integration-design.md)
 - [AE Explorer gap analysis](design/ae-explorer-gap-analysis.md)
-- `workr`-shaped report workflows under `inst/workflow/3_reports/` for AE Explorer, AE Timelines, Hep Explorer, Nep Explorer, Paneled Outlier Explorer, Safety Delta Delta, Safety Histogram, Safety Outlier Explorer, Safety Results Over Time, and Safety Shift Plot
+- `workr`-shaped report workflows under `inst/workflow/3_reports/` for AE Explorer, AE Timelines, Hep Explorer, Paneled Outlier Explorer, Safety Delta Delta, Safety Histogram, Safety Outlier Explorer, Safety Results Over Time, and Safety Shift Plot
 - Interactive SafetyCharts HTML report artifacts rendered through `safetyCharts::render_widget()`
 - Pkgdown menu examples that run the report YAML workflows with `workr::RunWorkflow()`
 - GitHub Actions R CMD check, pkgdown, coverage, and workflow-template checks

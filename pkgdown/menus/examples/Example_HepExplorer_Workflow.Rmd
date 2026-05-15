@@ -33,7 +33,7 @@ knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 
 <div class="example-nav" aria-label="Example navigation">
 <a class="btn btn-outline-secondary btn-sm" href="Example_AE_Timelines_Workflow.html">← Previous: AE Timelines Workflow</a>
-<a class="btn btn-outline-secondary btn-sm" href="Example_NepExplorer_Workflow.html">Next: Nep Explorer Workflow →</a>
+<a class="btn btn-outline-secondary btn-sm" href="Example_PaneledOutlierExplorer_Workflow.html">Next: Paneled Outlier Explorer Workflow →</a>
 </div>
 
 This example runs the Hep Explorer report through a `workr` YAML workflow:

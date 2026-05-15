@@ -3,7 +3,6 @@ test_that("all safetyCharts widget report workflows are workr-shaped", {
     "ae_explorer",
     "ae_timelines",
     "hep_explorer",
-    "nep_explorer",
     "paneled_outlier_explorer",
     "safety_delta_delta",
     "safety_histogram",

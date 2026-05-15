@@ -4,3 +4,5 @@
 .Ruserdata
 *.Rcheck/
 docs/*.html
+
+node_modules/

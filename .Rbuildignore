@@ -1,3 +1,7 @@
 ^\.github$
 ^\.gitignore$
 ^docs/.*\.html$
+
+^package\.json$
+^tools$
+^package-lock\.json$

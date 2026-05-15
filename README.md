@@ -19,17 +19,82 @@ The package intentionally avoids wrapping the full SafetyGraphics Shiny app. The
 
 ## Available widget reports
 
-| Widget report | Workflow YAML | Example |
-|---|---|---|
-| AE Explorer | [`ae_explorer.yaml`](inst/workflow/3_reports/ae_explorer.yaml) | [Example](https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_AE_Explorer_Workflow.html) |
-| AE Timelines | [`ae_timelines.yaml`](inst/workflow/3_reports/ae_timelines.yaml) | [Example](https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_AE_Timelines_Workflow.html) |
-| Hep Explorer | [`hep_explorer.yaml`](inst/workflow/3_reports/hep_explorer.yaml) | [Example](https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_HepExplorer_Workflow.html) |
-| Paneled Outlier Explorer | [`paneled_outlier_explorer.yaml`](inst/workflow/3_reports/paneled_outlier_explorer.yaml) | [Example](https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_PaneledOutlierExplorer_Workflow.html) |
-| Safety Delta Delta | [`safety_delta_delta.yaml`](inst/workflow/3_reports/safety_delta_delta.yaml) | [Example](https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_SafetyDeltaDelta_Workflow.html) |
-| Safety Histogram | [`safety_histogram.yaml`](inst/workflow/3_reports/safety_histogram.yaml) | [Example](https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_SafetyHistogram_Workflow.html) |
-| Safety Outlier Explorer | [`safety_outlier_explorer.yaml`](inst/workflow/3_reports/safety_outlier_explorer.yaml) | [Example](https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_SafetyOutlierExplorer_Workflow.html) |
-| Safety Results Over Time | [`safety_results_over_time.yaml`](inst/workflow/3_reports/safety_results_over_time.yaml) | [Example](https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_SafetyResultsOverTime_Workflow.html) |
-| Safety Shift Plot | [`safety_shift_plot.yaml`](inst/workflow/3_reports/safety_shift_plot.yaml) | [Example](https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_SafetyShiftPlot_Workflow.html) |
+The pkgdown home page uses a thumbnail gallery so reviewers can scan the available interactive reports and jump directly to each rendered example.
+
+<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:1rem; margin:1rem 0 1.5rem 0;">
+  <a href="https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_AE_Explorer_Workflow.html" style="display:block; border:1px solid #ddd; border-radius:10px; overflow:hidden; text-decoration:none; color:inherit; background:#fff;">
+    <img src="man/figures/widgets/ae-explorer.svg" alt="AE Explorer thumbnail" style="width:100%; display:block;" />
+    <div style="padding:0.75rem;">
+      <strong>AE Explorer</strong><br />
+      <small><code>inst/workflow/3_reports/ae_explorer.yaml</code></small>
+    </div>
+  </a>
+  <a href="https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_AE_Timelines_Workflow.html" style="display:block; border:1px solid #ddd; border-radius:10px; overflow:hidden; text-decoration:none; color:inherit; background:#fff;">
+    <img src="man/figures/widgets/ae-timelines.svg" alt="AE Timelines thumbnail" style="width:100%; display:block;" />
+    <div style="padding:0.75rem;">
+      <strong>AE Timelines</strong><br />
+      <small><code>inst/workflow/3_reports/ae_timelines.yaml</code></small>
+    </div>
+  </a>
+  <a href="https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_HepExplorer_Workflow.html" style="display:block; border:1px solid #ddd; border-radius:10px; overflow:hidden; text-decoration:none; color:inherit; background:#fff;">
+    <img src="man/figures/widgets/hep-explorer.svg" alt="Hep Explorer thumbnail" style="width:100%; display:block;" />
+    <div style="padding:0.75rem;">
+      <strong>Hep Explorer</strong><br />
+      <small><code>inst/workflow/3_reports/hep_explorer.yaml</code></small>
+    </div>
+  </a>
+  <a href="https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_PaneledOutlierExplorer_Workflow.html" style="display:block; border:1px solid #ddd; border-radius:10px; overflow:hidden; text-decoration:none; color:inherit; background:#fff;">
+    <img src="man/figures/widgets/paneled-outlier-explorer.svg" alt="Paneled Outlier Explorer thumbnail" style="width:100%; display:block;" />
+    <div style="padding:0.75rem;">
+      <strong>Paneled Outlier Explorer</strong><br />
+      <small><code>inst/workflow/3_reports/paneled_outlier_explorer.yaml</code></small>
+    </div>
+  </a>
+  <a href="https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_SafetyDeltaDelta_Workflow.html" style="display:block; border:1px solid #ddd; border-radius:10px; overflow:hidden; text-decoration:none; color:inherit; background:#fff;">
+    <img src="man/figures/widgets/safety-delta-delta.svg" alt="Safety Delta Delta thumbnail" style="width:100%; display:block;" />
+    <div style="padding:0.75rem;">
+      <strong>Safety Delta Delta</strong><br />
+      <small><code>inst/workflow/3_reports/safety_delta_delta.yaml</code></small>
+    </div>
+  </a>
+  <a href="https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_SafetyHistogram_Workflow.html" style="display:block; border:1px solid #ddd; border-radius:10px; overflow:hidden; text-decoration:none; color:inherit; background:#fff;">
+    <img src="man/figures/widgets/safety-histogram.svg" alt="Safety Histogram thumbnail" style="width:100%; display:block;" />
+    <div style="padding:0.75rem;">
+      <strong>Safety Histogram</strong><br />
+      <small><code>inst/workflow/3_reports/safety_histogram.yaml</code></small>
+    </div>
+  </a>
+  <a href="https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_SafetyOutlierExplorer_Workflow.html" style="display:block; border:1px solid #ddd; border-radius:10px; overflow:hidden; text-decoration:none; color:inherit; background:#fff;">
+    <img src="man/figures/widgets/safety-outlier-explorer.svg" alt="Safety Outlier Explorer thumbnail" style="width:100%; display:block;" />
+    <div style="padding:0.75rem;">
+      <strong>Safety Outlier Explorer</strong><br />
+      <small><code>inst/workflow/3_reports/safety_outlier_explorer.yaml</code></small>
+    </div>
+  </a>
+  <a href="https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_SafetyResultsOverTime_Workflow.html" style="display:block; border:1px solid #ddd; border-radius:10px; overflow:hidden; text-decoration:none; color:inherit; background:#fff;">
+    <img src="man/figures/widgets/safety-results-over-time.svg" alt="Safety Results Over Time thumbnail" style="width:100%; display:block;" />
+    <div style="padding:0.75rem;">
+      <strong>Safety Results Over Time</strong><br />
+      <small><code>inst/workflow/3_reports/safety_results_over_time.yaml</code></small>
+    </div>
+  </a>
+  <a href="https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_SafetyShiftPlot_Workflow.html" style="display:block; border:1px solid #ddd; border-radius:10px; overflow:hidden; text-decoration:none; color:inherit; background:#fff;">
+    <img src="man/figures/widgets/safety-shift-plot.svg" alt="Safety Shift Plot thumbnail" style="width:100%; display:block;" />
+    <div style="padding:0.75rem;">
+      <strong>Safety Shift Plot</strong><br />
+      <small><code>inst/workflow/3_reports/safety_shift_plot.yaml</code></small>
+    </div>
+  </a>
+</div>
+
+Thumbnail assets live in `man/figures/widgets/`. To regenerate browser-based screenshots for the gallery, install the Node development dependencies and run:
+
+```sh
+npm install
+npm run capture:widget-thumbnails
+```
+
+The capture script uses Playwright so the JavaScript widgets can finish rendering before screenshots are taken.
 
 ## Workflow approach
 

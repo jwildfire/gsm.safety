@@ -1,0 +1,11 @@
+{
+  "name": "gsm-safety-doc-tools",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "capture:widget-thumbnails": "playwright install chromium && node tools/capture-widget-thumbnails.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.57.0"
+  }
+}

@@ -40,102 +40,81 @@ available interactive reports and jump directly to each rendered
 example.
 
 [![AE Explorer
-thumbnail](reference/figures/widgets/ae-explorer.svg)](https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_AE_Explorer_Workflow.html)
+thumbnail](reference/figures/widgets/ae-explorer.svg)](https://obot-claw.github.io/gsm.safety/dev/examples/Example_AE_Explorer_Workflow.md)
 
-``` R
-  <strong>AE Explorer</strong><br />
-  <small><code>inst/workflow/3_reports/ae_explorer.yaml</code></small>
-</div>
-```
+**AE Explorer**  
+`inst/workflow/3_reports/ae_explorer.yaml`
 
 [![AE Timelines
-thumbnail](reference/figures/widgets/ae-timelines.svg)](https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_AE_Timelines_Workflow.html)
+thumbnail](reference/figures/widgets/ae-timelines.svg)](https://obot-claw.github.io/gsm.safety/dev/examples/Example_AE_Timelines_Workflow.md)
 
-``` R
-  <strong>AE Timelines</strong><br />
-  <small><code>inst/workflow/3_reports/ae_timelines.yaml</code></small>
-</div>
-```
+**AE Timelines**  
+`inst/workflow/3_reports/ae_timelines.yaml`
 
 [![Hep Explorer
-thumbnail](reference/figures/widgets/hep-explorer.svg)](https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_HepExplorer_Workflow.html)
+thumbnail](reference/figures/widgets/hep-explorer.svg)](https://obot-claw.github.io/gsm.safety/dev/examples/Example_HepExplorer_Workflow.md)
 
-``` R
-  <strong>Hep Explorer</strong><br />
-  <small><code>inst/workflow/3_reports/hep_explorer.yaml</code></small>
-</div>
-```
+**Hep Explorer**  
+`inst/workflow/3_reports/hep_explorer.yaml`
 
 [![Paneled Outlier Explorer
-thumbnail](reference/figures/widgets/paneled-outlier-explorer.svg)](https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_PaneledOutlierExplorer_Workflow.html)
+thumbnail](reference/figures/widgets/paneled-outlier-explorer.svg)](https://obot-claw.github.io/gsm.safety/dev/examples/Example_PaneledOutlierExplorer_Workflow.md)
 
-``` R
-  <strong>Paneled Outlier Explorer</strong><br />
-  <small><code>inst/workflow/3_reports/paneled_outlier_explorer.yaml</code></small>
-</div>
-```
+**Paneled Outlier Explorer**  
+`inst/workflow/3_reports/paneled_outlier_explorer.yaml`
 
 [![Safety Delta Delta
-thumbnail](reference/figures/widgets/safety-delta-delta.svg)](https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_SafetyDeltaDelta_Workflow.html)
+thumbnail](reference/figures/widgets/safety-delta-delta.svg)](https://obot-claw.github.io/gsm.safety/dev/examples/Example_SafetyDeltaDelta_Workflow.md)
 
-``` R
-  <strong>Safety Delta Delta</strong><br />
-  <small><code>inst/workflow/3_reports/safety_delta_delta.yaml</code></small>
-</div>
-```
+**Safety Delta Delta**  
+`inst/workflow/3_reports/safety_delta_delta.yaml`
 
 [![Safety Histogram
-thumbnail](reference/figures/widgets/safety-histogram.svg)](https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_SafetyHistogram_Workflow.html)
+thumbnail](reference/figures/widgets/safety-histogram.svg)](https://obot-claw.github.io/gsm.safety/dev/examples/Example_SafetyHistogram_Workflow.md)
 
-``` R
-  <strong>Safety Histogram</strong><br />
-  <small><code>inst/workflow/3_reports/safety_histogram.yaml</code></small>
-</div>
-```
+**Safety Histogram**  
+`inst/workflow/3_reports/safety_histogram.yaml`
 
 [![Safety Outlier Explorer
-thumbnail](reference/figures/widgets/safety-outlier-explorer.svg)](https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_SafetyOutlierExplorer_Workflow.html)
+thumbnail](reference/figures/widgets/safety-outlier-explorer.svg)](https://obot-claw.github.io/gsm.safety/dev/examples/Example_SafetyOutlierExplorer_Workflow.md)
 
-``` R
-  <strong>Safety Outlier Explorer</strong><br />
-  <small><code>inst/workflow/3_reports/safety_outlier_explorer.yaml</code></small>
-</div>
-```
+**Safety Outlier Explorer**  
+`inst/workflow/3_reports/safety_outlier_explorer.yaml`
 
 [![Safety Results Over Time
-thumbnail](reference/figures/widgets/safety-results-over-time.svg)](https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_SafetyResultsOverTime_Workflow.html)
+thumbnail](reference/figures/widgets/safety-results-over-time.svg)](https://obot-claw.github.io/gsm.safety/dev/examples/Example_SafetyResultsOverTime_Workflow.md)
 
-``` R
-  <strong>Safety Results Over Time</strong><br />
-  <small><code>inst/workflow/3_reports/safety_results_over_time.yaml</code></small>
-</div>
-```
+**Safety Results Over Time**  
+`inst/workflow/3_reports/safety_results_over_time.yaml`
 
 [![Safety Shift Plot
-thumbnail](reference/figures/widgets/safety-shift-plot.svg)](https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_SafetyShiftPlot_Workflow.html)
+thumbnail](reference/figures/widgets/safety-shift-plot.svg)](https://obot-claw.github.io/gsm.safety/dev/examples/Example_SafetyShiftPlot_Workflow.md)
 
-``` R
-  <strong>Safety Shift Plot</strong><br />
-  <small><code>inst/workflow/3_reports/safety_shift_plot.yaml</code></small>
-</div>
-```
+**Safety Shift Plot**  
+`inst/workflow/3_reports/safety_shift_plot.yaml`
 
-Thumbnail assets live in `man/figures/widgets/`. To regenerate
-browser-based screenshots for the gallery, install the Node development
-dependencies and run:
+Thumbnail assets currently live in `man/figures/widgets/` as checked-in
+SVG placeholders. Replace them with browser-rendered PNG screenshots
+before merging this gallery:
 
-``` sh
-npm install
-npm run capture:widget-thumbnails
-```
+1.  Build and publish a pkgdown preview for the PR branch.
+2.  Run `npm install` if Node dependencies are not installed.
+3.  Run
+    `GSM_SAFETY_WIDGET_BASE_URL=<preview-url> npm run capture:widget-thumbnails`
+    in an environment where Playwright can launch Chromium.
+4.  Review the generated files in `man/figures/widgets/*.png`, switch
+    the gallery image paths from `.svg` to `.png`, commit the PNGs, and
+    rerun pkgdown.
 
-The capture script uses Playwright so the JavaScript widgets can finish
-rendering before screenshots are taken.
-
-## Workflow approach
+The capture script waits for the JavaScript widgets to render before
+taking screenshots. In the restricted OpenClaw macOS shell sandbox,
+Chromium can fail while registering its Mach port; in that case run the
+script in GitHub Actions or a normal local browser environment. \##
+Workflow approach
 
 The implemented workflows keep the report contract in YAML and use
-`MakeExampleData()` for reproducible examples:
+[`MakeExampleData()`](https://obot-claw.github.io/gsm.safety/dev/reference/MakeExampleData.md)
+for reproducible examples:
 
 1.  `meta$domains` maps GSM workflow data names, currently
     `Mapped_SUBJ`, `Mapped_AE`, and `Mapped_LB`, to the domain shapes
@@ -146,8 +125,10 @@ The implemented workflows keep the report contract in YAML and use
 3.  Workflows call the relevant `safetyCharts::init_*()` helper when one
     exists; widgets without an init helper pass data/settings directly
     to the renderer.
-4.  `gsm.safety::RenderSafetyChartsWidget()` renders the widget with
-    `safetyCharts::render_widget()` and writes a standalone HTML report.
+4.  [`gsm.safety::RenderSafetyChartsWidget()`](https://obot-claw.github.io/gsm.safety/dev/reference/RenderSafetyChartsWidget.md)
+    renders the widget with
+    [`safetyCharts::render_widget()`](https://rdrr.io/pkg/safetyCharts/man/render_widget.html)
+    and writes a standalone HTML report.
 
 The YAML is the authoritative configuration, and the generated HTML
 widget is the report artifact.
@@ -172,8 +153,10 @@ From a source checkout, use:
 source("inst/examples/run-ae-explorer-workflow.R")
 ```
 
-The pkgdown examples use `workr::RunWorkflow()` against the workflow
-YAML files and render the returned htmlwidget output.
+The pkgdown examples use
+[`workr::RunWorkflow()`](https://gilead-biostats.github.io/workr/reference/RunWorkflow.html)
+against the workflow YAML files and render the returned htmlwidget
+output.
 
 Run local checks with:
 

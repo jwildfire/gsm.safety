@@ -3,16 +3,18 @@ import { chromium } from 'playwright';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
+const baseUrl = (process.env.GSM_SAFETY_WIDGET_BASE_URL || 'https://obot-claw.github.io/gsm.safety/dev').replace(/\/$/, '');
+
 const widgets = [
-  ['ae-explorer', 'AE Explorer', 'https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_AE_Explorer_Workflow.html'],
-  ['ae-timelines', 'AE Timelines', 'https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_AE_Timelines_Workflow.html'],
-  ['hep-explorer', 'Hep Explorer', 'https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_HepExplorer_Workflow.html'],
-  ['paneled-outlier-explorer', 'Paneled Outlier Explorer', 'https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_PaneledOutlierExplorer_Workflow.html'],
-  ['safety-delta-delta', 'Safety Delta Delta', 'https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_SafetyDeltaDelta_Workflow.html'],
-  ['safety-histogram', 'Safety Histogram', 'https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_SafetyHistogram_Workflow.html'],
-  ['safety-outlier-explorer', 'Safety Outlier Explorer', 'https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_SafetyOutlierExplorer_Workflow.html'],
-  ['safety-results-over-time', 'Safety Results Over Time', 'https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_SafetyResultsOverTime_Workflow.html'],
-  ['safety-shift-plot', 'Safety Shift Plot', 'https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_SafetyShiftPlot_Workflow.html'],
+  ['ae-explorer', 'AE Explorer', 'examples/Example_AE_Explorer_Workflow.html'],
+  ['ae-timelines', 'AE Timelines', 'examples/Example_AE_Timelines_Workflow.html'],
+  ['hep-explorer', 'Hep Explorer', 'examples/Example_HepExplorer_Workflow.html'],
+  ['paneled-outlier-explorer', 'Paneled Outlier Explorer', 'examples/Example_PaneledOutlierExplorer_Workflow.html'],
+  ['safety-delta-delta', 'Safety Delta Delta', 'examples/Example_SafetyDeltaDelta_Workflow.html'],
+  ['safety-histogram', 'Safety Histogram', 'examples/Example_SafetyHistogram_Workflow.html'],
+  ['safety-outlier-explorer', 'Safety Outlier Explorer', 'examples/Example_SafetyOutlierExplorer_Workflow.html'],
+  ['safety-results-over-time', 'Safety Results Over Time', 'examples/Example_SafetyResultsOverTime_Workflow.html'],
+  ['safety-shift-plot', 'Safety Shift Plot', 'examples/Example_SafetyShiftPlot_Workflow.html'],
 ];
 
 const outDir = path.resolve('man/figures/widgets');
@@ -21,7 +23,8 @@ await fs.mkdir(outDir, { recursive: true });
 const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage({ viewport: { width: 1440, height: 1000 }, deviceScaleFactor: 1 });
 
-for (const [slug, label, url] of widgets) {
+for (const [slug, label, relativeUrl] of widgets) {
+  const url = new URL(relativeUrl, `${baseUrl}/`).toString();
   console.log(`Capturing ${label}: ${url}`);
   const messages = [];
   page.removeAllListeners('console');

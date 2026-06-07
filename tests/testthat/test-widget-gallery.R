@@ -1,5 +1,24 @@
+widget_gallery_project_root <- function(required = "README.md") {
+  candidates <- c(
+    Sys.getenv("GITHUB_WORKSPACE", ""),
+    getwd(),
+    file.path(getwd(), ".."),
+    file.path(getwd(), "..", ".."),
+    file.path(getwd(), "..", "00_pkg_src", "gsm.safety"),
+    file.path(getwd(), "..", "..", "..")
+  )
+  candidates <- unique(normalizePath(candidates[nzchar(candidates)], mustWork = FALSE))
+  matches <- candidates[file.exists(file.path(candidates, required))]
+
+  if (!length(matches)) {
+    skip(paste("source checkout artifact is unavailable:", required))
+  }
+
+  matches[[1]]
+}
+
 test_that("README widget gallery links every supported report with thumbnail assets (#28)", {
-  root <- normalizePath(file.path(getwd(), "..", ".."))
+  root <- widget_gallery_project_root("README.md")
   readme <- readLines(file.path(root, "README.md"), warn = FALSE)
   readme_text <- paste(readme, collapse = "\n")
 
@@ -48,7 +67,7 @@ test_that("README widget gallery links every supported report with thumbnail ass
 
 
 test_that("thumbnail capture script documents PR-preview PNG replacement path (#28)", {
-  root <- normalizePath(file.path(getwd(), "..", ".."))
+  root <- widget_gallery_project_root(file.path("tools", "capture-widget-thumbnails.mjs"))
   script <- readLines(file.path(root, "tools", "capture-widget-thumbnails.mjs"), warn = FALSE)
   script_text <- paste(script, collapse = "\n")
   readme_text <- paste(readLines(file.path(root, "README.md"), warn = FALSE), collapse = "\n")

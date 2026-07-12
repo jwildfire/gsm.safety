@@ -6,7 +6,20 @@
 \alias{gsm.safety-package}
 \title{gsm.safety}
 \description{
-Experimental bridge package for generating clinical safety visualization
-artifacts from Good Statistical Monitoring workflows.
+HTML widget bindings for the safety.viz JavaScript chart library:
+interactive clinical safety displays as htmlwidgets, plus bundled example
+data and report workflows for Good Statistical Monitoring.
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/jwildfire/gsm.safety}
+  \item Report bugs at \url{https://github.com/jwildfire/gsm.safety/issues}
+}
+
+}
+\author{
+\strong{Maintainer}: obot \email{obot@users.noreply.github.com}
+
 }
 \keyword{internal}

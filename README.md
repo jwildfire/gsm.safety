@@ -1,84 +1,56 @@
 # gsm.safety
 
-`gsm.safety` is an R package for generating clinical safety visualization artifacts from Good Statistical Monitoring workflows.
+`gsm.safety` provides R bindings for the [safety.viz](https://github.com/jwildfire/safety.viz) JavaScript chart library: six interactive clinical safety displays as htmlwidgets, plus bundled example data and report workflows for Good Statistical Monitoring. It mirrors the `gsm.kri` / `gsm.viz` architecture.
 
-The first release, `v0.1.0`, focuses on workflow-driven SafetyCharts HTML widget reports. Reports are defined in YAML, run with `workr::RunWorkflow()`, and rendered with `gsm.safety::RenderSafetyChartsWidget()` using reproducible `gsm.datasim`-backed example data.
+## Widgets
 
-## Current status
-
-This repository contains:
-
-- [Integration design](design/integration-design.md)
-- [AE Explorer gap analysis](design/ae-explorer-gap-analysis.md)
-- `workr`-shaped report workflows under `inst/workflow/3_reports/`
-- Interactive SafetyCharts HTML report artifacts rendered through `safetyCharts::render_widget()`
-- Pkgdown examples that run the report YAML workflows with `workr::RunWorkflow()`
-- GitHub Actions R CMD check, pkgdown, coverage, and workflow-template checks
-
-The package intentionally avoids wrapping the full SafetyGraphics Shiny app. The current scope is standalone report artifacts that can be generated from GSM-style mapped data. Nep Explorer is excluded from `v0.1.0` because the legacy htmlwidget path is no longer supported; future NEP support should be considered through a Shiny-app pipeline or a static graphic.
-
-## Available widget reports
-
-| Widget report | Workflow YAML | Example |
+| Widget | safety.viz module | Report workflow |
 |---|---|---|
-| AE Explorer | [`ae_explorer.yaml`](inst/workflow/3_reports/ae_explorer.yaml) | [Example](https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_AE_Explorer_Workflow.html) |
-| AE Timelines | [`ae_timelines.yaml`](inst/workflow/3_reports/ae_timelines.yaml) | [Example](https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_AE_Timelines_Workflow.html) |
-| Hep Explorer | [`hep_explorer.yaml`](inst/workflow/3_reports/hep_explorer.yaml) | [Example](https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_HepExplorer_Workflow.html) |
-| Paneled Outlier Explorer | [`paneled_outlier_explorer.yaml`](inst/workflow/3_reports/paneled_outlier_explorer.yaml) | [Example](https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_PaneledOutlierExplorer_Workflow.html) |
-| Safety Delta Delta | [`safety_delta_delta.yaml`](inst/workflow/3_reports/safety_delta_delta.yaml) | [Example](https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_SafetyDeltaDelta_Workflow.html) |
-| Safety Histogram | [`safety_histogram.yaml`](inst/workflow/3_reports/safety_histogram.yaml) | [Example](https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_SafetyHistogram_Workflow.html) |
-| Safety Outlier Explorer | [`safety_outlier_explorer.yaml`](inst/workflow/3_reports/safety_outlier_explorer.yaml) | [Example](https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_SafetyOutlierExplorer_Workflow.html) |
-| Safety Results Over Time | [`safety_results_over_time.yaml`](inst/workflow/3_reports/safety_results_over_time.yaml) | [Example](https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_SafetyResultsOverTime_Workflow.html) |
-| Safety Shift Plot | [`safety_shift_plot.yaml`](inst/workflow/3_reports/safety_shift_plot.yaml) | [Example](https://obot-claw.github.io/gsm.safety/dev/menus/examples/Example_SafetyShiftPlot_Workflow.html) |
+| `Widget_Histogram()` | histogram | [`safety_histogram.yaml`](inst/workflow/3_reports/safety_histogram.yaml) |
+| `Widget_ShiftPlot()` | shiftPlot | [`safety_shift_plot.yaml`](inst/workflow/3_reports/safety_shift_plot.yaml) |
+| `Widget_DeltaDelta()` | deltaDelta | [`safety_delta_delta.yaml`](inst/workflow/3_reports/safety_delta_delta.yaml) |
+| `Widget_ResultsOverTime()` | resultsOverTime | [`safety_results_over_time.yaml`](inst/workflow/3_reports/safety_results_over_time.yaml) |
+| `Widget_OutlierExplorer()` | outlierExplorer | [`safety_outlier_explorer.yaml`](inst/workflow/3_reports/safety_outlier_explorer.yaml) |
+| `Widget_AeTimelines()` | aeTimelines | [`ae_timelines.yaml`](inst/workflow/3_reports/ae_timelines.yaml) |
 
-## Workflow approach
+Each widget validates its data and settings against the module's vendored JSON data contract (`inst/schema/`) before rendering, so column-mapping mistakes fail fast in R.
 
-The implemented workflows keep the report contract in YAML and use `MakeExampleData()` for reproducible examples:
+## Usage
 
-1. `meta$domains` maps GSM workflow data names, currently `Mapped_SUBJ`, `Mapped_AE`, and `Mapped_LB`, to the domain shapes expected by each SafetyCharts widget.
-2. `meta$widgetSettings` stores the widget column mapping used by `safetyCharts`, including `sex` as the current example grouping variable when supported.
-3. Workflows call the relevant `safetyCharts::init_*()` helper when one exists; widgets without an init helper pass data/settings directly to the renderer.
-4. `gsm.safety::RenderSafetyChartsWidget()` renders the widget with `safetyCharts::render_widget()` and writes a standalone HTML report.
+```r
+library(gsm.safety)
 
-The YAML is the authoritative configuration, and the generated HTML widget is the report artifact.
+# Bundled pharmaverseadam-derived demo data (same data as the safety.viz site demos)
+dfResults <- ExampleData("adbds") # long-format labs and vitals
+dfAE <- ExampleData("adae") # adverse events
+
+# Render a widget in the viewer
+Widget_Histogram(dfResults, lSettings = list(group_by = "ARM"))
+
+# Or save any widget as a self-contained HTML report
+SaveWidgetReport(
+  Widget_Histogram(dfResults),
+  strOutputDir = tempdir(),
+  strOutputFile = "histogram"
+)
+```
+
+Settings are merged onto each module's defaults client-side, so only overrides are needed; the defaults already match the example data column names.
+
+## Report workflows
+
+Report workflows under `inst/workflow/3_reports/` render each widget end-to-end via `gsm.core::RunWorkflow()`. Matching runner scripts live in `inst/examples/`:
+
+```sh
+Rscript inst/examples/histogram.R [output_dir]
+```
 
 ## Development
 
-This project intentionally does **not** use `renv` yet. The dependency surface is still changing, and the first release should establish the core package/API boundaries before adding lockfile maintenance.
-
-Run the AE Explorer workflow example with:
-
 ```r
-source(system.file("examples", "run-ae-explorer-workflow.R", package = "gsm.safety"))
+devtools::test()
+devtools::check()
 ```
-
-From a source checkout, use:
-
-```r
-source("inst/examples/run-ae-explorer-workflow.R")
-```
-
-The pkgdown examples use `workr::RunWorkflow()` against the workflow YAML files and render the returned htmlwidget output.
-
-Run local checks with:
-
-```r
-rcmdcheck::rcmdcheck(args = "--no-manual")
-```
-
-or from a shell with R installed:
-
-```sh
-R CMD check --no-manual gsm.safety
-```
-
-## Next milestones
-
-1. Merge PR #26 and cut the first `v0.1.0` release with the available SafetyCharts widget reports.
-2. Harden the GSM-to-SafetyCharts mapping contract against real `gsm.mapping` outputs.
-3. Decide the dependency strategy for remote SafetyCharts/Tendril dependencies versus vendoring or reimplementation.
-4. Review FDA ST&F / Duke-Margolis materials and create issues for static safety displays.
-5. Revisit NEP support as a Shiny app pipeline or static graphic rather than as a legacy htmlwidget.
 
 ## License
 

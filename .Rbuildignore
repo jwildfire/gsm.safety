@@ -1,3 +1,8 @@
+^\.git$
 ^\.github$
 ^\.gitignore$
 ^docs/.*\.html$
+^_pkgdown\.yml$
+^pkgdown$
+^design$
+^LICENSE$

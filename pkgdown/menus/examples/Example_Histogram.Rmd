@@ -12,12 +12,46 @@ output:
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
 
+<style>
+.main-container {
+  max-width: min(1700px, 96vw) !important;
+}
+div.html-widget {
+  width: 100% !important;
+  height: auto !important;
+  min-height: 480px;
+}
+.example-nav a { text-decoration: none; }
+</style>
+
 <div class="example-nav" aria-label="Example navigation" style="display: flex; justify-content: space-between; gap: 1rem; margin: 0.75rem 0 1.25rem 0;">
 <a class="btn btn-outline-secondary btn-sm" href="Example_AeTimelines.html">&larr; Previous: AE Timelines</a>
 <a class="btn btn-outline-secondary btn-sm" href="Example_ShiftPlot.html">Next: Shift Plot &rarr;</a>
 </div>
 
 Interactive lab-results distributions with normal-range overlays, grouped small multiples, and a linked participant listing. The chart below is live — rendered by the safety.viz `histogram` module on the package's example data, with the full control sidebar.
+
+
+## Render this report from a workflow
+
+The same chart ships as a gsm-idiom report workflow. Run it with `gsm.core::RunWorkflow()` to produce a standalone HTML report, or use the matching runner script:
+
+```{r, eval = FALSE}
+lWorkflow <- yaml::read_yaml(
+  system.file("workflow", "3_reports", "safety_histogram.yaml", package = "gsm.safety")
+)
+
+gsm.core::RunWorkflow(
+  lWorkflow = lWorkflow,
+  lData = list(dfResults = ExampleData("adbds"))
+)
+```
+
+```sh
+Rscript inst/examples/histogram.R <output-dir>
+```
+
+## The live chart
 
 ```{r}
 library(gsm.safety)
@@ -45,26 +79,6 @@ Widget_Histogram(
     test_normality = TRUE,
     group_by = "ARM",
     compare_distributions = TRUE
-  ),
-  height = "800px"
+  )
 )
-```
-
-## Render this report from a workflow
-
-The same chart ships as a gsm-idiom report workflow. Run it with `gsm.core::RunWorkflow()` to produce a standalone HTML report, or use the matching runner script:
-
-```{r, eval = FALSE}
-lWorkflow <- yaml::read_yaml(
-  system.file("workflow", "3_reports", "safety_histogram.yaml", package = "gsm.safety")
-)
-
-gsm.core::RunWorkflow(
-  lWorkflow = lWorkflow,
-  lData = list(dfResults = ExampleData("adbds"))
-)
-```
-
-```sh
-Rscript inst/examples/histogram.R <output-dir>
 ```

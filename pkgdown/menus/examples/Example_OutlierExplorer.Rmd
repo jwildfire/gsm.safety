@@ -12,12 +12,46 @@ output:
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
 ```
 
+<style>
+.main-container {
+  max-width: min(1700px, 96vw) !important;
+}
+div.html-widget {
+  width: 100% !important;
+  height: auto !important;
+  min-height: 480px;
+}
+.example-nav a { text-decoration: none; }
+</style>
+
 <div class="example-nav" aria-label="Example navigation" style="display: flex; justify-content: space-between; gap: 1rem; margin: 0.75rem 0 1.25rem 0;">
 <a class="btn btn-outline-secondary btn-sm" href="Example_ResultsOverTime.html">&larr; Previous: Results Over Time</a>
 <a class="btn btn-outline-secondary btn-sm" href="Example_AeTimelines.html">Next: AE Timelines &rarr;</a>
 </div>
 
 Participant-level trajectories over time for spotting outliers per measure. The chart below is live — rendered by the safety.viz `outlierExplorer` module on the package's example data, with the full control sidebar.
+
+
+## Render this report from a workflow
+
+The same chart ships as a gsm-idiom report workflow. Run it with `gsm.core::RunWorkflow()` to produce a standalone HTML report, or use the matching runner script:
+
+```{r, eval = FALSE}
+lWorkflow <- yaml::read_yaml(
+  system.file("workflow", "3_reports", "safety_outlier_explorer.yaml", package = "gsm.safety")
+)
+
+gsm.core::RunWorkflow(
+  lWorkflow = lWorkflow,
+  lData = list(dfResults = ExampleData("adbds"))
+)
+```
+
+```sh
+Rscript inst/examples/outlier-explorer.R <output-dir>
+```
+
+## The live chart
 
 ```{r}
 library(gsm.safety)
@@ -46,26 +80,6 @@ Widget_OutlierExplorer(
       list(value_col = "RACE", label = "Race"),
       list(value_col = "ARM", label = "Treatment Group")
     )
-  ),
-  height = "800px"
+  )
 )
-```
-
-## Render this report from a workflow
-
-The same chart ships as a gsm-idiom report workflow. Run it with `gsm.core::RunWorkflow()` to produce a standalone HTML report, or use the matching runner script:
-
-```{r, eval = FALSE}
-lWorkflow <- yaml::read_yaml(
-  system.file("workflow", "3_reports", "safety_outlier_explorer.yaml", package = "gsm.safety")
-)
-
-gsm.core::RunWorkflow(
-  lWorkflow = lWorkflow,
-  lData = list(dfResults = ExampleData("adbds"))
-)
-```
-
-```sh
-Rscript inst/examples/outlier-explorer.R <output-dir>
 ```

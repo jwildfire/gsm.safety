@@ -201,3 +201,21 @@ SaveWidgetReport <- function(
 
   invisible(normalizePath(strOutputPath, winslash = "/"))
 }
+
+#' Default sizing policy for gsm.safety widgets
+#'
+#' The safety.viz shell lays out as a normal document (sticky sidebar plus
+#' full-width charts), so the widgets default to the full container width
+#' rather than htmlwidgets' fixed 960px.
+#'
+#' @return An [htmlwidgets::sizingPolicy()].
+#'
+#' @keywords internal
+WidgetSizingPolicy <- function() {
+  htmlwidgets::sizingPolicy(
+    defaultWidth = "100%",
+    browser.defaultWidth = "100%",
+    viewer.defaultWidth = "100%",
+    knitr.defaultWidth = "100%"
+  )
+}

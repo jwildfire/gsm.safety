@@ -68,6 +68,7 @@ Widget_Histogram <- function(
     width = width,
     height = height,
     package = "gsm.safety",
-    elementId = elementId
+    elementId = elementId,
+    sizingPolicy = WidgetSizingPolicy()
   )
 }

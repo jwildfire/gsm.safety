@@ -16,6 +16,8 @@ Interactive safety.viz charts as htmlwidgets.
   : Outlier Explorer Widget
 - [`Widget_AeTimelines()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_AeTimelines.md)
   : AE Timelines Widget
+- [`Widget_HepExplorer()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_HepExplorer.md)
+  : Hepatic Safety Explorer (eDISH) Widget
 
 ## Data
 

@@ -7,15 +7,17 @@ interactive chart library, mirroring the gsm.kri / gsm.viz architecture.
 
 ### New features
 
-- Six interactive safety widgets built on the vendored safety.viz 1.1.0
-  bundle:
+- Seven interactive safety widgets built on the vendored safety.viz
+  1.2.0 bundle:
   [`Widget_Histogram()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_Histogram.md),
   [`Widget_ShiftPlot()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_ShiftPlot.md),
   [`Widget_DeltaDelta()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_DeltaDelta.md),
   [`Widget_ResultsOverTime()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_ResultsOverTime.md),
   [`Widget_OutlierExplorer()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_OutlierExplorer.md),
+  [`Widget_AeTimelines()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_AeTimelines.md),
   and
-  [`Widget_AeTimelines()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_AeTimelines.md).
+  [`Widget_HepExplorer()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_HepExplorer.md)
+  (eDISH).
 - Every widget validates its inputs against the module’s vendored JSON
   data contract (`inst/schema/`), so bad column mappings fail fast in R
   instead of silently in the browser.

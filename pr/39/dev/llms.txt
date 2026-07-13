@@ -2,7 +2,7 @@
 
 `gsm.safety` provides R bindings for the
 [safety.viz](https://github.com/jwildfire/safety.viz) JavaScript chart
-library: six interactive clinical safety displays as htmlwidgets, plus
+library: seven interactive clinical safety displays as htmlwidgets, plus
 bundled example data and report workflows for Good Statistical
 Monitoring. It mirrors the `gsm.kri` / `gsm.viz` architecture.
 
@@ -16,6 +16,7 @@ Monitoring. It mirrors the `gsm.kri` / `gsm.viz` architecture.
 | [`Widget_ResultsOverTime()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_ResultsOverTime.md) | resultsOverTime | [`safety_results_over_time.yaml`](https://jwildfire.github.io/gsm.safety/dev/inst/workflow/3_reports/safety_results_over_time.yaml) |
 | [`Widget_OutlierExplorer()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_OutlierExplorer.md) | outlierExplorer | [`safety_outlier_explorer.yaml`](https://jwildfire.github.io/gsm.safety/dev/inst/workflow/3_reports/safety_outlier_explorer.yaml) |
 | [`Widget_AeTimelines()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_AeTimelines.md) | aeTimelines | [`ae_timelines.yaml`](https://jwildfire.github.io/gsm.safety/dev/inst/workflow/3_reports/ae_timelines.yaml) |
+| [`Widget_HepExplorer()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_HepExplorer.md) | hepExplorer | [`hep_explorer.yaml`](https://jwildfire.github.io/gsm.safety/dev/inst/workflow/3_reports/hep_explorer.yaml) |
 
 Each widget validates its data and settings against the module’s
 vendored JSON data contract (`inst/schema/`) before rendering, so
@@ -87,6 +88,8 @@ Interactive safety.viz charts as htmlwidgets.
   : Outlier Explorer Widget
 - [`Widget_AeTimelines()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_AeTimelines.md)
   : AE Timelines Widget
+- [`Widget_HepExplorer()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_HepExplorer.md)
+  : Hepatic Safety Explorer (eDISH) Widget
 
 ## Data
 

@@ -4,7 +4,7 @@ First stable release: gsm.safety is now the R home of the safety.viz interactive
 
 ## New features
 
-- Six interactive safety widgets built on the vendored safety.viz 1.1.0 bundle: `Widget_Histogram()`, `Widget_ShiftPlot()`, `Widget_DeltaDelta()`, `Widget_ResultsOverTime()`, `Widget_OutlierExplorer()`, and `Widget_AeTimelines()`.
+- Seven interactive safety widgets built on the vendored safety.viz 1.2.0 bundle: `Widget_Histogram()`, `Widget_ShiftPlot()`, `Widget_DeltaDelta()`, `Widget_ResultsOverTime()`, `Widget_OutlierExplorer()`, `Widget_AeTimelines()`, and `Widget_HepExplorer()` (eDISH).
 - Every widget validates its inputs against the module's vendored JSON data contract (`inst/schema/`), so bad column mappings fail fast in R instead of silently in the browser.
 - `ExampleData()` ships pharmaverseadam-derived demo datasets — `adbds` (long-format labs and vitals) and `adae` (adverse events) — identical to the safety.viz site demos.
 - `SaveWidgetReport()` writes any widget as a self-contained standalone HTML report.

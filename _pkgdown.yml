@@ -23,6 +23,7 @@ reference:
       - Widget_ResultsOverTime
       - Widget_OutlierExplorer
       - Widget_AeTimelines
+      - Widget_HepExplorer
   - title: Data
     contents:
       - ExampleData

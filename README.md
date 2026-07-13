@@ -1,6 +1,6 @@
 # gsm.safety
 
-`gsm.safety` provides R bindings for the [safety.viz](https://github.com/jwildfire/safety.viz) JavaScript chart library: six interactive clinical safety displays as htmlwidgets, plus bundled example data and report workflows for Good Statistical Monitoring. It mirrors the `gsm.kri` / `gsm.viz` architecture.
+`gsm.safety` provides R bindings for the [safety.viz](https://github.com/jwildfire/safety.viz) JavaScript chart library: seven interactive clinical safety displays as htmlwidgets, plus bundled example data and report workflows for Good Statistical Monitoring. It mirrors the `gsm.kri` / `gsm.viz` architecture.
 
 ## Widgets
 
@@ -12,6 +12,7 @@
 | `Widget_ResultsOverTime()` | resultsOverTime | [`safety_results_over_time.yaml`](inst/workflow/3_reports/safety_results_over_time.yaml) |
 | `Widget_OutlierExplorer()` | outlierExplorer | [`safety_outlier_explorer.yaml`](inst/workflow/3_reports/safety_outlier_explorer.yaml) |
 | `Widget_AeTimelines()` | aeTimelines | [`ae_timelines.yaml`](inst/workflow/3_reports/ae_timelines.yaml) |
+| `Widget_HepExplorer()` | hepExplorer | [`hep_explorer.yaml`](inst/workflow/3_reports/hep_explorer.yaml) |
 
 Each widget validates its data and settings against the module's vendored JSON data contract (`inst/schema/`) before rendering, so column-mapping mistakes fail fast in R.
 

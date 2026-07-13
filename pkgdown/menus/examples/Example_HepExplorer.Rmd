@@ -1,0 +1,82 @@
+---
+title: "Hepatic Safety Explorer"
+author: "gsm.safety Example"
+description: "eDISH scatter of peak liver measures with Hy's Law quadrants and participant drill-down to standardized values by study day."
+index: 7
+output:
+  html_document:
+    code_folding: hide
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+<style>
+.main-container {
+  max-width: min(1700px, 96vw) !important;
+}
+div.html-widget {
+  width: 100% !important;
+  height: auto !important;
+  min-height: 480px;
+}
+.example-nav a { text-decoration: none; }
+</style>
+
+<div class="example-nav" aria-label="Example navigation" style="display: flex; justify-content: space-between; gap: 1rem; margin: 0.75rem 0 1.25rem 0;">
+<a class="btn btn-outline-secondary btn-sm" href="Example_AeTimelines.html">&larr; Previous: AE Timelines</a>
+<a class="btn btn-outline-secondary btn-sm" href="Example_Histogram.html">Next: Histogram &rarr;</a>
+</div>
+
+eDISH scatter of peak liver measures with Hy's Law quadrants and participant drill-down to standardized values by study day. The chart below is live — rendered by the safety.viz `hepExplorer` module on the package's example data, with the full control sidebar. `measure_values` maps the ALT/AST/TB/ALP keys onto this dataset's measure names, and the visit sequence stands in for study day.
+
+## Render this report from a workflow
+
+The same chart ships as a gsm-idiom report workflow. Run it with `gsm.core::RunWorkflow()` to produce a standalone HTML report, or use the matching runner script:
+
+```{r, eval = FALSE}
+lWorkflow <- yaml::read_yaml(
+  system.file("workflow", "3_reports", "hep_explorer.yaml", package = "gsm.safety")
+)
+
+gsm.core::RunWorkflow(
+  lWorkflow = lWorkflow,
+  lData = list(dfResults = ExampleData("adbds"))
+)
+```
+
+```sh
+Rscript inst/examples/hep-explorer.R <output-dir>
+```
+
+## The live chart
+
+```{r}
+library(gsm.safety)
+
+dfResults <- ExampleData("adbds")
+
+Widget_HepExplorer(
+  dfResults,
+  lSettings = list(
+    studyday_col = "VISITNUM",
+    visit_col = "VISIT",
+    visitn_col = "VISITNUM",
+    measure_values = list(
+      ALT = "Alanine Aminotransferase",
+      AST = "Aspartate Aminotransferase",
+      TB = "Bilirubin",
+      ALP = "Alkaline Phosphatase"
+    ),
+    filters = list(
+      list(value_col = "SEX", label = "Sex"),
+      list(value_col = "ARM", label = "Treatment Group")
+    ),
+    groups = list(
+      list(value_col = "ARM", label = "Treatment Group"),
+      list(value_col = "SEX", label = "Sex")
+    )
+  )
+)
+```

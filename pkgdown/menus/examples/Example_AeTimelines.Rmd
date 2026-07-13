@@ -1,0 +1,72 @@
+---
+title: "AE Timelines"
+author: "gsm.safety Example"
+description: "Per-participant adverse-event timelines colored by severity, with seriousness highlighting and filters."
+index: 6
+output:
+  html_document:
+    code_folding: hide
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+<div class="example-nav" aria-label="Example navigation" style="display: flex; justify-content: space-between; gap: 1rem; margin: 0.75rem 0 1.25rem 0;">
+<a class="btn btn-outline-secondary btn-sm" href="Example_OutlierExplorer.html">&larr; Previous: Outlier Explorer</a>
+<a class="btn btn-outline-secondary btn-sm" href="Example_Histogram.html">Next: Histogram &rarr;</a>
+</div>
+
+Per-participant adverse-event timelines colored by severity, with seriousness highlighting and filters. The chart below is live — rendered by the safety.viz `aeTimelines` module on the package's example data, with the full control sidebar.
+
+```{r}
+library(gsm.safety)
+
+dfResults <- ExampleData("adae")
+
+Widget_AeTimelines(
+  dfResults,
+  lSettings = list(
+    color = list(
+      value_col = "AESEV",
+      label = "Severity"
+    ),
+    highlight = list(
+      value_col = "AESER",
+      label = "Serious Event",
+      value = "Y"
+    ),
+    filters = list(
+      list(value_col = "AESER", label = "Serious Event"),
+      list(value_col = "AESEV", label = "Severity"),
+      list(value_col = "ARM", label = "Treatment Group"),
+      list(value_col = "USUBJID", label = "Participant ID")
+    ),
+    details = list(
+      list(value_col = "AEBODSYS", label = "Body System"),
+      list(value_col = "AEDECOD", label = "Dictionary-Derived Term")
+    ),
+    sort_participants = "earliest"
+  ),
+  height = "800px"
+)
+```
+
+## Render this report from a workflow
+
+The same chart ships as a gsm-idiom report workflow. Run it with `gsm.core::RunWorkflow()` to produce a standalone HTML report, or use the matching runner script:
+
+```{r, eval = FALSE}
+lWorkflow <- yaml::read_yaml(
+  system.file("workflow", "3_reports", "ae_timelines.yaml", package = "gsm.safety")
+)
+
+gsm.core::RunWorkflow(
+  lWorkflow = lWorkflow,
+  lData = list(dfResults = ExampleData("adae"))
+)
+```
+
+```sh
+Rscript inst/examples/ae-timelines.R <output-dir>
+```

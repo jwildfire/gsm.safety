@@ -1,0 +1,62 @@
+---
+title: "Delta-Delta"
+author: "gsm.safety Example"
+description: "Per-participant change on two measures at once — ALT versus AST by default — with an optional regression line."
+index: 3
+output:
+  html_document:
+    code_folding: hide
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+<div class="example-nav" aria-label="Example navigation" style="display: flex; justify-content: space-between; gap: 1rem; margin: 0.75rem 0 1.25rem 0;">
+<a class="btn btn-outline-secondary btn-sm" href="Example_ShiftPlot.html">&larr; Previous: Shift Plot</a>
+<a class="btn btn-outline-secondary btn-sm" href="Example_ResultsOverTime.html">Next: Results Over Time &rarr;</a>
+</div>
+
+Per-participant change on two measures at once — ALT versus AST by default — with an optional regression line. The chart below is live — rendered by the safety.viz `deltaDelta` module on the package's example data, with the full control sidebar.
+
+```{r}
+library(gsm.safety)
+
+dfResults <- ExampleData("adbds")
+
+Widget_DeltaDelta(
+  dfResults,
+  lSettings = list(
+    filters = list(
+      list(value_col = "SITE", label = "Site"),
+      list(value_col = "SEX", label = "Sex"),
+      list(value_col = "RACE", label = "Race"),
+      list(value_col = "ARM", label = "Treatment Group"),
+      list(value_col = "USUBJID", label = "Participant ID")
+    ),
+    measure_x = "Alanine Aminotransferase",
+    measure_y = "Aspartate Aminotransferase",
+    add_regression_line = TRUE
+  ),
+  height = "800px"
+)
+```
+
+## Render this report from a workflow
+
+The same chart ships as a gsm-idiom report workflow. Run it with `gsm.core::RunWorkflow()` to produce a standalone HTML report, or use the matching runner script:
+
+```{r, eval = FALSE}
+lWorkflow <- yaml::read_yaml(
+  system.file("workflow", "3_reports", "safety_delta_delta.yaml", package = "gsm.safety")
+)
+
+gsm.core::RunWorkflow(
+  lWorkflow = lWorkflow,
+  lData = list(dfResults = ExampleData("adbds"))
+)
+```
+
+```sh
+Rscript inst/examples/delta-delta.R <output-dir>
+```

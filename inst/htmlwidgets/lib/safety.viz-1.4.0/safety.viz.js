@@ -20,17 +20,19 @@ var SafetyViz = (() => {
   // src/main.js
   var main_exports = {};
   __export(main_exports, {
+    aeExplorer: () => aeExplorer,
     aeTimelines: () => aeTimelines,
     default: () => main_default,
     deltaDelta: () => deltaDelta,
     hepExplorer: () => hepExplorer,
     histogram: () => histogram,
     outlierExplorer: () => outlierExplorer,
+    qtExplorer: () => qtExplorer,
     resultsOverTime: () => resultsOverTime,
     shiftPlot: () => shiftPlot
   });
 
-  // ../hep-explorer/node_modules/@kurkle/color/dist/color.esm.js
+  // node_modules/@kurkle/color/dist/color.esm.js
   function round(v) {
     return v + 0.5 | 0;
   }
@@ -587,7 +589,7 @@ var SafetyViz = (() => {
     }
   };
 
-  // ../hep-explorer/node_modules/chart.js/dist/chunks/helpers.dataset.js
+  // node_modules/chart.js/dist/chunks/helpers.dataset.js
   function noop() {
   }
   var uid = /* @__PURE__ */ (() => {
@@ -2985,7 +2987,7 @@ var SafetyViz = (() => {
     };
   }
 
-  // ../hep-explorer/node_modules/chart.js/dist/chart.js
+  // node_modules/chart.js/dist/chart.js
   var Animator = class {
     constructor() {
       this._request = null;
@@ -16661,7 +16663,7 @@ Change in ${this.state.measureY}: ${formatDelta(point.delta_y)}`;
     });
     return [...seen.entries()].sort((a, b) => a[1] - b[1]).map(([label]) => label);
   }
-  function buildSeries(rows, settings, timeCol, groupBy) {
+  function buildSeries(rows, settings, timeCol, groupBy2) {
     const byId = /* @__PURE__ */ new Map();
     rows.forEach((row) => {
       const id = row[settings.id_col];
@@ -16677,7 +16679,7 @@ Change in ${this.state.measureY}: ${formatDelta(point.delta_y)}`;
         label: timeLabel(row, timeCol),
         raw: row
       })).sort((a, b) => a.order - b.order);
-      const group = groupBy && groupBy !== OE_SEQ ? records[0][groupBy] : null;
+      const group = groupBy2 && groupBy2 !== OE_SEQ ? records[0][groupBy2] : null;
       series.push({ id, group, points });
     });
     return series.sort(
@@ -17094,13 +17096,13 @@ Change in ${this.state.measureY}: ${formatDelta(point.delta_y)}`;
         this.render();
       };
       if (this.state.normalMethod === "Standard Deviation") {
-        const sd4 = addControl("# Std. Dev.", document.createElement("input"), nrParent);
-        sd4.type = "number";
-        sd4.step = "any";
-        sd4.min = "0";
-        sd4.value = this.state.normalSd;
-        sd4.onchange = () => {
-          this.state.normalSd = Number(sd4.value) || 0;
+        const sd5 = addControl("# Std. Dev.", document.createElement("input"), nrParent);
+        sd5.type = "number";
+        sd5.step = "any";
+        sd5.min = "0";
+        sd5.value = this.state.normalSd;
+        sd5.onchange = () => {
+          this.state.normalSd = Number(sd5.value) || 0;
           this.render();
         };
       } else if (this.state.normalMethod === "Quantiles") {
@@ -18284,6 +18286,10 @@ Change in ${this.state.measureY}: ${formatDelta(point.delta_y)}`;
     { value: "relative_uln", label: "Upper limit of normal adjusted (eDISH)" },
     { value: "relative_baseline", label: "Baseline adjusted (mDISH)" }
   ];
+  var VIEW_MODES = [
+    { value: "scatter", label: "eDISH / mDISH scatter" },
+    { value: "composite", label: "Composite plot (baseline-referenced)" }
+  ];
   var AXIS_TYPES = ["linear", "log"];
   var POINT_SIZE_OPTIONS = ["Uniform", "rRatio"];
   var MEASURE_KEYS = ["ALT", "AST", "TB", "ALP"];
@@ -18303,6 +18309,7 @@ Change in ${this.state.measureY}: ${formatDelta(point.delta_y)}`;
       TB: "Total Bilirubin",
       ALP: "Alkaline phosphatase (ALP)"
     },
+    view: "scatter",
     x_default: "ALT",
     y_default: "TB",
     x_options: ["ALT", "AST", "TB", "ALP"],
@@ -18448,6 +18455,12 @@ Change in ${this.state.measureY}: ${formatDelta(point.delta_y)}`;
               ALP: "Alkaline phosphatase (ALP)"
             },
             description: "Map of the short measure key (ALT/AST/TB/ALP) to the full measure string in the data (HEP-DATA-002)."
+          },
+          view: {
+            type: "string",
+            enum: ["scatter", "composite"],
+            default: "scatter",
+            description: "Initial view mode: `scatter` (eDISH/mDISH one-point-per-participant scatter) or `composite` (baseline-referenced composite plot for subjects with abnormal baseline liver tests \u2014 pretreatment and on-treatment eDISH panels, a four-panel \xD7Baseline shift plot, and a migration table) (HEP-COMP-006)."
           },
           x_default: {
             type: "string",
@@ -18640,6 +18653,48 @@ Change in ${this.state.measureY}: ${formatDelta(point.delta_y)}`;
     }
     return lines;
   }
+  function referenceLinePlugin({ vLines = [], hLines = [] } = {}) {
+    return {
+      id: `hep-reflines-${Math.random().toString(36).slice(2)}`,
+      beforeDatasetsDraw(chart) {
+        const { ctx, chartArea, scales } = chart;
+        if (!scales.x || !scales.y) return;
+        ctx.save();
+        ctx.strokeStyle = "rgba(100, 116, 139, 0.65)";
+        ctx.fillStyle = "rgba(51, 65, 85, 0.85)";
+        ctx.lineWidth = 1;
+        ctx.setLineDash([4, 4]);
+        ctx.font = "10px system-ui, sans-serif";
+        vLines.forEach(({ value, label }) => {
+          const px = scales.x.getPixelForValue(value);
+          if (!(px >= chartArea.left && px <= chartArea.right)) return;
+          ctx.beginPath();
+          ctx.moveTo(px, chartArea.top);
+          ctx.lineTo(px, chartArea.bottom);
+          ctx.stroke();
+          if (label) {
+            ctx.textAlign = "left";
+            ctx.textBaseline = "bottom";
+            ctx.fillText(label, px + 2, chartArea.bottom - 2);
+          }
+        });
+        hLines.forEach(({ value, label }) => {
+          const py = scales.y.getPixelForValue(value);
+          if (!(py >= chartArea.top && py <= chartArea.bottom)) return;
+          ctx.beginPath();
+          ctx.moveTo(chartArea.left, py);
+          ctx.lineTo(chartArea.right, py);
+          ctx.stroke();
+          if (label) {
+            ctx.textAlign = "left";
+            ctx.textBaseline = "bottom";
+            ctx.fillText(label, chartArea.left + 2, py - 2);
+          }
+        });
+        ctx.restore();
+      }
+    };
+  }
   function quadrantPlugin(instance) {
     return {
       id: `hep-quadrants-${Math.random().toString(36).slice(2)}`,
@@ -18826,7 +18881,7 @@ Change in ${this.state.measureY}: ${formatDelta(point.delta_y)}`;
     return altPeak.value / alpPeak.value;
   }
   function buildPoints(cleanRows, settings, state) {
-    const { measureX, measureY, display, visitWindow, groupBy } = state;
+    const { measureX, measureY, display, visitWindow, groupBy: groupBy2 } = state;
     const timed = hasStudyDay(cleanRows);
     const metaCols = unique6([
       settings.id_col,
@@ -18860,7 +18915,7 @@ Change in ${this.state.measureY}: ${formatDelta(point.delta_y)}`;
       const daysY = peakY.day;
       const dayDiff = Number.isFinite(daysX) && Number.isFinite(daysY) ? Math.abs(daysX - daysY) : NaN;
       const withinWindow = Number.isFinite(dayDiff) ? dayDiff <= visitWindow : !timed;
-      const groupValue = groupBy && groupBy !== GROUP_NONE2 ? participantRows[0][groupBy] : null;
+      const groupValue = groupBy2 && groupBy2 !== GROUP_NONE2 ? participantRows[0][groupBy2] : null;
       const meta = {};
       metaCols.forEach((col) => {
         meta[col] = participantRows[0][col] === void 0 ? "" : String(participantRows[0][col]);
@@ -18980,6 +19035,153 @@ Change in ${this.state.measureY}: ${formatDelta(point.delta_y)}`;
     }).filter((row) => row.n > 0);
   }
 
+  // src/hep-explorer/composite.js
+  var COMPOSITE_QUADRANTS = ["Normal & NN", "Cholestasis", "Temple's Corollary", "Hy's Law"];
+  var [NN, CH, TC, HL] = COMPOSITE_QUADRANTS;
+  var ALT_ULN_CUT = 3;
+  var BILI_ULN_CUT = 2;
+  var BLN_LINES = [1, 3, 5];
+  var QUADRANT_STYLE = {
+    [NN]: { color: "#33a02c", pointStyle: "rect", label: NN },
+    [CH]: { color: "#e6a000", pointStyle: "circle", label: CH },
+    [TC]: { color: "#1f78b4", pointStyle: "cross", label: TC },
+    [HL]: { color: "#e31a1c", pointStyle: "triangle", label: HL }
+  };
+  var CONCERN_COLORS = {
+    red: "#f28b82",
+    yellow: "#fdd663",
+    green: "#81c995",
+    gray: "#dadce0"
+  };
+  var CONCERN_MATRIX = {
+    [NN]: { [NN]: "gray", [CH]: "red", [TC]: "red", [HL]: "red" },
+    [CH]: { [NN]: "green", [CH]: "gray", [TC]: "yellow", [HL]: "red" },
+    [TC]: { [NN]: "green", [CH]: "yellow", [TC]: "gray", [HL]: "red" },
+    [HL]: { [NN]: "green", [CH]: "green", [TC]: "green", [HL]: "gray" }
+  };
+  function concernOf(pretreatQuadrant, onTreatQuadrant) {
+    const row = CONCERN_MATRIX[pretreatQuadrant];
+    return row && row[onTreatQuadrant] || "gray";
+  }
+  function classifyComposite(altULN, biliULN) {
+    const altElevated = altULN > ALT_ULN_CUT;
+    const biliElevated = biliULN > BILI_ULN_CUT;
+    if (!altElevated && !biliElevated) return NN;
+    if (!altElevated && biliElevated) return CH;
+    if (altElevated && biliElevated) return HL;
+    return TC;
+  }
+  function dayThenIndex2(a, b) {
+    const da = Number.isFinite(a.__hep_day) ? a.__hep_day : Number.MAX_SAFE_INTEGER;
+    const db = Number.isFinite(b.__hep_day) ? b.__hep_day : Number.MAX_SAFE_INTEGER;
+    return da - db || a.__hep_index - b.__hep_index;
+  }
+  function reduceMeasure(rows) {
+    if (!rows.length) return null;
+    const ordered = [...rows].sort(dayThenIndex2);
+    const baselineRow = ordered.find((row) => row.__hep_day === 0) || ordered[0];
+    if (!baselineRow || !Number.isFinite(baselineRow.__hep_value) || !(baselineRow.__hep_value > 0) || !Number.isFinite(baselineRow.__hep_relative_uln)) {
+      return null;
+    }
+    const hasDay = rows.some((row) => Number.isFinite(row.__hep_day));
+    const isOnTreatment = (row) => hasDay ? Number.isFinite(row.__hep_day) && row.__hep_day > 0 : row !== baselineRow;
+    let peakULN = NaN;
+    let peakBLN = NaN;
+    rows.forEach((row) => {
+      if (!isOnTreatment(row)) return;
+      if (Number.isFinite(row.__hep_relative_uln) && !(row.__hep_relative_uln <= peakULN)) {
+        peakULN = row.__hep_relative_uln;
+      }
+      if (Number.isFinite(row.__hep_relative_baseline) && !(row.__hep_relative_baseline <= peakBLN)) {
+        peakBLN = row.__hep_relative_baseline;
+      }
+    });
+    if (!Number.isFinite(peakULN) || !Number.isFinite(peakBLN)) return null;
+    return { baselineULN: baselineRow.__hep_relative_uln, peakULN, peakBLN };
+  }
+  function buildCompositeSubjects(cleanRows, settings) {
+    const metaCols = [
+      ...settings.groups.map((group) => group.value_col),
+      ...settings.filters.map((filter) => filter.value_col)
+    ].filter((col) => col && col !== GROUP_NONE2);
+    const byId = /* @__PURE__ */ new Map();
+    cleanRows.forEach((row) => {
+      const id = row[settings.id_col];
+      if (!byId.has(id)) byId.set(id, []);
+      byId.get(id).push(row);
+    });
+    const subjects = [];
+    let excluded = 0;
+    byId.forEach((participantRows, id) => {
+      const alt = reduceMeasure(resolveMeasureRows(participantRows, settings, "ALT"));
+      const bili = reduceMeasure(resolveMeasureRows(participantRows, settings, "TB"));
+      if (!alt || !bili) {
+        excluded += 1;
+        return;
+      }
+      const pretreatQuadrant = classifyComposite(alt.baselineULN, bili.baselineULN);
+      const onTreatQuadrant = classifyComposite(alt.peakULN, bili.peakULN);
+      const raw = {};
+      metaCols.forEach((col) => {
+        raw[col] = participantRows[0][col] === void 0 ? "" : String(participantRows[0][col]);
+      });
+      subjects.push({
+        id,
+        raw,
+        baselineAltULN: alt.baselineULN,
+        baselineBiliULN: bili.baselineULN,
+        peakAltULN: alt.peakULN,
+        peakBiliULN: bili.peakULN,
+        peakAltBLN: alt.peakBLN,
+        peakBiliBLN: bili.peakBLN,
+        pretreatQuadrant,
+        onTreatQuadrant,
+        concern: concernOf(pretreatQuadrant, onTreatQuadrant)
+      });
+    });
+    return { subjects, excluded };
+  }
+  function migrationMatrix(subjects) {
+    const counts = {};
+    const rowTotals = {};
+    const colTotals = {};
+    COMPOSITE_QUADRANTS.forEach((pre) => {
+      counts[pre] = {};
+      rowTotals[pre] = 0;
+      colTotals[pre] = 0;
+      COMPOSITE_QUADRANTS.forEach((post) => {
+        counts[pre][post] = 0;
+      });
+    });
+    let total = 0;
+    subjects.forEach((subject) => {
+      const pre = subject.pretreatQuadrant;
+      const post = subject.onTreatQuadrant;
+      if (counts[pre] && counts[pre][post] !== void 0) {
+        counts[pre][post] += 1;
+        rowTotals[pre] += 1;
+        colTotals[post] += 1;
+        total += 1;
+      }
+    });
+    return { counts, rowTotals, colTotals, total };
+  }
+  function byArmSummary(subjects, armCol) {
+    const buckets = /* @__PURE__ */ new Map();
+    const bucketFor = (arm) => {
+      if (!buckets.has(arm))
+        buckets.set(arm, { arm, red: 0, yellow: 0, green: 0, gray: 0, total: 0 });
+      return buckets.get(arm);
+    };
+    subjects.forEach((subject) => {
+      const arm = armCol ? subject.raw[armCol] ?? "" : "All";
+      const bucket = bucketFor(arm === "" ? "(missing)" : arm);
+      bucket[subject.concern] += 1;
+      bucket.total += 1;
+    });
+    return [...buckets.values()].sort((a, b) => String(a.arm).localeCompare(String(b.arm)));
+  }
+
   // src/hep-explorer.js
   Chart.register(
     ScatterController,
@@ -18992,6 +19194,11 @@ Change in ${this.state.measureY}: ${formatDelta(point.delta_y)}`;
     plugin_legend
   );
   var BASE_POINT_COLOR = GROUP_COLORS2[0];
+  var COMPOSITE_HEADER_HINT = "Hover a point to trace a participant across every panel; click to keep it selected.";
+  var HIGHLIGHT_DIM_FILL = 0.15;
+  var HIGHLIGHT_DIM_BORDER = 0.25;
+  var HIGHLIGHT_RADIUS_BOOST = 2.5;
+  var HIGHLIGHT_BORDER_WIDTH = 2.5;
   var SafetyHepExplorer = class {
     constructor(element = "body", settings = {}) {
       this.element = typeof element === "string" ? document.querySelector(element) : element;
@@ -19013,8 +19220,18 @@ Change in ${this.state.measureY}: ${formatDelta(point.delta_y)}`;
       this.page = 1;
       this.charts = [];
       this.chart = null;
+      this.compositeCharts = [];
+      this.compositeSubjectsShown = [];
+      this.compositeHoverId = null;
+      this.compositeSelectedIds = [];
+      this.compositeHeaderEl = null;
+      this.compositeSelectEl = null;
+      this.compositeSelectSection = null;
+      this.compositeClearBtn = null;
+      this.scatterSelectedIds = [];
       this.participantsSelected = [];
       this.state = {
+        view: this.settings.view === "composite" ? "composite" : "scatter",
         measureX: this.settings.x_default,
         measureY: this.settings.y_default,
         display: "relative_uln",
@@ -19026,6 +19243,7 @@ Change in ${this.state.measureY}: ${formatDelta(point.delta_y)}`;
         rRatio: [...this.settings.r_ratio],
         cuts: JSON.parse(JSON.stringify(this.settings.cuts)),
         selectedId: null,
+        hoverId: null,
         xCut: null,
         yCut: null
       };
@@ -19047,8 +19265,14 @@ Change in ${this.state.measureY}: ${formatDelta(point.delta_y)}`;
       this.legendEl = createElement("div", "hep-legend");
       this.legendEl.style.cssText = "display:flex;flex-wrap:wrap;gap:.35rem .9rem;font-size:.8rem;color:#52616f;margin:0 0 .5rem";
       this.main.insertBefore(this.legendEl, this.chartWrap);
+      this.compositeHeaderEl = createElement("div", "hep-composite-header");
+      this.compositeHeaderEl.textContent = COMPOSITE_HEADER_HINT;
+      this.main.insertBefore(this.compositeHeaderEl, this.legendEl);
       this.quadrantWrap = createElement("div", "hep-quadrant-summary");
       this.main.insertBefore(this.quadrantWrap, this.multiplesWrap);
+      this.compositeWrap = createElement("div", "hep-composite");
+      this.compositeWrap.style.display = "none";
+      this.main.insertBefore(this.compositeWrap, this.multiplesWrap);
       this.detailWrap = createElement("div", "hep-detail");
       this.detailWrap.style.display = "none";
       this.main.insertBefore(this.detailWrap, this.listingWrap);
@@ -19077,7 +19301,38 @@ Change in ${this.state.measureY}: ${formatDelta(point.delta_y)}`;
 .safety-hep-explorer .hep-summary-table{width:100%;max-width:520px;border-collapse:collapse;font-size:.85rem;background:#fff;margin-top:.9rem}
 .safety-hep-explorer .hep-summary-table th,.safety-hep-explorer .hep-summary-table td{border-bottom:1px solid #e3e8ee;padding:.4rem .55rem;text-align:left}
 .safety-hep-explorer .hep-summary-table th{border-bottom:2px solid #d8dee4;font-size:.72rem;text-transform:uppercase;letter-spacing:.03em;color:#52616f}
-.safety-hep-explorer .hep-summary-table td.hep-num,.safety-hep-explorer .hep-summary-table th.hep-num{text-align:right;font-variant-numeric:tabular-nums}`;
+.safety-hep-explorer .hep-summary-table td.hep-num,.safety-hep-explorer .hep-summary-table th.hep-num{text-align:right;font-variant-numeric:tabular-nums}
+.safety-hep-explorer .hep-view-list{display:flex;flex-direction:column;gap:.35rem}
+.safety-hep-explorer .hep-view-option{display:block;width:100%;text-align:left;padding:.45rem .55rem;border:1px solid #d8dee4;border-radius:8px;background:#fff;font:inherit;font-size:.85rem;line-height:1.3;color:#1f2933;cursor:pointer}
+.safety-hep-explorer .hep-view-option:hover{border-color:#b8c0cc;background:#f6f8fa}
+.safety-hep-explorer .hep-view-option.is-active{border-color:#0b62a4;background:#eaf2fb;color:#0b3d63;font-weight:600;box-shadow:inset 0 0 0 1px #0b62a4}
+.safety-hep-explorer .hep-view-option:focus-visible{outline:2px solid #0b62a4;outline-offset:1px}
+.safety-hep-explorer .hep-composite{margin-top:.5rem}
+.safety-hep-explorer .hep-composite-header{font-size:.85rem;color:#52616f;background:#f6f8fa;border:1px solid #e3e8ee;border-radius:8px;padding:.4rem .6rem;margin:0 0 .6rem;min-height:1.2rem}
+.safety-hep-explorer .hep-composite-header.is-active{color:#1f2933;font-weight:600;border-color:#b8c0cc;background:#eef2f6}
+.safety-hep-explorer .hep-composite-select select{padding:.25rem;font-size:.82rem}
+.safety-hep-explorer .hep-composite-select option{padding:.15rem .3rem}
+.safety-hep-explorer .hep-composite-clear{width:100%;margin-top:.35rem;padding:.25rem .45rem;border:1px solid #b8c0cc;border-radius:6px;background:#fff;font:inherit;font-size:.78rem;cursor:pointer}
+.safety-hep-explorer .hep-composite-clear:disabled{color:#9aa5b1;cursor:default}
+.safety-hep-explorer .hep-composite-legend{display:flex;flex-wrap:wrap;gap:.35rem 1rem;font-size:.8rem;color:#52616f;margin:0 0 .75rem}
+.safety-hep-explorer .hep-composite-legend .hep-legend-item{display:inline-flex;align-items:center;gap:.3rem}
+.safety-hep-explorer .hep-composite-section-title{font-size:.9rem;margin:1rem 0 .5rem;color:#1f2933}
+.safety-hep-explorer .hep-composite-edish{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:1rem}
+.safety-hep-explorer .hep-composite-panels{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;max-width:760px}
+.safety-hep-explorer .hep-composite-card{border:1px solid #d8dee4;border-radius:10px;padding:.6rem .7rem;background:#fff}
+.safety-hep-explorer .hep-composite-card h4{font-size:.82rem;margin:0 0 .4rem;color:#52616f;font-weight:600}
+.safety-hep-explorer .hep-composite-canvas{height:280px;position:relative}
+.safety-hep-explorer .hep-composite-panel-canvas{height:210px;position:relative}
+.safety-hep-explorer .hep-migration{margin-top:1.25rem}
+.safety-hep-explorer .hep-migration table{border-collapse:collapse;font-size:.82rem;background:#fff}
+.safety-hep-explorer .hep-migration th,.safety-hep-explorer .hep-migration td{border:1px solid #d8dee4;padding:.35rem .55rem;text-align:center}
+.safety-hep-explorer .hep-migration th{font-size:.72rem;text-transform:uppercase;letter-spacing:.02em;color:#52616f;font-weight:700}
+.safety-hep-explorer .hep-migration td.hep-rowhead{text-align:left;font-weight:600;color:#1f2933;white-space:nowrap}
+.safety-hep-explorer .hep-migration td.hep-total,.safety-hep-explorer .hep-migration th.hep-total{background:#f6f8fa;font-weight:700}
+.safety-hep-explorer .hep-migration caption{caption-side:top;text-align:left;font-size:.82rem;color:#52616f;margin-bottom:.35rem}
+.safety-hep-explorer .hep-concern-legend{display:flex;flex-wrap:wrap;gap:.35rem .9rem;font-size:.76rem;color:#52616f;margin:.5rem 0 0}
+.safety-hep-explorer .hep-concern-legend .hep-legend-item{display:inline-flex;align-items:center;gap:.3rem}
+.safety-hep-explorer .hep-concern-swatch{display:inline-block;width:.8rem;height:.8rem;border:1px solid #b8c0cc;border-radius:2px}`;
       document.head.append(style);
     }
     /**
@@ -19123,6 +19378,8 @@ Change in ${this.state.measureY}: ${formatDelta(point.delta_y)}`;
      */
     setSettings(settings) {
       this.settings = syncSettings7({ ...this.settings, ...settings });
+      if ("view" in settings)
+        this.state.view = this.settings.view === "composite" ? "composite" : "scatter";
       if ("x_default" in settings) this.state.measureX = this.settings.x_default;
       if ("y_default" in settings) this.state.measureY = this.settings.y_default;
       if ("visit_window" in settings) this.state.visitWindow = this.settings.visit_window;
@@ -19201,6 +19458,37 @@ Change in ${this.state.measureY}: ${formatDelta(point.delta_y)}`;
       return { min, max, dataMax };
     }
     /**
+     * Render the View selector into its own section as a visible list of options
+     * (HEP-COMP-006): one styled, clickable row per view mode with the active mode
+     * highlighted, so both the eDISH/mDISH scatter and the composite plot are
+     * always shown rather than hidden inside a dropdown.
+     * @param {Function} addSection The shell's section builder.
+     * @private
+     */
+    buildViewControl(addSection) {
+      const section = addSection("View");
+      const list = createElement("div", "hep-view-list");
+      VIEW_MODES.forEach((mode) => {
+        const active = mode.value === this.state.view;
+        const optionButton = createElement(
+          "button",
+          `hep-view-option${active ? " is-active" : ""}`,
+          mode.label
+        );
+        optionButton.type = "button";
+        optionButton.setAttribute("aria-pressed", String(active));
+        optionButton.onclick = () => {
+          const next = mode.value === "composite" ? "composite" : "scatter";
+          if (this.state.view === next) return;
+          this.state.view = next;
+          this.buildControls();
+          this.render();
+        };
+        list.append(optionButton);
+      });
+      section.append(list);
+    }
+    /**
      * Rebuild the settings/filters controls from data + state (HEP-CTRL-*). Only
      * controls with ≥2 meaningful options are rendered: the Y-measure picker is
      * dropped when a single option, Group when only None, and the R-Ratio filter
@@ -19210,71 +19498,79 @@ Change in ${this.state.measureY}: ${formatDelta(point.delta_y)}`;
     buildControls() {
       this.controls.innerHTML = "";
       const { addSection, addRow, addControl } = controlBuilders(this.controls);
+      const scatter = this.state.view !== "composite";
+      this.buildViewControl(addSection);
       const settingsParent = addSection("Settings");
-      const measureX = addControl("X-axis Measure", document.createElement("select"), settingsParent);
-      this.settings.x_options.forEach(
-        (key) => option(measureX, key, key, key === this.state.measureX)
-      );
-      measureX.onchange = () => {
-        this.state.measureX = measureX.value;
-        this.buildControls();
-        this.render();
-      };
-      if (this.settings.y_options.length > 1) {
-        const measureY = addControl(
-          "Y-axis Measure",
+      if (scatter) {
+        const measureX = addControl(
+          "X-axis Measure",
           document.createElement("select"),
           settingsParent
         );
-        this.settings.y_options.forEach(
-          (key) => option(measureY, key, key, key === this.state.measureY)
+        this.settings.x_options.forEach(
+          (key) => option(measureX, key, key, key === this.state.measureX)
         );
-        measureY.onchange = () => {
-          this.state.measureY = measureY.value;
+        measureX.onchange = () => {
+          this.state.measureX = measureX.value;
           this.buildControls();
           this.render();
         };
-      }
-      this.addCutControl(addControl, settingsParent, "measureX");
-      this.addCutControl(addControl, settingsParent, "measureY");
-      const display = addControl("Display Type", document.createElement("select"), settingsParent);
-      DISPLAY_MODES.forEach(
-        (mode) => option(display, mode.value, mode.label, mode.value === this.state.display)
-      );
-      display.onchange = () => {
-        this.state.display = display.value;
-        this.buildControls();
-        this.render();
-      };
-      const axisType = addControl("Axis Type", document.createElement("select"), settingsParent);
-      AXIS_TYPES.forEach((type) => option(axisType, type, type, type === this.state.axisType));
-      axisType.onchange = () => {
-        this.state.axisType = axisType.value;
-        this.render();
-      };
-      const pointSize = addControl("Point Size", document.createElement("select"), settingsParent);
-      POINT_SIZE_OPTIONS.forEach(
-        (value) => option(pointSize, value, value, value === this.state.pointSize)
-      );
-      pointSize.onchange = () => {
-        this.state.pointSize = pointSize.value;
-        this.render();
-      };
-      const window2 = addControl(
-        "Highlight Points Based on Timing",
-        document.createElement("input"),
-        settingsParent
-      );
-      window2.type = "number";
-      window2.min = "0";
-      window2.step = "1";
-      window2.value = this.state.visitWindow;
-      window2.onchange = () => {
-        const value = Number(window2.value);
-        this.state.visitWindow = Number.isFinite(value) && value >= 0 ? value : 0;
+        if (this.settings.y_options.length > 1) {
+          const measureY = addControl(
+            "Y-axis Measure",
+            document.createElement("select"),
+            settingsParent
+          );
+          this.settings.y_options.forEach(
+            (key) => option(measureY, key, key, key === this.state.measureY)
+          );
+          measureY.onchange = () => {
+            this.state.measureY = measureY.value;
+            this.buildControls();
+            this.render();
+          };
+        }
+        this.addCutControl(addControl, settingsParent, "measureX");
+        this.addCutControl(addControl, settingsParent, "measureY");
+        const display = addControl("Display Type", document.createElement("select"), settingsParent);
+        DISPLAY_MODES.forEach(
+          (mode) => option(display, mode.value, mode.label, mode.value === this.state.display)
+        );
+        display.onchange = () => {
+          this.state.display = display.value;
+          this.buildControls();
+          this.render();
+        };
+        const axisType = addControl("Axis Type", document.createElement("select"), settingsParent);
+        AXIS_TYPES.forEach((type) => option(axisType, type, type, type === this.state.axisType));
+        axisType.onchange = () => {
+          this.state.axisType = axisType.value;
+          this.render();
+        };
+        const pointSize = addControl("Point Size", document.createElement("select"), settingsParent);
+        POINT_SIZE_OPTIONS.forEach(
+          (value) => option(pointSize, value, value, value === this.state.pointSize)
+        );
+        pointSize.onchange = () => {
+          this.state.pointSize = pointSize.value;
+          this.render();
+        };
+        const window2 = addControl(
+          "Highlight Points Based on Timing",
+          document.createElement("input"),
+          settingsParent
+        );
+        window2.type = "number";
+        window2.min = "0";
+        window2.step = "1";
         window2.value = this.state.visitWindow;
-        this.render();
-      };
+        window2.onchange = () => {
+          const value = Number(window2.value);
+          this.state.visitWindow = Number.isFinite(value) && value >= 0 ? value : 0;
+          window2.value = this.state.visitWindow;
+          this.render();
+        };
+      }
       if (this.settings.groups.length > 1) {
         const group = addControl("Group", document.createElement("select"), settingsParent);
         this.settings.groups.forEach(
@@ -19286,7 +19582,7 @@ Change in ${this.state.measureY}: ${formatDelta(point.delta_y)}`;
         };
       }
       const filterSpecs = this.activeFilterSpecs();
-      const showRRatio = this.settings.r_ratio_filter;
+      const showRRatio = this.settings.r_ratio_filter && scatter;
       if (filterSpecs.length || showRRatio) {
         const filterParent = addSection("Filters");
         filterSpecs.forEach((filter) => {
@@ -19307,6 +19603,7 @@ Change in ${this.state.measureY}: ${formatDelta(point.delta_y)}`;
         });
         if (showRRatio) this.addRRatioControl(addRow, addControl, filterParent);
       }
+      this.compositeSelectSection = addSection("Participants");
       const reset = addControl(" ", document.createElement("button"), this.controls);
       reset.type = "button";
       reset.textContent = "Reset Chart";
@@ -19420,11 +19717,13 @@ Change in ${this.state.measureY}: ${formatDelta(point.delta_y)}`;
      * @returns {void}
      */
     render() {
-      const previousSelectedId = this.state.selectedId;
+      const carriedIds = this.participantsSelected.map(String);
       this.destroyCharts();
       this.listingWrap.innerHTML = "";
       this.legendEl.innerHTML = "";
       this.quadrantWrap.innerHTML = "";
+      this.compositeWrap.innerHTML = "";
+      this.mountCompositeSelect([]);
       this.detailWrap.innerHTML = "";
       this.detailWrap.style.display = "none";
       this.currentTableData = [];
@@ -19432,15 +19731,27 @@ Change in ${this.state.measureY}: ${formatDelta(point.delta_y)}`;
       this.listingSort = null;
       this.page = 1;
       this.state.selectedId = null;
+      this.state.hoverId = null;
+      this.scatterSelectedIds = [];
       this.participantsSelected = [];
       this.notes.innerHTML = "";
       this.mainAnnotation.textContent = "";
       this.footnote.textContent = this.baseFootnote();
+      if (this.compositeHeaderEl) {
+        this.compositeHeaderEl.textContent = COMPOSITE_HEADER_HINT;
+        this.compositeHeaderEl.classList.remove("is-active");
+      }
+      const composite = this.state.view === "composite";
+      this.setViewVisibility(composite);
       this.state.xCut = cutFor(this.state.cuts, this.state.measureX, this.state.display);
       this.state.yCut = cutFor(this.state.cuts, this.state.measureY, this.state.display);
       if (!this.cleanRows.length) {
         this.notes.innerHTML = "<span>No data selected. Provide records to draw the chart.</span>";
-        if (previousSelectedId != null) this.dispatchSelection([]);
+        if (carriedIds.length) this.dispatchSelection([]);
+        return;
+      }
+      if (composite) {
+        this.renderComposite(carriedIds);
         return;
       }
       const built = buildPoints(this.cleanRows, this.settings, this.state);
@@ -19450,7 +19761,7 @@ Change in ${this.state.measureY}: ${formatDelta(point.delta_y)}`;
       this.updateNotes();
       if (!this.points.length) {
         this.mainAnnotation.textContent = "No participants to plot for the current selection.";
-        if (previousSelectedId != null) this.dispatchSelection([]);
+        if (carriedIds.length) this.dispatchSelection([]);
         return;
       }
       const grouped = this.state.groupBy && this.state.groupBy !== GROUP_NONE2;
@@ -19460,24 +19771,35 @@ Change in ${this.state.measureY}: ${formatDelta(point.delta_y)}`;
       this.drawScatter();
       this.drawLegend();
       this.drawQuadrantSummary();
-      if (previousSelectedId != null) this.restoreSelection(previousSelectedId);
+      this.mountCompositeSelect(
+        unique6(this.points.map((point) => String(point.id))).map((id) => ({ id }))
+      );
+      if (carriedIds.length) this.restoreSelection(carriedIds);
     }
     /**
-     * Re-apply a participant selection that was live before a redraw. When the
-     * participant is still among the shown points, selectParticipant re-renders
-     * every coordinated panel — visit path, lab-over-time chart, measure summary
-     * table, and listing — in the active display units and re-announces the
-     * selection (HEP-SELECT-006); when the participant is no longer shown (for
-     * example filtered out, or dropped by the mDISH view for lacking a
-     * baseline), the already-cleared selection is confirmed to listeners with an
-     * empty participantsSelected event.
-     * @param {string|number} id The previously selected participant identifier.
+     * Re-apply the participant selection that was live before a redraw or a view
+     * switch. A single surviving participant reopens every coordinated panel —
+     * visit path, lab-over-time chart, measure summary table, and listing — in
+     * the active display units (HEP-SELECT-006); several survivors restore the
+     * multi-highlight and the Participants control without the single-participant
+     * drill-down; participants no longer shown (filtered out, or dropped by the
+     * mDISH view for lacking a baseline) fall out, and listeners always hear the
+     * surviving selection.
+     * @param {Array<string|number>} ids The previously selected participant ids.
      * @private
      */
-    restoreSelection(id) {
-      const shown = this.points.some((point) => String(point.id) === String(id));
-      if (shown) this.selectParticipant(id);
-      else this.dispatchSelection([]);
+    restoreSelection(ids) {
+      const shownIds = new Set(this.points.map((point) => String(point.id)));
+      const survivors = ids.map(String).filter((id) => shownIds.has(id));
+      if (survivors.length === 1) {
+        this.selectParticipant(survivors[0]);
+        return;
+      }
+      this.scatterSelectedIds = survivors;
+      this.syncSelectControl(survivors);
+      if (this.chart) this.chart.update("none");
+      this.updateScatterHeader();
+      this.dispatchSelection([...survivors]);
     }
     /**
      * Refresh the shown/total participant counts, the removed-record note, and
@@ -19494,11 +19816,65 @@ Change in ${this.state.measureY}: ${formatDelta(point.delta_y)}`;
       this.notes.innerHTML = `<span>${shown} of ${totalParticipants} participants shown (${pct}%).</span>` + removedNote + droppedNote;
     }
     /**
-     * Whether a point is the currently selected participant.
+     * The scatter participant being traced: the hovered participant takes priority
+     * over the clicked (sticky) selection, or null when neither is active — the
+     * same hover-over-select rule the composite view uses (HEP-SELECT-001).
      * @private
      */
-    isSelected(point) {
-      return this.state.selectedId != null && String(point.id) === String(this.state.selectedId);
+    scatterActiveId() {
+      return this.state.hoverId != null ? this.state.hoverId : this.state.selectedId;
+    }
+    /**
+     * Whether any scatter participant is currently traced — hovered, or in the
+     * control-driven multi-highlight (HEP-SELECT-001, HEP-COMP-007).
+     * @private
+     */
+    anyScatterActive() {
+      return this.state.hoverId != null || this.scatterSelectedIds.length > 0;
+    }
+    /**
+     * Whether a scatter point is currently traced: hovered, or one of the
+     * Participants-control multi-highlight (a click selection is always mirrored
+     * there) (HEP-SELECT-001).
+     * @private
+     */
+    isScatterActive(point) {
+      if (!point) return false;
+      const id = String(point.id);
+      if (this.state.hoverId != null && String(this.state.hoverId) === id) return true;
+      return this.scatterSelectedIds.includes(id);
+    }
+    /**
+     * Whether the given participant id is the sticky (clicked) selection.
+     * @private
+     */
+    isSelectedId(id) {
+      return this.state.selectedId != null && String(this.state.selectedId) === String(id);
+    }
+    /**
+     * The shared annotation text for a traced participant, identical in both views
+     * (HEP-SELECT-001, HEP-COMP-007): "Participant {id} selected." when it is the
+     * clicked selection, else "Participant {id}" for a transient hover.
+     * @private
+     */
+    participantAnnotationText(id, selected) {
+      return `Participant ${id}${selected ? " selected." : ""}`;
+    }
+    /**
+     * Set the transient hovered scatter participant and restyle the scatter +
+     * overlay annotation when it changes, without triggering the drill-down (which
+     * stays a click action). The overlay follows the hover, then reverts to the
+     * sticky selection when the pointer leaves (HEP-SELECT-001).
+     * @private
+     */
+    setScatterHover(id) {
+      const norm = id ?? null;
+      if (String(norm ?? "") === String(this.state.hoverId ?? "")) return;
+      this.state.hoverId = norm;
+      if (this.chart) this.chart.update("none");
+      const activeId = this.scatterActiveId();
+      this.mainAnnotation.textContent = activeId == null ? "" : this.participantAnnotationText(activeId, this.isSelectedId(activeId));
+      this.updateScatterHeader();
     }
     /**
      * The palette color for a point given the active grouping (HEP-CTRL-009).
@@ -19543,22 +19919,23 @@ Change in ${this.state.measureY}: ${formatDelta(point.delta_y)}`;
         this.state.yCut,
         type
       );
+      const anyActive = () => this.anyScatterActive();
+      const isActive = (point) => this.isScatterActive(point);
       const fill = (ctx) => {
         const point = points[ctx.dataIndex];
         if (!point) return "rgba(0,0,0,0)";
-        const selected = this.isSelected(point);
-        if (!point.withinWindow && !selected) return "rgba(0,0,0,0)";
-        const color2 = selected ? SELECTION_COLOR2 : this.colorFor(point);
-        const opacity = this.state.selectedId != null ? selected ? 1 : 0.15 : 0.75;
+        const active = isActive(point);
+        if (!point.withinWindow && !active) return "rgba(0,0,0,0)";
+        const color2 = this.colorFor(point);
+        const opacity = anyActive() ? active ? 1 : HIGHLIGHT_DIM_FILL : 0.75;
         return hexToRgba3(color2, opacity);
       };
       const border = (ctx) => {
         const point = points[ctx.dataIndex];
         if (!point) return "rgba(0,0,0,0)";
-        const selected = this.isSelected(point);
-        const color2 = selected ? SELECTION_COLOR2 : this.colorFor(point);
-        const opacity = this.state.selectedId != null ? selected ? 1 : 0.25 : 0.9;
-        return hexToRgba3(color2, opacity);
+        if (isActive(point)) return SELECTION_COLOR2;
+        const opacity = anyActive() ? HIGHLIGHT_DIM_BORDER : 0.9;
+        return hexToRgba3(this.colorFor(point), opacity);
       };
       const chart = new Chart(this.canvas.getContext("2d"), {
         type: "scatter",
@@ -19569,8 +19946,8 @@ Change in ${this.state.measureY}: ${formatDelta(point.delta_y)}`;
               data,
               pointBackgroundColor: fill,
               pointBorderColor: border,
-              pointBorderWidth: (ctx) => this.isSelected(points[ctx.dataIndex]) ? 2.5 : 1.25,
-              pointRadius: (ctx) => this.radiusFor(points[ctx.dataIndex]) + (this.isSelected(points[ctx.dataIndex]) ? 2 : 0),
+              pointBorderWidth: (ctx) => isActive(points[ctx.dataIndex]) ? HIGHLIGHT_BORDER_WIDTH : 1.25,
+              pointRadius: (ctx) => this.radiusFor(points[ctx.dataIndex]) + (isActive(points[ctx.dataIndex]) ? HIGHLIGHT_RADIUS_BOOST : 0),
               pointHoverRadius: (ctx) => this.radiusFor(points[ctx.dataIndex]) + 2
             },
             {
@@ -19609,6 +19986,8 @@ Change in ${this.state.measureY}: ${formatDelta(point.delta_y)}`;
           onHover: (event, active) => {
             const target = event?.native?.target;
             if (target) target.style.cursor = active.length ? "pointer" : "default";
+            const hit = active.find((element) => element.datasetIndex === 0);
+            this.setScatterHover(hit ? points[hit.index].id : null);
           },
           onClick: (event, active) => {
             const hit = active.find((element) => element.datasetIndex === 0);
@@ -19674,6 +20053,674 @@ Change in ${this.state.measureY}: ${formatDelta(point.delta_y)}`;
       this.quadrantWrap.append(table);
     }
     /**
+     * Show either the scatter chrome (single canvas, legend, quadrant summary) or
+     * the composite container, per the active view (HEP-COMP-006).
+     * @private
+     */
+    setViewVisibility(composite) {
+      this.chartWrap.style.display = composite ? "none" : "";
+      this.legendEl.style.display = composite ? "none" : "flex";
+      this.quadrantWrap.style.display = composite ? "none" : "";
+      this.compositeWrap.style.display = composite ? "" : "none";
+    }
+    /**
+     * Render the composite plot into the composite container (HEP-COMP-001..006):
+     * a baseline-quadrant legend, the pretreatment and peak on-treatment eDISH
+     * panels (each point colored/shaped by its baseline quadrant so migration is
+     * visible), the four-panel ×Baseline shift plot (one panel per on-treatment
+     * quadrant, with 1×/3×/5× reference lines), the pretreatment × on-treatment
+     * migration table with concern coding, and the by-arm concern/benefit
+     * summary. Degrades to an explanatory note when no participant in the current
+     * selection has a usable baseline and on-treatment ALT and total bilirubin.
+     * @param {Array<string|number>} [carriedIds] A live selection to carry into
+     *   the composite view (HEP-SELECT-006): the participants that are part of
+     *   the composite cohort arrive selected; when none survive the selection is
+     *   cleared and listeners notified.
+     * @private
+     */
+    renderComposite(carriedIds = []) {
+      const { subjects, excluded } = buildCompositeSubjects(this.cleanRows, this.settings);
+      const shown = applyFilters6(subjects, this.state.filters);
+      this.compositeCharts = [];
+      this.compositeSubjectsShown = shown;
+      this.compositeHoverId = null;
+      this.compositeSelectedIds = [];
+      this.compositeSelectEl = null;
+      this.compositeClearBtn = null;
+      this.mountCompositeSelect(shown);
+      const totalParticipants = unique6(this.cleanRows.map((row) => row[this.settings.id_col])).length;
+      const excludedNote = excluded ? `<span class="sv-warning">${excluded} participant${excluded > 1 ? "s" : ""} excluded (missing baseline or on-treatment ALT/total bilirubin).</span>` : "";
+      this.notes.innerHTML = `<span>${shown.length} of ${totalParticipants} participants shown in the composite plot.</span>` + excludedNote;
+      this.footnote.textContent = "Composite plot (Tesfaldet et al., Drug Safety 2024): symbol color and shape mark each participant\u2019s baseline (pretreatment) eDISH quadrant, carried through every panel so migration is visible. \xD7Baseline = peak on-treatment value \xF7 the participant\u2019s own baseline.";
+      if (!shown.length) {
+        const note = createElement("div", "sv-warning");
+        note.textContent = "The composite plot needs baseline and on-treatment ALT and total bilirubin for at least one participant. No participant in the current selection qualifies.";
+        this.compositeWrap.append(note);
+        if (carriedIds.length) this.dispatchSelection([]);
+        return;
+      }
+      this.compositeWrap.append(this.buildCompositeLegend());
+      this.compositeWrap.append(
+        createElement("h3", "hep-composite-section-title", "Baseline \u2192 on-treatment eDISH (\xD7ULN)")
+      );
+      const edishRow = createElement("div", "hep-composite-edish");
+      edishRow.append(this.buildEdishCard("Pretreatment (baseline)", shown, "pretreat"));
+      edishRow.append(this.buildEdishCard("Peak on-treatment", shown, "ontreat"));
+      this.compositeWrap.append(edishRow);
+      this.compositeWrap.append(
+        createElement(
+          "h3",
+          "hep-composite-section-title",
+          "Peak on-treatment relative to own baseline (\xD7Baseline)"
+        )
+      );
+      this.compositeWrap.append(this.buildCompositePanels(shown));
+      this.compositeWrap.append(this.buildMigrationTable(shown));
+      this.compositeWrap.append(this.buildByArmSummary(shown));
+      if (carriedIds.length) {
+        const shownIds = new Set(shown.map((subject) => String(subject.id)));
+        const survivors = carriedIds.map(String).filter((id) => shownIds.has(id));
+        if (survivors.length) {
+          this.compositeSelectedIds = survivors;
+          this.afterCompositeSelectionChange();
+        } else {
+          this.dispatchSelection([]);
+        }
+      }
+    }
+    /**
+     * The baseline-quadrant legend for the composite plot: the four quadrants,
+     * each with its coded color and symbol (HEP-COMP-001).
+     * @private
+     */
+    buildCompositeLegend() {
+      const legend = createElement("div", "hep-composite-legend");
+      legend.append(createElement("strong", null, "Baseline quadrant:"));
+      COMPOSITE_QUADRANTS.forEach((quadrant) => {
+        const style = QUADRANT_STYLE[quadrant];
+        const item = createElement("span", "hep-legend-item");
+        const swatch = createElement("span");
+        swatch.style.cssText = `display:inline-block;width:.7rem;height:.7rem;border-radius:${style.pointStyle === "circle" ? "50%" : "2px"};background:${style.color}`;
+        item.append(swatch, document.createTextNode(quadrant));
+        legend.append(item);
+      });
+      return legend;
+    }
+    /**
+     * Log-log Chart.js scale configs for the composite eDISH scatters, widened to
+     * keep the ALT 3×ULN / BILI 2×ULN cut-lines in view.
+     * @private
+     */
+    compositeEdishScales(xValues, yValues) {
+      const xDomain = edishDomain(xValues, ALT_ULN_CUT, "log");
+      const yDomain = edishDomain(yValues, BILI_ULN_CUT, "log");
+      return {
+        x: {
+          type: "logarithmic",
+          min: xDomain[0],
+          max: xDomain[1],
+          title: { display: true, text: "ALT [\xD7ULN]" },
+          grid: { color: "rgba(148, 163, 184, 0.25)" }
+        },
+        y: {
+          type: "logarithmic",
+          min: yDomain[0],
+          max: yDomain[1],
+          title: { display: true, text: "Total Bilirubin [\xD7ULN]" },
+          grid: { color: "rgba(148, 163, 184, 0.25)" }
+        }
+      };
+    }
+    /**
+     * Build one composite eDISH scatter card (pretreatment or peak on-treatment):
+     * peak/baseline ALT (x) vs total bilirubin (y) in ×ULN, each point colored and
+     * shaped by its baseline quadrant, with the ALT 3×ULN / BILI 2×ULN cut-lines
+     * (HEP-COMP-001, HEP-COMP-002).
+     * @private
+     */
+    buildEdishCard(title, subjects, which) {
+      const card = createElement("div", "hep-composite-card");
+      card.append(createElement("h4", null, title));
+      const wrap = createElement("div", "hep-composite-canvas");
+      const canvas = document.createElement("canvas");
+      wrap.append(canvas);
+      card.append(wrap);
+      const xKey = which === "pretreat" ? "baselineAltULN" : "peakAltULN";
+      const yKey = which === "pretreat" ? "baselineBiliULN" : "peakBiliULN";
+      const data = subjects.map((subject) => ({ x: subject[xKey], y: subject[yKey] }));
+      const chart = new Chart(canvas.getContext("2d"), {
+        type: "scatter",
+        data: {
+          datasets: [{ data, ...this.compositeDatasetStyle(subjects, 5) }]
+        },
+        options: {
+          maintainAspectRatio: false,
+          responsive: true,
+          animation: false,
+          plugins: {
+            legend: { display: false },
+            tooltip: this.compositeTooltipConfig(subjects, which)
+          },
+          scales: this.compositeEdishScales(
+            subjects.map((subject) => subject[xKey]),
+            subjects.map((subject) => subject[yKey])
+          ),
+          ...this.compositeInteractionOptions()
+        },
+        plugins: [
+          referenceLinePlugin({
+            vLines: [{ value: ALT_ULN_CUT, label: `${ALT_ULN_CUT}\xD7ULN` }],
+            hLines: [{ value: BILI_ULN_CUT, label: `${BILI_ULN_CUT}\xD7ULN` }]
+          })
+        ]
+      });
+      this.registerCompositeChart(chart, subjects, canvas);
+      return card;
+    }
+    /**
+     * A log-log ×Baseline domain over a set of values, always including the
+     * 1×/3×/5× reference lines and padded so no point sits on the frame.
+     * @private
+     */
+    blnDomain(values) {
+      const positives = [...values.filter(Number.isFinite), ...BLN_LINES].filter((v) => v > 0);
+      if (!positives.length) return [0.5, 5];
+      const min = Math.min(...positives, 0.5);
+      const max = Math.max(...positives);
+      return [min / 1.3, max * 1.3];
+    }
+    /**
+     * Build the four-panel ×Baseline shift plot (HEP-COMP-003): one panel per
+     * on-treatment quadrant, arranged in the eDISH spatial layout (Cholestasis
+     * upper-left, Hy's Law upper-right, Normal & NN lower-left, Temple's Corollary
+     * lower-right, matching the paper's Figs 4–6). Each point is the participant's
+     * peak ALT vs total bilirubin as multiples of its own baseline, colored/shaped
+     * by baseline quadrant, over shared axes with 1×/3×/5× reference lines.
+     * @private
+     */
+    buildCompositePanels(subjects) {
+      const grid = createElement("div", "hep-composite-panels");
+      const order = ["Cholestasis", "Hy's Law", "Normal & NN", "Temple's Corollary"];
+      const xDomain = this.blnDomain(subjects.map((subject) => subject.peakAltBLN));
+      const yDomain = this.blnDomain(subjects.map((subject) => subject.peakBiliBLN));
+      const refLines = BLN_LINES.map((value) => ({ value, label: `${value}\xD7` }));
+      order.forEach((quadrant) => {
+        const members = subjects.filter((subject) => subject.onTreatQuadrant === quadrant);
+        const card = createElement("div", "hep-composite-card");
+        card.append(createElement("h4", null, `${quadrant} (${members.length})`));
+        const wrap = createElement("div", "hep-composite-panel-canvas");
+        const canvas = document.createElement("canvas");
+        wrap.append(canvas);
+        card.append(wrap);
+        const data = members.map((subject) => ({ x: subject.peakAltBLN, y: subject.peakBiliBLN }));
+        const chart = new Chart(canvas.getContext("2d"), {
+          type: "scatter",
+          data: {
+            datasets: [{ data, ...this.compositeDatasetStyle(members, 4.5) }]
+          },
+          options: {
+            maintainAspectRatio: false,
+            responsive: true,
+            animation: false,
+            plugins: {
+              legend: { display: false },
+              tooltip: this.compositeTooltipConfig(members, "bln")
+            },
+            scales: {
+              x: {
+                type: "logarithmic",
+                min: xDomain[0],
+                max: xDomain[1],
+                title: { display: true, text: "ALT [\xD7Baseline]" },
+                grid: { color: "rgba(148, 163, 184, 0.2)" }
+              },
+              y: {
+                type: "logarithmic",
+                min: yDomain[0],
+                max: yDomain[1],
+                title: { display: true, text: "TB [\xD7Baseline]" },
+                grid: { color: "rgba(148, 163, 184, 0.2)" }
+              }
+            },
+            ...this.compositeInteractionOptions()
+          },
+          plugins: [referenceLinePlugin({ vLines: refLines, hLines: refLines })]
+        });
+        this.registerCompositeChart(chart, members, canvas);
+        grid.append(card);
+      });
+      return grid;
+    }
+    /**
+     * Tooltip line for a composite point: the participant id, the panel-relevant
+     * standardized values, and the baseline → on-treatment migration.
+     * @private
+     */
+    compositeTooltip(subject, which) {
+      if (!subject) return "";
+      if (which === "bln") {
+        return `${subject.id}: ALT ${formatNumber4(subject.peakAltBLN)}\xD7BLN, TB ${formatNumber4(subject.peakBiliBLN)}\xD7BLN (baseline ${subject.pretreatQuadrant})`;
+      }
+      const alt = which === "pretreat" ? subject.baselineAltULN : subject.peakAltULN;
+      const bili = which === "pretreat" ? subject.baselineBiliULN : subject.peakBiliULN;
+      return `${subject.id}: ALT ${formatNumber4(alt)}\xD7ULN, TB ${formatNumber4(bili)}\xD7ULN \u2014 ${subject.pretreatQuadrant} \u2192 ${subject.onTreatQuadrant}`;
+    }
+    /**
+     * Tooltip config for a composite chart (HEP-COMP-007): when more than two
+     * points overlap under the cursor (dense panels), the tooltip collapses to a
+     * "N participants" count instead of stacking a line per participant, so the
+     * box stays small and does not cover the points beneath it. With one or two
+     * points it lists each participant's detail line.
+     * @param {Object[]} subjects The subjects backing this chart's single dataset.
+     * @param {string} which The panel kind ('pretreat' | 'ontreat' | 'bln').
+     * @private
+     */
+    compositeTooltipConfig(subjects, which) {
+      let itemCount = 0;
+      return {
+        filter: (item, index, items) => {
+          itemCount = items.length;
+          return items.length > 2 ? index === 0 : true;
+        },
+        callbacks: {
+          title: () => "",
+          label: (ctx) => itemCount > 2 ? `${itemCount} participants` : this.compositeTooltip(subjects[ctx.dataIndex], which)
+        }
+      };
+    }
+    /**
+     * Whether any participant is currently traced — hovered, or in the sticky
+     * multi-selection (HEP-COMP-007).
+     * @private
+     */
+    anyCompositeActive() {
+      return this.compositeHoverId != null || this.compositeSelectedIds.length > 0;
+    }
+    /**
+     * Whether a composite subject is currently traced: hovered, or one of the
+     * clicked multi-selection (HEP-COMP-007).
+     * @private
+     */
+    compositeIsActive(subject) {
+      if (!subject) return false;
+      const id = String(subject.id);
+      if (this.compositeHoverId != null && String(this.compositeHoverId) === id) return true;
+      return this.compositeSelectedIds.includes(id);
+    }
+    /**
+     * Scriptable point styling shared by every composite chart (HEP-COMP-007): each
+     * point keeps its baseline-quadrant color and shape; when a participant is
+     * traced, that participant's point(s) render full-opacity with a dark ring and
+     * a larger radius while every other point dims, so the traced participant
+     * stands out in each panel it appears in. With no trace active the styling is
+     * the module's default (0.8 opacity, quadrant-colored border).
+     * @param {Object[]} subjects The subjects backing this chart's single dataset.
+     * @param {number} baseRadius The unemphasized point radius.
+     * @private
+     */
+    compositeDatasetStyle(subjects, baseRadius) {
+      return {
+        pointStyle: subjects.map((subject) => QUADRANT_STYLE[subject.pretreatQuadrant].pointStyle),
+        pointBackgroundColor: (ctx) => {
+          const subject = subjects[ctx.dataIndex];
+          if (!subject) return "rgba(0, 0, 0, 0)";
+          const color2 = QUADRANT_STYLE[subject.pretreatQuadrant].color;
+          if (!this.anyCompositeActive()) return hexToRgba3(color2, 0.8);
+          return hexToRgba3(color2, this.compositeIsActive(subject) ? 1 : HIGHLIGHT_DIM_FILL);
+        },
+        pointBorderColor: (ctx) => {
+          const subject = subjects[ctx.dataIndex];
+          if (!subject) return "rgba(0, 0, 0, 0)";
+          const color2 = QUADRANT_STYLE[subject.pretreatQuadrant].color;
+          if (this.compositeIsActive(subject)) return SELECTION_COLOR2;
+          return !this.anyCompositeActive() ? color2 : hexToRgba3(color2, HIGHLIGHT_DIM_BORDER);
+        },
+        pointBorderWidth: (ctx) => this.compositeIsActive(subjects[ctx.dataIndex]) ? HIGHLIGHT_BORDER_WIDTH : 1,
+        pointRadius: (ctx) => baseRadius + (this.compositeIsActive(subjects[ctx.dataIndex]) ? HIGHLIGHT_RADIUS_BOOST : 0),
+        pointHoverRadius: baseRadius + 2
+      };
+    }
+    /**
+     * The hover/click handlers shared by every composite chart (HEP-COMP-007):
+     * hovering a point traces its participant everywhere; clicking a point toggles
+     * that participant in the multi-selection; clicking empty space clears the
+     * selection. Chart.js passes the chart as the THIRD handler argument (the
+     * active elements carry no chart reference), so the backing subjects are
+     * looked up from that chart.
+     * @private
+     */
+    compositeInteractionOptions() {
+      const idAt = (chart, element) => {
+        const subjects = chart && chart.$compositeSubjects;
+        const subject = subjects && element && subjects[element.index];
+        return subject ? subject.id : null;
+      };
+      return {
+        onHover: (event, active, chart) => {
+          const target = event?.native?.target;
+          if (target) target.style.cursor = active.length ? "pointer" : "default";
+          this.setCompositeHover(active.length ? idAt(chart, active[0]) : null);
+        },
+        onClick: (event, active, chart) => {
+          if (!active.length) {
+            this.clearCompositeSelection();
+            return;
+          }
+          const id = idAt(chart, active[0]);
+          if (id != null) this.toggleCompositeSelection(id);
+        }
+      };
+    }
+    /**
+     * Register a freshly built composite chart for teardown, resize, and
+     * cross-linking: it joins this.charts and this.compositeCharts, remembers its
+     * backing subjects for the interaction handlers, and clears the hover trace
+     * when the pointer leaves its canvas (HEP-COMP-007).
+     * @private
+     */
+    registerCompositeChart(chart, subjects, canvas) {
+      chart.$compositeSubjects = subjects;
+      this.charts.push(chart);
+      this.compositeCharts.push(chart);
+      canvas.addEventListener("pointerleave", () => this.setCompositeHover(null));
+    }
+    /**
+     * Mount the participant multi-select into the sidebar's Participants section
+     * (HEP-COMP-007): the section is created by buildControls (composite view
+     * only) and filled here once the shown subjects are known; with nothing shown
+     * the whole section is hidden.
+     * @param {Object[]} shown The shown composite subjects.
+     * @private
+     */
+    mountCompositeSelect(shown) {
+      const section = this.compositeSelectSection;
+      if (!section) return;
+      [...section.querySelectorAll(".sv-control")].forEach((el) => el.remove());
+      section.style.display = shown.length ? "" : "none";
+      if (shown.length) section.append(this.buildCompositeSelect(shown));
+    }
+    /**
+     * The active view's sticky participant selection: the composite
+     * multi-selection, or the scatter multi-highlight (HEP-SELECT-001,
+     * HEP-COMP-007).
+     * @private
+     */
+    activeSelectedIds() {
+      return this.state.view === "composite" ? this.compositeSelectedIds : this.scatterSelectedIds;
+    }
+    /**
+     * Build the participant multi-select dropdown for the sidebar's Participants
+     * section, shared by both views (HEP-SELECT-001, HEP-COMP-007): one option
+     * per shown participant, its selected options mirroring the view's sticky
+     * selection, plus a Clear selection button (disabled while nothing is
+     * selected) that resets the whole selection. Editing the select drives the
+     * highlight, and clicking points keeps it in sync.
+     * @param {Object[]} shown The shown participants ({id} each).
+     * @private
+     */
+    buildCompositeSelect(shown) {
+      const wrap = createElement("div", "hep-composite-select sv-control");
+      wrap.append(createElement("label", null, "Selected participants"));
+      const select = document.createElement("select");
+      select.multiple = true;
+      select.size = Math.min(8, Math.max(3, shown.length));
+      shown.forEach((subject) => option(select, String(subject.id), String(subject.id), false));
+      select.onchange = () => {
+        const ids = [...select.selectedOptions].map((opt) => opt.value);
+        if (this.state.view === "composite") {
+          this.compositeSelectedIds = ids;
+          this.afterCompositeSelectionChange();
+        } else {
+          this.applyScatterControlSelection(ids);
+        }
+      };
+      this.compositeSelectEl = select;
+      wrap.append(select);
+      const clear = document.createElement("button");
+      clear.type = "button";
+      clear.className = "hep-composite-clear";
+      clear.textContent = "Clear selection";
+      clear.disabled = !this.activeSelectedIds().length;
+      clear.onclick = () => this.state.view === "composite" ? this.clearCompositeSelection() : this.clearSelection();
+      this.compositeClearBtn = clear;
+      wrap.append(clear);
+      return wrap;
+    }
+    /**
+     * Mirror a view's sticky selection into the shared Participants control: the
+     * dropdown's selected options and the Clear button's enabled state
+     * (HEP-SELECT-001, HEP-COMP-007).
+     * @param {string[]} ids The view's selected participant ids.
+     * @private
+     */
+    syncSelectControl(ids) {
+      if (this.compositeSelectEl) {
+        const set2 = new Set(ids.map(String));
+        [...this.compositeSelectEl.options].forEach((opt) => {
+          opt.selected = set2.has(opt.value);
+        });
+      }
+      if (this.compositeClearBtn) this.compositeClearBtn.disabled = !ids.length;
+    }
+    /**
+     * Set the transient hovered participant and restyle the panels + header when it
+     * changes (HEP-COMP-007).
+     * @private
+     */
+    setCompositeHover(id) {
+      const norm = id == null ? null : String(id);
+      if (String(norm ?? "") === String(this.compositeHoverId ?? "")) return;
+      this.compositeHoverId = norm;
+      this.refreshCompositeHighlight();
+    }
+    /**
+     * Toggle a participant in the click-driven multi-selection (HEP-COMP-007).
+     * @private
+     */
+    toggleCompositeSelection(id) {
+      const key = String(id);
+      const index = this.compositeSelectedIds.indexOf(key);
+      if (index >= 0) this.compositeSelectedIds.splice(index, 1);
+      else this.compositeSelectedIds.push(key);
+      this.afterCompositeSelectionChange();
+    }
+    /**
+     * Clear the whole multi-selection (e.g. a click on empty plot space)
+     * (HEP-COMP-007).
+     * @private
+     */
+    clearCompositeSelection() {
+      if (!this.compositeSelectedIds.length) return;
+      this.compositeSelectedIds = [];
+      this.afterCompositeSelectionChange();
+    }
+    /**
+     * Sync the dropdown and its Clear selection button to the current
+     * multi-selection, restyle the panels + header, and dispatch the
+     * participantsSelected event so host apps stay in sync (HEP-COMP-007,
+     * HEP-API-003).
+     * @private
+     */
+    afterCompositeSelectionChange() {
+      this.syncSelectControl(this.compositeSelectedIds);
+      this.refreshCompositeHighlight();
+      this.dispatchSelection([...this.compositeSelectedIds]);
+    }
+    /**
+     * Restyle every composite chart to the current trace and refresh the header.
+     * Uses Chart.js's no-animation update so the highlight tracks the pointer
+     * without flicker (HEP-COMP-007).
+     * @private
+     */
+    refreshCompositeHighlight() {
+      this.compositeCharts.forEach((chart) => chart.update("none"));
+      this.updateCompositeHeader();
+    }
+    /**
+     * Update the shared participant-trace header from a view's hover + selection:
+     * a hover names that participant (marked selected when it is also in the
+     * selection), a single selection reads "Participant X selected.", several are
+     * counted, and the idle hint returns when nothing is traced (HEP-SELECT-001,
+     * HEP-COMP-007).
+     * @param {string|number|null} hoverId The view's transient hovered id.
+     * @param {string[]} selected The view's sticky selected ids.
+     * @private
+     */
+    updateTraceHeader(hoverId, selected) {
+      if (!this.compositeHeaderEl) return;
+      let text;
+      let active = true;
+      if (hoverId != null) {
+        text = this.participantAnnotationText(hoverId, selected.includes(String(hoverId)));
+      } else if (selected.length === 1) {
+        text = this.participantAnnotationText(selected[0], true);
+      } else if (selected.length > 1) {
+        text = `${selected.length} participants selected.`;
+      } else {
+        text = COMPOSITE_HEADER_HINT;
+        active = false;
+      }
+      this.compositeHeaderEl.textContent = text;
+      this.compositeHeaderEl.classList.toggle("is-active", active);
+    }
+    /**
+     * Refresh the shared trace header from the composite view's hover +
+     * multi-selection (HEP-COMP-007).
+     * @private
+     */
+    updateCompositeHeader() {
+      this.updateTraceHeader(this.compositeHoverId, this.compositeSelectedIds);
+    }
+    /**
+     * Refresh the shared trace header from the scatter view's hover +
+     * multi-highlight (HEP-SELECT-001).
+     * @private
+     */
+    updateScatterHeader() {
+      this.updateTraceHeader(this.state.hoverId, this.scatterSelectedIds);
+    }
+    /**
+     * Build the pretreatment × on-treatment migration table (HEP-COMP-004): counts
+     * with row/column totals, each interior cell shaded by its level of DILI
+     * concern (red/yellow/green/gray), plus the concern legend.
+     * @private
+     */
+    buildMigrationTable(subjects) {
+      const wrap = createElement("div", "hep-migration");
+      const matrix = migrationMatrix(subjects);
+      const table = createElement("table");
+      table.append(
+        createElement(
+          "caption",
+          null,
+          "Migration table \u2014 pretreatment (rows) \xD7 on-treatment (columns) quadrant counts"
+        )
+      );
+      const thead = document.createElement("thead");
+      const headRow = document.createElement("tr");
+      headRow.append(createElement("th", null, "Baseline \u2193 / On-treatment \u2192"));
+      COMPOSITE_QUADRANTS.forEach((quadrant) => headRow.append(createElement("th", null, quadrant)));
+      headRow.append(createElement("th", "hep-total", "Total"));
+      thead.append(headRow);
+      table.append(thead);
+      const tbody = document.createElement("tbody");
+      COMPOSITE_QUADRANTS.forEach((pre) => {
+        const tr = document.createElement("tr");
+        tr.append(createElement("td", "hep-rowhead", pre));
+        COMPOSITE_QUADRANTS.forEach((post) => {
+          const td = createElement("td", null, String(matrix.counts[pre][post]));
+          td.style.background = CONCERN_COLORS[concernOf(pre, post)];
+          tr.append(td);
+        });
+        tr.append(createElement("td", "hep-total", String(matrix.rowTotals[pre])));
+        tbody.append(tr);
+      });
+      const totalRow = document.createElement("tr");
+      totalRow.append(createElement("td", "hep-rowhead hep-total", "Total"));
+      COMPOSITE_QUADRANTS.forEach(
+        (post) => totalRow.append(createElement("td", "hep-total", String(matrix.colTotals[post])))
+      );
+      totalRow.append(createElement("td", "hep-total", String(matrix.total)));
+      tbody.append(totalRow);
+      table.append(tbody);
+      wrap.append(table);
+      wrap.append(this.buildConcernLegend());
+      return wrap;
+    }
+    /**
+     * The concern color legend for the migration table (HEP-COMP-004).
+     * @private
+     */
+    buildConcernLegend() {
+      const legend = createElement("div", "hep-concern-legend");
+      const items = [
+        ["red", "Migration of concern"],
+        ["yellow", "Migration of potential concern"],
+        ["green", "Migration of no concern (potential benefit)"],
+        ["gray", "No migration"]
+      ];
+      items.forEach(([key, label]) => {
+        const item = createElement("span", "hep-legend-item");
+        const swatch = createElement("span", "hep-concern-swatch");
+        swatch.style.background = CONCERN_COLORS[key];
+        item.append(swatch, document.createTextNode(label));
+        legend.append(item);
+      });
+      return legend;
+    }
+    /**
+     * Build the by-arm concern/benefit summary table (HEP-COMP-005): per value of
+     * the active Group column (or all participants when no grouping), the count of
+     * subjects whose migration is a concern (red), potential concern (yellow), no
+     * concern / benefit (green), or no migration (gray), with the arm total.
+     * @private
+     */
+    buildByArmSummary(subjects) {
+      const armCol = this.state.groupBy && this.state.groupBy !== GROUP_NONE2 ? this.state.groupBy : null;
+      const armLabel = armCol ? (this.settings.groups.find((group) => group.value_col === armCol) || {}).label || armCol : null;
+      const rows = byArmSummary(subjects, armCol);
+      const wrap = createElement("div", "hep-migration");
+      const table = createElement("table");
+      table.append(
+        createElement(
+          "caption",
+          null,
+          armCol ? `Concern vs. benefit summary by ${armLabel}` : "Concern vs. benefit summary (all participants)"
+        )
+      );
+      const thead = document.createElement("thead");
+      const headRow = document.createElement("tr");
+      [
+        armCol ? armLabel : "Group",
+        "Concern",
+        "Potential concern",
+        "No concern / benefit",
+        "No migration",
+        "Total"
+      ].forEach((label) => headRow.append(createElement("th", null, label)));
+      thead.append(headRow);
+      table.append(thead);
+      const tbody = document.createElement("tbody");
+      const cell2 = (count, key) => {
+        const td = createElement("td", null, String(count));
+        td.style.background = CONCERN_COLORS[key];
+        return td;
+      };
+      rows.forEach((row) => {
+        const tr = document.createElement("tr");
+        tr.append(createElement("td", "hep-rowhead", String(row.arm)));
+        tr.append(cell2(row.red, "red"));
+        tr.append(cell2(row.yellow, "yellow"));
+        tr.append(cell2(row.green, "green"));
+        tr.append(cell2(row.gray, "gray"));
+        tr.append(createElement("td", "hep-total", String(row.total)));
+        tbody.append(tr);
+      });
+      table.append(tbody);
+      wrap.append(table);
+      return wrap;
+    }
+    /**
      * The selected participant's cleaned lab records, augmented with the derived
      * display columns the linked listing shows.
      * @private
@@ -19696,6 +20743,8 @@ Change in ${this.state.measureY}: ${formatDelta(point.delta_y)}`;
      */
     selectParticipant(id) {
       this.state.selectedId = id;
+      this.scatterSelectedIds = [String(id)];
+      this.syncSelectControl(this.scatterSelectedIds);
       if (this.chart) {
         const path = visitPathSeries(this.cleanRows, id, this.settings, this.state);
         this.chart.data.datasets[1].data = path.map((entry) => ({ x: entry.x, y: entry.y }));
@@ -19707,18 +20756,20 @@ Change in ${this.state.measureY}: ${formatDelta(point.delta_y)}`;
       this.page = 1;
       renderListing(this);
       this.drawDetail(id);
-      this.mainAnnotation.textContent = `Participant ${id} selected.`;
-      this.footnote.textContent = `Participant ${id} selected.`;
+      const annotation = this.participantAnnotationText(id, true);
+      this.mainAnnotation.textContent = annotation;
+      this.footnote.textContent = annotation;
+      this.updateScatterHeader();
       this.dispatchSelection([id]);
     }
     /**
-     * Clear any participant selection: erase the visit-path overlay, close the
-     * detail panels and listing, and restore the base annotation/footnote
-     * (HEP-SELECT-007).
-     * @returns {void}
+     * Close the single-participant drill-down: erase the visit-path overlay, tear
+     * down the detail chart, close the listing, and restore the base
+     * annotation/footnote — without touching the multi-highlight or notifying
+     * listeners (HEP-SELECT-007).
+     * @private
      */
-    clearSelection() {
-      if (this.state.selectedId == null) return;
+    closeDrillDown() {
       this.state.selectedId = null;
       if (this.chart) {
         this.chart.data.datasets[1].data = [];
@@ -19735,7 +20786,47 @@ Change in ${this.state.measureY}: ${formatDelta(point.delta_y)}`;
       this.detailWrap.style.display = "none";
       this.mainAnnotation.textContent = "";
       this.footnote.textContent = this.baseFootnote();
+    }
+    /**
+     * Clear any participant selection — the clicked drill-down and the
+     * Participants-control multi-highlight: erase the visit-path overlay, close
+     * the detail panels and listing, restore the base annotation/footnote and
+     * idle header, and notify listeners (HEP-SELECT-007).
+     * @returns {void}
+     */
+    clearSelection() {
+      if (this.state.selectedId == null && !this.scatterSelectedIds.length) return;
+      this.scatterSelectedIds = [];
+      this.closeDrillDown();
+      this.syncSelectControl([]);
+      this.updateScatterHeader();
       this.dispatchSelection([]);
+    }
+    /**
+     * Apply a Participants-control selection to the scatter view (HEP-SELECT-001,
+     * HEP-COMP-007): exactly one participant opens the full drill-down (the same
+     * path as clicking their point), none clears everything, and several
+     * highlight those participants across the scatter — dimming the rest and
+     * counting them in the header — while the single-participant drill-down
+     * closes.
+     * @param {string[]} ids The participant ids selected in the control.
+     * @private
+     */
+    applyScatterControlSelection(ids) {
+      if (ids.length === 1) {
+        this.selectParticipant(ids[0]);
+        return;
+      }
+      if (!ids.length) {
+        this.clearSelection();
+        return;
+      }
+      this.closeDrillDown();
+      this.scatterSelectedIds = ids.map(String);
+      this.syncSelectControl(this.scatterSelectedIds);
+      if (this.chart) this.chart.update("none");
+      this.updateScatterHeader();
+      this.dispatchSelection([...this.scatterSelectedIds]);
     }
     /**
      * Draw the participant drill-down panels into the detail container: the
@@ -19860,6 +20951,7 @@ Change in ${this.state.measureY}: ${formatDelta(point.delta_y)}`;
     destroyCharts() {
       this.charts.forEach((chart) => chart.destroy());
       this.charts = [];
+      this.compositeCharts = [];
       this.chart = null;
     }
     /**
@@ -19877,6 +20969,2771 @@ Change in ${this.state.measureY}: ${formatDelta(point.delta_y)}`;
     return new SafetyHepExplorer(element, settings);
   }
 
+  // src/ae-explorer/configure.js
+  var DEFAULT_SETTINGS8 = {
+    id_col: "USUBJID",
+    major_col: "AEBODSYS",
+    minor_col: "AEDECOD",
+    group_col: "ARM",
+    groups: null,
+    // ColorBrewer Set1 re-ordered like the original — and with no yellow, the
+    // fix behind AE-REG-040.
+    colors: ["#377eb8", "#4daf4a", "#984ea3", "#ff7f00", "#a65628", "#f781bf", "#e41a1c"],
+    filters: null,
+    details: null,
+    variable_options: null,
+    placeholder_flag: { value_col: null, values: ["", "NA"] },
+    max_prevalence: 0,
+    max_groups: 6,
+    total_col: true,
+    group_cols: true,
+    diff_col: true,
+    pref_terms: false,
+    summarize_by: "participant",
+    validation: false,
+    plot_settings: {
+      height: 15,
+      width: 200,
+      radius: 7,
+      margin: { left: 40, right: 40 },
+      diff_margin: { left: 5, right: 5 }
+    },
+    page_size: 10
+  };
+  var SUMMARIZE_OPTIONS = ["participant", "event"];
+  var DEFAULT_FILTERS = [
+    { value_col: "AESER", label: "Serious?" },
+    { value_col: "AESEV", label: "Severity" },
+    { value_col: "AEREL", label: "Relationship" },
+    { value_col: "AEOUT", label: "Outcome" }
+  ];
+  function filterSpec(value) {
+    const spec = fieldSpec(value);
+    const type = value && value.type === "participant" ? "participant" : "event";
+    const start = value && value.start || null;
+    return { ...spec, type, start };
+  }
+  function syncSettings8(settings) {
+    const synced = { ...DEFAULT_SETTINGS8, ...settings };
+    synced.placeholder_flag = {
+      ...DEFAULT_SETTINGS8.placeholder_flag,
+      ...settings.placeholder_flag || {}
+    };
+    if (!synced.placeholder_flag.value_col) synced.placeholder_flag.value_col = synced.major_col;
+    synced.plot_settings = {
+      ...DEFAULT_SETTINGS8.plot_settings,
+      ...settings.plot_settings || {}
+    };
+    synced.plot_settings.margin = {
+      ...DEFAULT_SETTINGS8.plot_settings.margin,
+      ...(settings.plot_settings || {}).margin || {}
+    };
+    synced.plot_settings.diff_margin = {
+      ...DEFAULT_SETTINGS8.plot_settings.diff_margin,
+      ...(settings.plot_settings || {}).diff_margin || {}
+    };
+    const customFilters = arrayify(synced.filters).map((value) => filterSpec(value)).filter((filter) => filter.value_col);
+    synced.filters = customFilters.length ? customFilters : DEFAULT_FILTERS.map((filter) => filterSpec(filter));
+    synced.details = synced.details ? arrayify(synced.details).map((value) => fieldSpec(value)).filter((column) => column.value_col) : null;
+    if (!SUMMARIZE_OPTIONS.includes(synced.summarize_by)) {
+      synced.summarize_by = DEFAULT_SETTINGS8.summarize_by;
+    }
+    return synced;
+  }
+  function columnPlan(groupCount, settings) {
+    if (!settings.group_cols && !settings.total_col) {
+      throw new Error(
+        "ae-explorer: group_cols and total_col cannot both be false \u2014 nothing to draw."
+      );
+    }
+    const groupCols = settings.group_cols;
+    const totalCol = settings.total_col && groupCount > 1;
+    const diffCol = settings.diff_col && groupCols && groupCount > 1;
+    return { groupCols, totalCol, diffCol };
+  }
+
+  // src/data/schema/ae-explorer.json
+  var ae_explorer_default = {
+    $schema: "https://json-schema.org/draft/2020-12/schema",
+    $id: "https://raw.githubusercontent.com/jwildfire/safety.viz/main/src/data/schema/ae-explorer.json",
+    title: "safety.viz ae-explorer data contract",
+    description: "Adverse-event data: one record per adverse event, plus one placeholder row per participant with no adverse events so the population denominator is right (AE-DATA-001). Placeholder rows are identified by the placeholder_flag setting \u2014 blank or 'NA' in the System Organ Class column by default \u2014 and count toward participant denominators while never appearing as events. Column names default to the ADaM ADAE standard and are remappable through the settings (AE-CFG-003); a chart initializes with no settings at all when the data carries the default columns (AE-DATA-003).",
+    type: "object",
+    required: ["data", "settings"],
+    properties: {
+      data: {
+        type: "array",
+        minItems: 1,
+        items: { type: "object" },
+        description: "d3.csv()-style records; every row carries the participant, System Organ Class, Preferred Term, and treatment-group columns named in settings."
+      },
+      settings: {
+        type: "object",
+        description: "Column mappings and rendering options; merged onto the module's DEFAULT_SETTINGS, so only overrides need to be supplied (AE-CFG-001).",
+        required: ["id_col", "major_col", "minor_col", "group_col"],
+        properties: {
+          id_col: {
+            type: "string",
+            default: "USUBJID",
+            description: "Participant identifier column; required in data. Distinct participants drive the group denominators and participant-mode numerators."
+          },
+          major_col: {
+            type: "string",
+            default: "AEBODSYS",
+            description: "Major category column \u2014 the MedDRA System Organ Class; required in data. One expandable table section per level, and the default placeholder-flag column."
+          },
+          minor_col: {
+            type: "string",
+            default: "AEDECOD",
+            description: "Minor category column \u2014 the MedDRA Preferred Term; required in data. One nested row per level under its System Organ Class."
+          },
+          group_col: {
+            type: "string",
+            default: "ARM",
+            description: "Treatment group column; required in data. One rate column per level (up to max_groups)."
+          },
+          groups: {
+            type: ["array", "null"],
+            items: { type: "string" },
+            default: null,
+            description: "Group levels to show as columns (AE-CFG-005). Null derives every level found in group_col, sorted; configured levels missing from the data are dropped with a console warning. A single group hides the Total and Difference columns (AE-USER-019)."
+          },
+          colors: {
+            type: "array",
+            items: { type: "string" },
+            description: "Group colors assigned by column order (AE-CFG-006); the Total column always renders gray. The default palette carries no yellow."
+          },
+          filters: {
+            $ref: "#/$defs/filterList",
+            description: "Filter controls (AE-USER-018): column names or { value_col, label, type, start } specs. Type 'event' narrows the events counted; type 'participant' narrows the analysis population and its denominators. Defaults to the four ADAE event filters \u2014 seriousness, severity, relationship, outcome; filters whose column is absent or single-valued are dropped with a console warning."
+          },
+          details: {
+            $ref: "#/$defs/fieldList",
+            description: "Columns for the details drill-down listing (AE-REG-024): null shows every input column."
+          },
+          variable_options: {
+            type: ["object", "null"],
+            default: null,
+            description: "Valid alternative columns for the primary mappings (AE-CFG-004): keys id, major, minor, group, each an array of column names. Two or more options for a mapping draw a re-mapping control; the current mapping is always offered even when not listed (AE-REG-044).",
+            properties: {
+              id: { type: "array", items: { type: "string" } },
+              major: { type: "array", items: { type: "string" } },
+              minor: { type: "array", items: { type: "string" } },
+              group: { type: "array", items: { type: "string" } }
+            }
+          },
+          placeholder_flag: {
+            type: "object",
+            description: "How placeholder rows for AE-free participants are identified (AE-DATA-001): value_col (null defaults to major_col) and the values that mark a placeholder.",
+            properties: {
+              value_col: { type: ["string", "null"], default: null },
+              values: {
+                type: "array",
+                items: { type: "string" },
+                default: ["", "NA"]
+              }
+            }
+          },
+          max_prevalence: {
+            type: "number",
+            default: 0,
+            description: "Initial minimum-prevalence filter value in percent (AE-USER-001): rows where every group rate is below the threshold are hidden."
+          },
+          max_groups: {
+            type: "number",
+            default: 6,
+            description: "Most group columns the table will draw; more levels than this throws."
+          },
+          total_col: {
+            type: "boolean",
+            default: true,
+            description: "Draw the all-groups Total column (AE-REG-037). Suppressed automatically when only one group shows."
+          },
+          group_cols: {
+            type: "boolean",
+            default: true,
+            description: "Draw the per-group rate columns. Disabling leaves a Total-only table and suppresses the Difference column (AE-REG-037)."
+          },
+          diff_col: {
+            type: "boolean",
+            default: true,
+            description: "Draw the Difference Between Groups column (AE-USER-013). Needs two or more shown groups."
+          },
+          pref_terms: {
+            type: "boolean",
+            default: false,
+            description: "Start with every Preferred Term row expanded instead of collapsed."
+          },
+          summarize_by: {
+            type: "string",
+            enum: ["participant", "event"],
+            default: "participant",
+            description: "Summary basis (AE-USER-006): participants with at least one event over the group's distinct participants, or event counts over the group's event total (AE-REG-033, AE-REG-035)."
+          },
+          validation: {
+            type: "boolean",
+            default: false,
+            description: "Adds a summarized-data CSV download named major-minor-summarize_by (AE-CFG-009, AE-USER-020)."
+          },
+          plot_settings: {
+            type: "object",
+            description: "Inline row-plot geometry (AE-CFG-008): height, width, and point radius in pixels, with margin / diff_margin {left, right} insets for the rate and difference plots (AE-REG-046).",
+            properties: {
+              height: { type: "number", default: 15 },
+              width: { type: "number", default: 200 },
+              radius: { type: "number", default: 7 },
+              margin: { type: "object", default: { left: 40, right: 40 } },
+              diff_margin: { type: "object", default: { left: 5, right: 5 } }
+            }
+          },
+          page_size: {
+            type: "number",
+            default: 10,
+            description: "Rows per page in the details drill-down listing."
+          }
+        }
+      }
+    },
+    $defs: {
+      fieldList: {
+        type: ["array", "null"],
+        items: {
+          anyOf: [
+            { type: "string" },
+            {
+              type: "object",
+              required: ["value_col"],
+              properties: {
+                value_col: { type: "string" },
+                label: { type: "string" }
+              }
+            }
+          ]
+        }
+      },
+      filterList: {
+        type: ["array", "null"],
+        items: {
+          anyOf: [
+            { type: "string" },
+            {
+              type: "object",
+              required: ["value_col"],
+              properties: {
+                value_col: { type: "string" },
+                label: { type: "string" },
+                type: { type: "string", enum: ["event", "participant"], default: "event" },
+                start: { type: ["array", "string", "null"], default: null }
+              }
+            }
+          ]
+        }
+      }
+    }
+  };
+
+  // src/ae-explorer/checkInputs.js
+  var REQUIRED_COLUMN_SETTINGS8 = ae_explorer_default.properties.settings.required;
+  function checkInputs8(data, settings) {
+    const rows = Array.isArray(data) ? data : [];
+    const columns = REQUIRED_COLUMN_SETTINGS8.map((key) => settings[key]);
+    const missing = columns.filter((col) => !rows.some((row) => row[col] !== void 0));
+    if (missing.length) {
+      throw new Error(`Required variable(s) missing: ${missing.join(", ")}`);
+    }
+  }
+
+  // src/ae-explorer/structureData.js
+  function unique7(values) {
+    return [...new Set(values)];
+  }
+  function rate(n, tot) {
+    if (!tot) return 0;
+    return Math.round(n / tot * 1e3) / 10;
+  }
+  function flagPlaceholders(rows, settings) {
+    const { value_col: col, values } = settings.placeholder_flag;
+    return rows.map((row) => ({
+      ...row,
+      __ae_placeholder: values.includes(String(row[col] == null ? "" : row[col]))
+    }));
+  }
+  function groupLevels(rows, settings) {
+    const present = unique7(rows.map((row) => String(row[settings.group_col] ?? ""))).filter(
+      (value) => value !== ""
+    );
+    let groups;
+    if (settings.groups && settings.groups.length) {
+      groups = settings.groups.filter((group) => {
+        if (present.includes(group)) return true;
+        console.warn(`The [ ${group} ] group was removed because it does not appear in the data.`);
+        return false;
+      });
+    } else {
+      groups = [...present].sort();
+    }
+    if (groups.length > settings.max_groups) {
+      throw new Error(
+        `ae-explorer: ${groups.length} groups exceed the max_groups limit of ${settings.max_groups}.`
+      );
+    }
+    return groups;
+  }
+  function passesFilters(row, specs, state, kind) {
+    return specs.every((spec) => {
+      if (spec.type !== kind) return true;
+      const value = state[spec.value_col];
+      if (value == null) return true;
+      return String(row[spec.value_col] ?? "") === String(value);
+    });
+  }
+  function populationData(rows, settings, groups, specs, state) {
+    return rows.filter(
+      (row) => groups.includes(String(row[settings.group_col] ?? "")) && passesFilters(row, specs, state, "participant")
+    );
+  }
+  function eventData(populationRows, specs, state) {
+    return populationRows.filter(
+      (row) => !row.__ae_placeholder && passesFilters(row, specs, state, "event")
+    );
+  }
+  function groupCounts(populationRows, eventRows, settings, groups) {
+    return groups.map((key) => ({
+      key,
+      n: unique7(
+        populationRows.filter((row) => String(row[settings.group_col] ?? "") === key).map((row) => row[settings.id_col])
+      ).length,
+      nEvents: eventRows.filter((row) => String(row[settings.group_col] ?? "") === key).length
+    }));
+  }
+  function cell(rows, settings, count, summarizeBy) {
+    const n = summarizeBy === "event" ? rows.length : unique7(rows.map((row) => row[settings.id_col])).length;
+    const tot = summarizeBy === "event" ? count.nEvents : count.n;
+    return { n, tot, per: rate(n, tot) };
+  }
+  function groupBy(rows, col) {
+    const map2 = /* @__PURE__ */ new Map();
+    rows.forEach((row) => {
+      const key = String(row[col] ?? "");
+      if (!map2.has(key)) map2.set(key, []);
+      map2.get(key).push(row);
+    });
+    return map2;
+  }
+  function cellsFor(rows, settings, groups, counts, summarizeBy) {
+    const byGroup = groupBy(rows, settings.group_col);
+    const cells = {};
+    groups.forEach((key, index) => {
+      cells[key] = cell(byGroup.get(key) || [], settings, counts[index], summarizeBy);
+    });
+    return cells;
+  }
+  function totalFor(rows, settings, counts, summarizeBy) {
+    const total = {
+      n: summarizeBy === "event" ? counts.reduce((sum, count) => sum + count.nEvents, 0) : counts.reduce((sum, count) => sum + count.n, 0)
+    };
+    return cell(rows, settings, { n: total.n, nEvents: total.n }, summarizeBy);
+  }
+  function maxPer(cells) {
+    return Math.max(0, ...Object.values(cells).map((value) => value.per));
+  }
+  function byPrevalence(a, b) {
+    return b.maxPer - a.maxPer || a.key.localeCompare(b.key);
+  }
+  function crossTab(eventRows, settings, groups, counts, summarizeBy) {
+    const majors = [...groupBy(eventRows, settings.major_col).entries()].map(([key, majorRows]) => {
+      const cells = cellsFor(majorRows, settings, groups, counts, summarizeBy);
+      const minors = [...groupBy(majorRows, settings.minor_col).entries()].map(
+        ([minorKey, minorRows]) => {
+          const minorCells = cellsFor(minorRows, settings, groups, counts, summarizeBy);
+          return {
+            key: minorKey,
+            cells: minorCells,
+            total: totalFor(minorRows, settings, counts, summarizeBy),
+            maxPer: maxPer(minorCells)
+          };
+        }
+      );
+      minors.sort(byPrevalence);
+      return {
+        key,
+        cells,
+        total: totalFor(majorRows, settings, counts, summarizeBy),
+        maxPer: maxPer(cells),
+        minors
+      };
+    });
+    majors.sort(byPrevalence);
+    const overallCells = cellsFor(eventRows, settings, groups, counts, summarizeBy);
+    return {
+      majors,
+      overall: {
+        key: "Any adverse event",
+        cells: overallCells,
+        total: totalFor(eventRows, settings, counts, summarizeBy),
+        maxPer: maxPer(overallCells)
+      }
+    };
+  }
+  function calculateDifference(n1, tot1, n2, tot2) {
+    const p1 = tot1 ? n1 / tot1 : 0;
+    const p2 = tot2 ? n2 / tot2 : 0;
+    const diff = p1 - p2;
+    const se = Math.sqrt(p1 * (1 - p1) / (tot1 || 1) + p2 * (1 - p2) / (tot2 || 1));
+    const lower = diff - 1.96 * se;
+    const upper = diff + 1.96 * se;
+    return {
+      diff: diff * 100,
+      lower: lower * 100,
+      upper: upper * 100,
+      sig: lower > 0 || upper < 0 ? 1 : 0
+    };
+  }
+  function addDifferences(cells, groups) {
+    const diffs = [];
+    for (let i = 0; i < groups.length; i += 1) {
+      for (let j = i + 1; j < groups.length; j += 1) {
+        const a = cells[groups[i]];
+        const b = cells[groups[j]];
+        diffs.push({
+          group1: groups[i],
+          group2: groups[j],
+          ...calculateDifference(a.n, a.tot, b.n, b.tot)
+        });
+      }
+    }
+    return diffs;
+  }
+  function prevalenceVisible(item, threshold) {
+    return item.maxPer >= (Number(threshold) || 0);
+  }
+  function searchCategories(majors, term) {
+    const majorKeys = /* @__PURE__ */ new Set();
+    const minorKeys = /* @__PURE__ */ new Set();
+    const lowered = String(term || "").toLowerCase();
+    if (!lowered) return { count: 0, majorKeys, minorKeys };
+    let count = 0;
+    majors.forEach((major) => {
+      if (major.key.toLowerCase().includes(lowered)) {
+        majorKeys.add(major.key);
+        count += 1;
+      }
+      major.minors.forEach((minor) => {
+        if (minor.key.toLowerCase().includes(lowered)) {
+          minorKeys.add(`${major.key}||${minor.key}`);
+          count += 1;
+        }
+      });
+    });
+    return { count, majorKeys, minorKeys };
+  }
+
+  // src/ae-explorer/getScales.js
+  function linear(domain, range) {
+    const [d0, d1] = domain;
+    const [r0, r1] = range;
+    const span = d1 - d0 || 1;
+    return {
+      domain,
+      range,
+      x: (value) => r0 + (value - d0) / span * (r1 - r0)
+    };
+  }
+  function makePercentScale(maxPer2, plot) {
+    return linear([0, maxPer2 || 1], [plot.margin.left, plot.width - plot.margin.right]);
+  }
+  function makeDiffScale(extent, plot) {
+    const reach = Math.max(Math.abs(extent[0] || 0), Math.abs(extent[1] || 0)) || 1;
+    return linear([-reach, reach], [plot.diff_margin.left, plot.width - plot.diff_margin.right]);
+  }
+  function formatPercent2(value) {
+    return (Number(value) || 0).toFixed(1);
+  }
+
+  // src/ae-explorer/getPlugins.js
+  function colorScale(groups, colors2) {
+    return (key) => {
+      if (key === "Total") return "#777";
+      const index = groups.indexOf(key);
+      return colors2[index >= 0 ? index % colors2.length : 0];
+    };
+  }
+  function cellTitle(cell2) {
+    return `${cell2.n}/${cell2.tot}`;
+  }
+  function dotTitle(group, cell2) {
+    return `${group}: ${formatPercent2(cell2.per)}%`;
+  }
+  function diffTitle(diff, cells) {
+    const side = (group) => `${group}: ${formatPercent2(cells[group].per)}% (${cellTitle(cells[group])})`;
+    return `${side(diff.group1)} vs ${side(diff.group2)} \u2014 difference ${formatPercent2(diff.diff)}%`;
+  }
+  function csvName(settings) {
+    return `${settings.major_col}-${settings.minor_col}-${settings.summarize_by}.csv`;
+  }
+  function summaryCsv(majors, groups) {
+    const quote = (value) => `"${String(value).replace(/"/g, '""')}"`;
+    const lines = ["major,minor,group,n,total,percent"];
+    const push = (majorKey, minorKey, cells) => groups.forEach(
+      (group) => lines.push(
+        [
+          quote(majorKey),
+          quote(minorKey),
+          quote(group),
+          cells[group].n,
+          cells[group].tot,
+          cells[group].per
+        ].join(",")
+      )
+    );
+    majors.forEach((major) => {
+      push(major.key, "", major.cells);
+      major.minors.forEach((minor) => push(major.key, minor.key, minor.cells));
+    });
+    return lines.join("\n") + "\n";
+  }
+
+  // src/ae-explorer.js
+  var SVG_NS2 = "http://www.w3.org/2000/svg";
+  var NO_MATCH_MESSAGE = "Error: No AEs found for the current filters. Update the filters to see results.";
+  var SUMMARY_FOOTNOTE = "Click a category to view the underlying records. Hover a rate for counts.";
+  var FILTER_TYPE_NOTES = {
+    event: "Event filter: narrows the events counted without changing the group denominators.",
+    participant: "Participant filter: narrows the analysis population and its denominators."
+  };
+  var MODULE_STYLE_ID = "safety-viz-ae-explorer-styles";
+  var MODULE_STYLES = `
+.safety-ae-explorer .ae-table-wrap{border:1px solid #d8dee4;border-radius:10px;background:#fff;padding:.5rem .75rem;overflow-x:auto}
+.safety-ae-explorer .ae-table{width:100%;border-collapse:collapse;font-size:.85rem}
+.safety-ae-explorer .ae-table th{border-bottom:2px solid #d8dee4;padding:.4rem .5rem;text-align:center;font-size:.75rem;text-transform:uppercase;letter-spacing:.03em;color:#52616f;white-space:normal;vertical-align:bottom}
+.safety-ae-explorer .ae-table th.ae-category{text-align:left}
+.safety-ae-explorer .ae-table th .ae-grp-n{display:block;font-weight:400;opacity:.85}
+.safety-ae-explorer .ae-groups-super{text-align:center;font-weight:600;color:#52616f;padding-bottom:.2rem;border-bottom:1px solid #e3e8ee}
+.safety-ae-explorer .ae-plot-head{text-align:center;vertical-align:bottom}
+.safety-ae-explorer svg.ae-axis{display:block;margin:.3rem auto 0}
+.safety-ae-explorer .ae-table td{border-bottom:1px solid #e3e8ee;padding:.3rem .5rem;vertical-align:middle}
+.safety-ae-explorer .ae-table td.ae-value{text-align:center;font-variant-numeric:tabular-nums;white-space:nowrap}
+.safety-ae-explorer .ae-table tbody tr:hover{background:#f0f3f6}
+.safety-ae-explorer tr.ae-major td{font-weight:600}
+.safety-ae-explorer tr.ae-minor td{font-weight:400;color:#3d4852}
+.safety-ae-explorer tr.ae-minor td.ae-category{padding-left:2.1em}
+.safety-ae-explorer tbody.ae-collapsed tr.ae-minor{display:none}
+.safety-ae-explorer tr.ae-hidden{display:none!important}
+.safety-ae-explorer tbody.ae-search-miss{display:none}
+.safety-ae-explorer .ae-toggle{display:inline-block;width:1.2em;cursor:pointer;color:#0b62a4;font-weight:700;user-select:none}
+.safety-ae-explorer .ae-label{cursor:pointer}
+.safety-ae-explorer .ae-label:hover{text-decoration:underline;color:#0b62a4}
+.safety-ae-explorer .ae-search-match{font-weight:700;color:#b34700}
+.safety-ae-explorer .ae-table tfoot td{border-top:2px solid #d8dee4;font-weight:600}
+.safety-ae-explorer .ae-plot line.ae-ci-hidden{visibility:hidden}
+.safety-ae-explorer tr.ae-show-ci .ae-plot line.ae-ci-hidden{visibility:visible}
+.safety-ae-explorer .ae-cell-count{color:#52616f;font-weight:400;display:none;margin-left:.25em}
+.safety-ae-explorer tr.ae-show-ci .ae-cell-count{display:inline}
+.safety-ae-explorer .ae-search-note{font-size:.8rem;color:#52616f;margin-top:.25rem}
+.safety-ae-explorer sup.ae-filter-type{cursor:help;color:#0b62a4;margin-left:.25em}
+.safety-ae-explorer .ae-error{color:#9a3412;padding:1rem 0}
+.safety-ae-explorer .ae-detail-note{font-size:.85rem;color:#52616f;margin:.35rem 0 .6rem}
+`;
+  var AEExplorer = class {
+    constructor(element = "body", settings = {}) {
+      this.element = typeof element === "string" ? document.querySelector(element) : element;
+      if (!this.element) throw new Error(`AE Explorer target not found: ${element}`);
+      this.settings = syncSettings8(settings);
+      this.initialMappings = {
+        id: this.settings.id_col,
+        major: this.settings.major_col,
+        minor: this.settings.minor_col,
+        group: this.settings.group_col
+      };
+      this.rawData = [];
+      this.cleanRows = [];
+      this.currentTableData = [];
+      this.listingSearch = "";
+      this.listingSort = null;
+      this.page = 1;
+      this.charts = [];
+      this.detail = null;
+      this.state = {
+        summarizeBy: this.settings.summarize_by,
+        maxPrevalence: this.settings.max_prevalence,
+        searchTerm: "",
+        filters: {},
+        expanded: /* @__PURE__ */ new Set()
+      };
+      this.renderShellChrome();
+    }
+    /**
+     * Build the static DOM the table renders into: the shared shell (with the
+     * unused main-chart canvas hidden — this renderer is a table), the table
+     * card, and the hidden details view.
+     * @private
+     */
+    renderShellChrome() {
+      Object.assign(
+        this,
+        renderShell(this.element, {
+          moduleClass: "safety-ae-explorer",
+          onToggle: () => this.resize()
+        })
+      );
+      this.applyModuleStyles();
+      this.chartWrap.classList.add("sv-hidden");
+      this.tableWrap = createElement("div", "ae-table-wrap");
+      this.main.insertBefore(this.tableWrap, this.footnote);
+      this.detailWrap = createElement("div", "sv-detail sv-hidden");
+      const header = createElement("div", "sv-listing-actions");
+      this.backButton = createElement("button", null, "Return to the Summary View");
+      this.backButton.type = "button";
+      this.backButton.onclick = () => this.backToSummary();
+      this.detailTitle = createElement("strong");
+      header.append(this.backButton, this.detailTitle);
+      this.detailNote = createElement("div", "ae-detail-note");
+      this.detailWrap.append(header, this.detailNote);
+      this.main.insertBefore(this.detailWrap, this.footnote);
+      this.footnote.textContent = SUMMARY_FOOTNOTE;
+    }
+    /**
+     * Inject the module-scoped stylesheet once per document.
+     * @private
+     */
+    applyModuleStyles() {
+      if (typeof document === "undefined" || document.getElementById(MODULE_STYLE_ID)) return;
+      const style = document.createElement("style");
+      style.id = MODULE_STYLE_ID;
+      style.textContent = MODULE_STYLES;
+      document.head.append(style);
+    }
+    /**
+     * Load data and render: an alias for setData that keeps the original
+     * renderer's create-then-init call shape working (AE-DATA-003,
+     * AE-API-001).
+     * @param {Object[]} data Adverse-event records matching the ae-explorer data contract.
+     * @returns {AEExplorer} The instance, for chaining.
+     */
+    init(data) {
+      this.setData(data);
+      return this;
+    }
+    /**
+     * Replace the bound data and re-render. The data is validated against the
+     * settings mapping (throwing, and rendering the message into the target
+     * element, when required columns are missing); placeholder rows for
+     * participants with no adverse events are flagged so they count toward
+     * the population denominators (AE-DATA-001); and the filter controls are
+     * rebuilt from the new data's values.
+     * @param {Object[]} data Adverse-event records matching the ae-explorer data contract.
+     * @returns {AEExplorer} The instance, for chaining.
+     */
+    setData(data) {
+      this.rawData = Array.isArray(data) ? data : [];
+      this.validateAndCleanData();
+      this.seedFilterState();
+      this.buildControls();
+      this.render();
+      return this;
+    }
+    /**
+     * Merge setting overrides onto the current settings, re-normalize them
+     * (same rules as the factory), re-seed the control state, rebuild the
+     * controls, and re-render.
+     * @param {AEExplorerSettings} settings Setting overrides to merge.
+     * @returns {AEExplorer} The instance, for chaining.
+     */
+    setSettings(settings) {
+      this.settings = syncSettings8({ ...this.settings, ...settings });
+      this.state.summarizeBy = this.settings.summarize_by;
+      this.state.maxPrevalence = this.settings.max_prevalence;
+      this.validateAndCleanData();
+      this.seedFilterState();
+      this.buildControls();
+      this.render();
+      return this;
+    }
+    /**
+     * Validate the raw data against the settings mapping, flag placeholder
+     * rows, and resolve the details-listing columns (every input column when
+     * the details setting is null).
+     * @private
+     */
+    validateAndCleanData() {
+      try {
+        checkInputs8(this.rawData, this.settings);
+      } catch (error) {
+        this.element.innerHTML = `<div class="sv-warning">${error.message}</div>`;
+        throw error;
+      }
+      this.cleanRows = flagPlaceholders(this.rawData, this.settings);
+      if (!this.settings.details) {
+        const columns = this.rawData.length ? Object.keys(this.rawData[0]) : [];
+        this.settings.details = columns.map((column) => ({ value_col: column, label: column }));
+      }
+      this.state.expanded = /* @__PURE__ */ new Set();
+    }
+    /**
+     * Reset the active filter values from the filter specs' start values
+     * (AE-REG-031).
+     * @private
+     */
+    seedFilterState() {
+      this.state.filters = {};
+      this.settings.filters.forEach((spec) => {
+        const start = Array.isArray(spec.start) ? spec.start[0] : spec.start;
+        if (start != null) this.state.filters[spec.value_col] = String(start);
+      });
+      this.state.searchTerm = "";
+    }
+    /**
+     * Rebuild the sidebar controls from the settings, data, and control
+     * state: the summary-basis toggle, the prevalence and search filters, the
+     * characteristic filters with their participant/event badges, any
+     * variable re-mapping controls, and the validation download.
+     * @private
+     */
+    buildControls() {
+      this.controls.innerHTML = "";
+      const { addSection, addControl } = controlBuilders(this.controls);
+      const summarySection = addSection("Summary");
+      const summarize2 = addControl("Summarize by", document.createElement("select"), summarySection);
+      SUMMARIZE_OPTIONS.forEach(
+        (value) => option(summarize2, value, value, value === this.state.summarizeBy)
+      );
+      summarize2.onchange = () => {
+        this.state.summarizeBy = summarize2.value;
+        this.render();
+      };
+      const filterSection = addSection("Filters");
+      const prevalence = document.createElement("input");
+      prevalence.type = "number";
+      prevalence.min = "0";
+      prevalence.step = "1";
+      prevalence.value = String(this.state.maxPrevalence);
+      prevalence.className = "ae-prevalence";
+      addControl("Minimum prevalence (%)", prevalence, filterSection);
+      prevalence.oninput = () => {
+        this.state.maxPrevalence = Number(prevalence.value) || 0;
+        this.render();
+      };
+      const search = document.createElement("input");
+      search.type = "search";
+      search.placeholder = "Search categories";
+      search.value = this.state.searchTerm;
+      search.className = "ae-search";
+      addControl("Search", search, filterSection);
+      search.oninput = () => {
+        this.state.searchTerm = search.value;
+        this.render();
+      };
+      this.searchNote = createElement("div", "ae-search-note");
+      filterSection.append(this.searchNote);
+      const eventRows = this.cleanRows.filter((row) => !row.__ae_placeholder);
+      this.activeFilterSpecs = this.settings.filters.filter((spec) => {
+        const source = spec.type === "participant" ? this.cleanRows : eventRows;
+        const values = [
+          ...new Set(source.map((row) => row[spec.value_col]).filter((value) => value != null))
+        ];
+        if (!values.length) {
+          console.warn(
+            `The [ ${spec.value_col} ] filter was removed because the variable does not exist.`
+          );
+          return false;
+        }
+        if (values.length < 2) {
+          console.warn(
+            `The [ ${spec.value_col} ] filter was removed because the variable has only one level.`
+          );
+          return false;
+        }
+        return true;
+      });
+      this.activeFilterSpecs.forEach((spec) => {
+        const select = document.createElement("select");
+        select.dataset.filter = spec.value_col;
+        const active = this.state.filters[spec.value_col];
+        option(select, "__all__", "All", active == null);
+        const source = spec.type === "participant" ? this.cleanRows : eventRows;
+        const values = [
+          ...new Set(source.map((row) => String(row[spec.value_col] ?? "")).filter(Boolean))
+        ].sort();
+        values.forEach((value) => option(select, value, value, active === value));
+        const wrap = addControl(spec.label, select, filterSection);
+        const label = wrap.parentElement.querySelector("label");
+        const sup = createElement("sup", "ae-filter-type", spec.type === "participant" ? "P" : "E");
+        sup.title = FILTER_TYPE_NOTES[spec.type];
+        label.append(sup);
+        select.onchange = () => {
+          this.state.filters[spec.value_col] = select.value === "__all__" ? null : select.value;
+          this.render();
+        };
+      });
+      this.buildVariableControls(addSection);
+      if (this.settings.validation) {
+        const dataSection = addSection("Data");
+        const download = createElement("button", "ae-download", "Download summarized data");
+        download.type = "button";
+        download.onclick = () => this.downloadSummary();
+        dataSection.append(download);
+      }
+    }
+    /**
+     * Re-mapping controls for the primary variables (AE-CFG-004): one select
+     * per mapping with two or more configured options, always offering the
+     * current column even when it is not listed (AE-REG-044); changing one
+     * re-syncs the settings and redraws (AE-REG-041..043).
+     * @private
+     */
+    buildVariableControls(addSection) {
+      const optionsByMapping = this.settings.variable_options;
+      if (!optionsByMapping) return;
+      const mappings = [
+        ["id", "id_col", "Participant ID"],
+        ["major", "major_col", "Major category"],
+        ["minor", "minor_col", "Minor category"],
+        ["group", "group_col", "Group"]
+      ];
+      let section = null;
+      const { addControl } = controlBuilders(this.controls);
+      mappings.forEach(([key, settingKey, label]) => {
+        const current = this.settings[settingKey];
+        const offered = [
+          .../* @__PURE__ */ new Set([this.initialMappings[key], ...optionsByMapping[key] || [], current])
+        ];
+        if (offered.length < 2) return;
+        if (!section) section = addSection("Variables");
+        const select = document.createElement("select");
+        select.dataset.variable = key;
+        offered.forEach((column) => option(select, column, column, column === current));
+        addControl(label, select, section);
+        select.onchange = () => this.setSettings({ [settingKey]: select.value });
+      });
+    }
+    /**
+     * The population and event datasets, group keys, and denominators for the
+     * current filter state.
+     * @private
+     */
+    computeData() {
+      const groups = groupLevels(this.cleanRows, this.settings);
+      const specs = this.activeFilterSpecs || this.settings.filters;
+      const population = populationData(
+        this.cleanRows,
+        this.settings,
+        groups,
+        specs,
+        this.state.filters
+      );
+      const events = eventData(population, specs, this.state.filters);
+      const counts = groupCounts(population, events, this.settings, groups);
+      return { groups, population, events, counts };
+    }
+    /**
+     * Redraw the summary table from the current data, settings, and control
+     * state: closes any open details view, recomputes the roll-up, and
+     * rebuilds the table with the prevalence and search visibility applied.
+     * Called automatically by the controls and the data/settings setters;
+     * call it directly only after mutating state by hand.
+     * @returns {void}
+     */
+    render() {
+      this.closeDetail();
+      const { groups, events, counts } = this.computeData();
+      this.groups = groups;
+      this.counts = counts;
+      this.plan = columnPlan(groups.length, this.settings);
+      this.table = crossTab(events, this.settings, groups, counts, this.state.summarizeBy);
+      this.currentEvents = events;
+      this.tableWrap.innerHTML = "";
+      if (!events.length) {
+        this.tableWrap.append(createElement("div", "ae-error", NO_MATCH_MESSAGE));
+        this.updateSearchNote(null);
+        return;
+      }
+      const search = searchCategories(this.table.majors, this.state.searchTerm);
+      this.updateSearchNote(this.state.searchTerm ? search : null);
+      this.tableWrap.append(this.buildTable(search));
+    }
+    /**
+     * Refresh the matched-category count beside the search control
+     * (AE-REG-004).
+     * @private
+     */
+    updateSearchNote(search) {
+      if (!this.searchNote) return;
+      if (!search) {
+        this.searchNote.textContent = "";
+        return;
+      }
+      this.searchNote.textContent = search.count ? `${search.count} categor${search.count === 1 ? "y" : "ies"} found.` : "No categories found with a matching search term.";
+    }
+    /**
+     * Build the full summary table element for the current roll-up and search
+     * state.
+     * @private
+     */
+    buildTable(search) {
+      const { plan, groups } = this;
+      const color2 = colorScale(groups, this.settings.colors);
+      const shownMaxPer = Math.max(
+        this.table.overall.maxPer,
+        ...this.table.majors.map((major) => major.maxPer)
+      );
+      const percentScale = makePercentScale(shownMaxPer, this.settings.plot_settings);
+      const allDiffs = [];
+      const rowsOf = (item) => addDifferences(item.cells, groups);
+      if (plan.diffCol) {
+        [this.table.overall, ...this.table.majors].forEach((major) => {
+          allDiffs.push(...rowsOf(major));
+          (major.minors || []).forEach((minor) => allDiffs.push(...rowsOf(minor)));
+        });
+      }
+      const diffExtent = allDiffs.length ? [
+        Math.min(...allDiffs.map((diff) => diff.lower)),
+        Math.max(...allDiffs.map((diff) => diff.upper))
+      ] : [0, 0];
+      const diffScale = makeDiffScale(diffExtent, this.settings.plot_settings);
+      const table = createElement("table", "ae-table");
+      table.append(this.buildHead(percentScale, diffScale));
+      const searchActive = Boolean(this.state.searchTerm);
+      const hasMatches = searchActive && search.count > 0;
+      this.table.majors.forEach((major) => {
+        const tbody = document.createElement("tbody");
+        const majorMatched = hasMatches && search.majorKeys.has(major.key);
+        const minorMatches = hasMatches ? major.minors.filter((minor) => search.minorKeys.has(`${major.key}||${minor.key}`)) : [];
+        if (hasMatches && !majorMatched && !minorMatches.length) {
+          tbody.className = "ae-search-miss";
+          table.append(tbody);
+          return;
+        }
+        const expanded = hasMatches && (majorMatched || minorMatches.length > 0) || this.settings.pref_terms || this.state.expanded.has(major.key);
+        tbody.className = expanded ? "ae-expanded" : "ae-collapsed";
+        tbody.append(
+          this.buildRow(major, {
+            kind: "major",
+            color: color2,
+            percentScale,
+            diffScale,
+            expanded,
+            matched: majorMatched
+          })
+        );
+        major.minors.forEach((minor) => {
+          const minorMatched = hasMatches && search.minorKeys.has(`${major.key}||${minor.key}`);
+          if (hasMatches && !majorMatched && !minorMatched) return;
+          const row = this.buildRow(minor, {
+            kind: "minor",
+            major,
+            color: color2,
+            percentScale,
+            diffScale,
+            matched: minorMatched
+          });
+          if (!hasMatches && !prevalenceVisible(minor, this.state.maxPrevalence)) {
+            row.classList.add("ae-hidden");
+          }
+          tbody.append(row);
+        });
+        if (!hasMatches && !prevalenceVisible(major, this.state.maxPrevalence)) {
+          [...tbody.children].forEach((row) => row.classList.add("ae-hidden"));
+        }
+        table.append(tbody);
+      });
+      const tfoot = document.createElement("tfoot");
+      tfoot.append(
+        this.buildRow(this.table.overall, {
+          kind: "overall",
+          color: color2,
+          percentScale,
+          diffScale
+        })
+      );
+      table.append(tfoot);
+      return table;
+    }
+    /**
+     * The header: the category column, one group column per shown group with
+     * its (n=…) denominator color-matched to its rate dot, the Total column,
+     * and the rate/difference plot columns with their axes. Two or more group
+     * columns draw a two-row head — a "Groups" super-header spanning the arms
+     * over their per-arm names — otherwise a single row carries everything.
+     * @private
+     */
+    buildHead(percentScale, diffScale) {
+      const { plan, groups, counts } = this;
+      const color2 = colorScale(groups, this.settings.colors);
+      const thead = document.createElement("thead");
+      const countHead = (label, n, key) => {
+        const th = createElement("th", "ae-value");
+        th.style.color = color2(key);
+        th.append(
+          document.createTextNode(`${label} `),
+          createElement("span", "ae-grp-n", `(n=${n})`)
+        );
+        return th;
+      };
+      const rateHead = () => {
+        const th = createElement("th", "ae-plot-head", "AE Rate by Group");
+        th.append(this.buildAxis(percentScale, (value) => `${Math.round(value)}%`));
+        return th;
+      };
+      const diffHead = () => {
+        const th = createElement("th", "ae-plot-head", "Difference Between Groups");
+        th.append(this.buildAxis(diffScale, (value) => `${Math.round(value)}`));
+        return th;
+      };
+      const totalN = () => counts.reduce((sum, count) => sum + count.n, 0);
+      if (plan.groupCols && groups.length >= 2) {
+        const top = document.createElement("tr");
+        const bottom = document.createElement("tr");
+        const span2 = (th) => {
+          th.rowSpan = 2;
+          return th;
+        };
+        top.append(span2(createElement("th", "ae-category", "Category")));
+        const superHead = createElement("th", "ae-groups-super", "Groups");
+        superHead.colSpan = groups.length;
+        top.append(superHead);
+        groups.forEach((group, index) => bottom.append(countHead(group, counts[index].n, group)));
+        if (plan.totalCol) top.append(span2(countHead("Total", totalN(), "Total")));
+        top.append(span2(rateHead()));
+        if (plan.diffCol) top.append(span2(diffHead()));
+        thead.append(top, bottom);
+        return thead;
+      }
+      const row = document.createElement("tr");
+      row.append(createElement("th", "ae-category", "Category"));
+      if (plan.groupCols) {
+        groups.forEach((group, index) => row.append(countHead(group, counts[index].n, group)));
+      }
+      if (plan.totalCol) row.append(countHead("Total", totalN(), "Total"));
+      row.append(rateHead());
+      if (plan.diffCol) row.append(diffHead());
+      thead.append(row);
+      return thead;
+    }
+    /**
+     * A small three-tick axis under a plot-column header.
+     * @private
+     */
+    buildAxis(scale, format) {
+      const { width } = this.settings.plot_settings;
+      const svg = document.createElementNS(SVG_NS2, "svg");
+      svg.setAttribute("width", width);
+      svg.setAttribute("height", 18);
+      svg.setAttribute("class", "ae-axis");
+      const [d0, d1] = scale.domain;
+      const line = document.createElementNS(SVG_NS2, "line");
+      line.setAttribute("x1", scale.x(d0));
+      line.setAttribute("x2", scale.x(d1));
+      line.setAttribute("y1", 4);
+      line.setAttribute("y2", 4);
+      line.setAttribute("stroke", "#b8c0cc");
+      svg.append(line);
+      const anchors = ["start", "middle", "end"];
+      [d0, (d0 + d1) / 2, d1].forEach((value, index) => {
+        const text = document.createElementNS(SVG_NS2, "text");
+        text.setAttribute("x", scale.x(value));
+        text.setAttribute("y", 15);
+        text.setAttribute("text-anchor", anchors[index]);
+        text.setAttribute("font-size", "9");
+        text.setAttribute("fill", "#52616f");
+        text.textContent = format(value);
+        svg.append(text);
+      });
+      return svg;
+    }
+    /**
+     * One summary row — a System Organ Class, Preferred Term, or the overall
+     * footer — with its expand control, rate cells, and inline plots.
+     * @private
+     */
+    buildRow(item, { kind, major, color: color2, percentScale, diffScale, expanded, matched }) {
+      const { plan, groups } = this;
+      const tr = document.createElement("tr");
+      tr.className = kind === "minor" ? "ae-minor" : kind === "major" ? "ae-major" : "ae-overall";
+      const category = createElement("td", "ae-category");
+      if (kind === "major") {
+        const toggle = createElement("span", "ae-toggle", expanded ? "\u2212" : "+");
+        toggle.title = "Show or hide the preferred terms in this category";
+        toggle.onclick = (event) => {
+          event.stopPropagation();
+          this.toggleMajor(item.key);
+        };
+        category.append(toggle);
+      }
+      const label = createElement("span", kind === "overall" ? null : "ae-label");
+      this.setLabelText(label, item.key, matched);
+      if (kind !== "overall") {
+        label.onclick = () => this.showDetails(
+          kind === "minor" ? { major: major.key, minor: item.key } : { major: item.key }
+        );
+      }
+      category.append(label);
+      tr.append(category);
+      if (plan.groupCols) {
+        groups.forEach((group) => {
+          const cell2 = item.cells[group];
+          const td = createElement("td", "ae-value", formatPercent2(cell2.per));
+          td.title = cellTitle(cell2);
+          const count = createElement("span", "ae-cell-count", `(${cellTitle(cell2)})`);
+          count.dataset.group = group;
+          td.append(count);
+          tr.append(td);
+        });
+      }
+      if (plan.totalCol) {
+        const td = createElement("td", "ae-value ae-total", formatPercent2(item.total.per));
+        td.title = cellTitle(item.total);
+        tr.append(td);
+      }
+      const rateTd = createElement("td", "ae-prevplot");
+      rateTd.append(this.buildDotPlot(item, color2, percentScale));
+      tr.append(rateTd);
+      if (plan.diffCol) {
+        const diffTd = createElement("td", "ae-diffplot");
+        diffTd.append(this.buildDiffPlot(item, color2, diffScale));
+        diffTd.addEventListener("mouseenter", () => tr.classList.add("ae-show-ci"));
+        diffTd.addEventListener("mouseleave", () => tr.classList.remove("ae-show-ci"));
+        tr.append(diffTd);
+      }
+      return tr;
+    }
+    /**
+     * Write a row label, wrapping the matched search substring for the
+     * highlight style (AE-REG-003).
+     * @private
+     */
+    setLabelText(label, text, matched) {
+      label.textContent = "";
+      const term = this.state.searchTerm;
+      const index = matched ? text.toLowerCase().indexOf(term.toLowerCase()) : -1;
+      if (index < 0) {
+        label.textContent = text;
+        return;
+      }
+      label.append(
+        document.createTextNode(text.slice(0, index)),
+        createElement("span", "ae-search-match", text.slice(index, index + term.length)),
+        document.createTextNode(text.slice(index + term.length))
+      );
+    }
+    /**
+     * The inline rate dot plot: one group-colored point per group on the
+     * shared percent axis (AE-USER-012).
+     * @private
+     */
+    buildDotPlot(item, color2, percentScale) {
+      const { height, width, radius } = this.settings.plot_settings;
+      const svg = document.createElementNS(SVG_NS2, "svg");
+      svg.setAttribute("width", width);
+      svg.setAttribute("height", height);
+      svg.setAttribute("class", "ae-plot");
+      this.groups.forEach((group) => {
+        const cell2 = item.cells[group];
+        const circle = document.createElementNS(SVG_NS2, "circle");
+        circle.setAttribute("cx", percentScale.x(cell2.per));
+        circle.setAttribute("cy", height / 2);
+        circle.setAttribute("r", Math.max(2, radius - 2));
+        circle.setAttribute("fill", color2(group));
+        circle.setAttribute("fill-opacity", "0.85");
+        const title = document.createElementNS(SVG_NS2, "title");
+        title.textContent = dotTitle(group, cell2);
+        circle.append(title);
+        svg.append(circle);
+      });
+      return svg;
+    }
+    /**
+     * The inline difference plot: one diamond per group pair at the
+     * difference in rates with its 95% interval line — solid when the
+     * interval excludes zero, faint otherwise, colored by the higher group
+     * (AE-USER-013). With more than two groups the interval lines stay
+     * hidden until the difference cell is hovered (AE-REG-017).
+     * @private
+     */
+    buildDiffPlot(item, color2, diffScale) {
+      const { height, width, radius } = this.settings.plot_settings;
+      const svg = document.createElementNS(SVG_NS2, "svg");
+      svg.setAttribute("width", width);
+      svg.setAttribute("height", height);
+      svg.setAttribute("class", "ae-plot");
+      const mid = height / 2;
+      const half = Math.max(3, radius - 2);
+      const diffs = addDifferences(item.cells, this.groups);
+      const hideCi = this.groups.length > 2;
+      diffs.forEach((diff) => {
+        const line = document.createElementNS(SVG_NS2, "line");
+        line.setAttribute("x1", diffScale.x(diff.lower));
+        line.setAttribute("x2", diffScale.x(diff.upper));
+        line.setAttribute("y1", mid);
+        line.setAttribute("y2", mid);
+        line.setAttribute("stroke", "#52616f");
+        line.setAttribute("class", hideCi ? "ae-ci ae-ci-hidden" : "ae-ci");
+        svg.append(line);
+        const x = diffScale.x(diff.diff);
+        const diamond = document.createElementNS(SVG_NS2, "path");
+        diamond.setAttribute(
+          "d",
+          `M ${x} ${mid - half} L ${x + half} ${mid} L ${x} ${mid + half} L ${x - half} ${mid} Z`
+        );
+        const higher = diff.diff < 0 ? diff.group2 : diff.group1;
+        diamond.setAttribute("fill", color2(higher));
+        diamond.setAttribute("stroke", color2(higher));
+        diamond.setAttribute("fill-opacity", diff.sig ? "1" : "0.1");
+        diamond.setAttribute("class", "ae-diamond");
+        const title = document.createElementNS(SVG_NS2, "title");
+        title.textContent = diffTitle(diff, item.cells);
+        diamond.append(title);
+        svg.append(diamond);
+      });
+      return svg;
+    }
+    /**
+     * Expand or collapse one System Organ Class section (AE-USER-014,
+     * AE-USER-015).
+     * @private
+     */
+    toggleMajor(key) {
+      if (this.state.expanded.has(key)) this.state.expanded.delete(key);
+      else this.state.expanded.add(key);
+      this.render();
+    }
+    /**
+     * Open the details view for a category (AE-USER-016): the record-level
+     * listing of the events under the clicked System Organ Class or Preferred
+     * Term as currently filtered, with the active filters reported and a
+     * Return to the Summary View button.
+     * @param {{major: string, minor: ?string}} target The clicked category.
+     * @returns {void}
+     */
+    showDetails(target) {
+      this.detail = target;
+      const rows = this.currentEvents.filter(
+        (row) => String(row[this.settings.major_col] ?? "") === target.major && (target.minor == null || String(row[this.settings.minor_col] ?? "") === target.minor)
+      );
+      const labelText = target.minor ? `${target.minor} (${target.major})` : target.major;
+      this.detailTitle.textContent = `Details for ${rows.length} ${labelText} records`;
+      const active = (this.activeFilterSpecs || []).filter(
+        (spec) => this.state.filters[spec.value_col] != null
+      );
+      this.detailNote.textContent = active.length ? `The listing is filtered as shown: ${active.map((spec) => `${spec.label} = ${this.state.filters[spec.value_col]}`).join("; ")}.` : "";
+      this.sidebar.classList.add("sv-hidden");
+      this.tableWrap.classList.add("sv-hidden");
+      this.detailWrap.classList.remove("sv-hidden");
+      this.currentTableData = rows;
+      this.listingSearch = "";
+      this.listingSort = null;
+      this.page = 1;
+      renderListing(this);
+      this.footnote.textContent = "Click Return to the Summary View to go back.";
+    }
+    /**
+     * Close the details view without re-rendering.
+     * @private
+     */
+    closeDetail() {
+      if (!this.detail) return;
+      this.detail = null;
+      this.detailWrap.classList.add("sv-hidden");
+      this.sidebar.classList.remove("sv-hidden");
+      this.tableWrap.classList.remove("sv-hidden");
+      this.listingWrap.innerHTML = "";
+      this.currentTableData = [];
+      this.footnote.textContent = SUMMARY_FOOTNOTE;
+    }
+    /**
+     * Return from the details view to the summary table (AE-USER-017).
+     * @returns {void}
+     */
+    backToSummary() {
+      this.closeDetail();
+      this.render();
+    }
+    /**
+     * The validation download's payload: the summarized data as currently
+     * filtered and summarized, and its major-minor-basis file name
+     * (AE-USER-020, AE-REG-027).
+     * @returns {{name: string, csv: string}} The file name and CSV text.
+     */
+    buildValidationCsv() {
+      return {
+        name: csvName({ ...this.settings, summarize_by: this.state.summarizeBy }),
+        csv: summaryCsv(this.table.majors, this.groups)
+      };
+    }
+    /**
+     * Trigger the summarized-data CSV download (AE-CFG-009).
+     * @private
+     */
+    downloadSummary() {
+      const { name, csv } = this.buildValidationCsv();
+      const blob = new Blob([csv], { type: "text/csv" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = name;
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+    /**
+     * Table layout reflows with the page, so resizing is a no-op kept for the
+     * shared lifecycle shape (the R htmlwidget bindings call it).
+     * @returns {void}
+     */
+    resize() {
+      this.charts.forEach((chart) => chart.resize());
+    }
+    /**
+     * Tear the explorer down: empty the target element. The instance cannot
+     * be reused afterwards — create a new one via the factory instead.
+     * @returns {void}
+     */
+    destroy() {
+      this.charts.forEach((chart) => chart.destroy());
+      this.charts = [];
+      this.element.innerHTML = "";
+    }
+  };
+  function aeExplorer(element = "body", settings = {}) {
+    return new AEExplorer(element, settings);
+  }
+
+  // src/data/schema/qt-explorer.json
+  var qt_explorer_default = {
+    $schema: "https://json-schema.org/draft/2020-12/schema",
+    $id: "https://raw.githubusercontent.com/jwildfire/safety.viz/main/src/data/schema/qt-explorer.json",
+    title: "safety.viz qt-explorer data contract",
+    description: "Long-format ECG-interval data: one record per participant per ECG parameter (QTcF / QTcB / Heart Rate) per visit (QT-DATA-001). Column names are supplied by the settings mapping. The qt-explorer reads a heart-rate-corrected QTc value, its baseline, and its change-from-baseline (taken from the change column, or derived value \u2212 baseline) to drive three views: central-tendency change over time by arm (\u0394 / placebo-corrected \u0394\u0394) with a 90% CI and the ICH-E14 metric, an outlier scatter of change vs baseline with absolute (450/480/500 ms) and change (30/60 ms) cut-lines, and a categorical by-arm exceedance table. Missing / non-numeric results are removed with a reported count (QT-DATA-003).",
+    type: "object",
+    required: ["data", "settings"],
+    properties: {
+      data: {
+        type: "array",
+        minItems: 1,
+        items: { type: "object" },
+        description: "d3.csv()-style records; every row carries the parameter, result, baseline, participant, arm, and visit columns named in settings, one row per participant per parameter per visit."
+      },
+      settings: {
+        type: "object",
+        description: "Column mappings and rendering options; merged onto the module's DEFAULT_SETTINGS, so only overrides need to be supplied (QT-DATA-003).",
+        required: ["measure_col", "value_col", "arm_col", "baseline_col"],
+        properties: {
+          id_col: {
+            type: "string",
+            default: "USUBJID",
+            description: "Participant identifier column; one point per participant in the scatter and the exceedance denominators (QT-DATA-001)."
+          },
+          measure_col: {
+            type: "string",
+            default: "TEST",
+            description: "Column holding the ECG parameter name; required in data. Matched to the correction options (QTcF/QTcB/Heart Rate) (QT-DATA-002)."
+          },
+          value_col: {
+            type: "string",
+            default: "STRESN",
+            description: "Column holding the numeric analysis value; required in data. Non-numeric results are removed with a logged count (QT-DATA-003)."
+          },
+          baseline_col: {
+            type: "string",
+            default: "BASE",
+            description: "Column holding the participant's baseline value; required in data \u2014 the scatter's x-axis and the absolute-threshold diagonals are anchored to it (QT-OUT-001)."
+          },
+          change_col: {
+            type: ["string", "null"],
+            default: "CHG",
+            description: "Optional column holding the source change-from-baseline. When absent or blank for a row, change is derived as value \u2212 baseline (QT-DATA-004)."
+          },
+          unit_col: {
+            type: ["string", "null"],
+            default: "STRESU",
+            description: "Optional unit column, appended to the parameter label."
+          },
+          arm_col: {
+            type: "string",
+            default: "ARM",
+            description: "Treatment-arm column; required in data. Drives the per-arm central-tendency lines, point colors, \u0394\u0394 placebo correction, and the exceedance table columns (QT-CT-001, QT-OUT-004, QT-CAT-001)."
+          },
+          placebo_arm: {
+            type: ["string", "null"],
+            default: null,
+            description: "The arm treated as placebo for the \u0394\u0394 (placebo-corrected) central-tendency mode and the ICH-E14 metric. When null, the arm whose name matches /placebo/i is auto-detected (QT-CT-004)."
+          },
+          visit_col: {
+            type: "string",
+            default: "VISIT",
+            description: "Categorical visit column; the central-tendency x-axis and the outlier-scatter timepoint selector (QT-CT-001, QT-OUT-002)."
+          },
+          visitn_col: {
+            type: ["string", "null"],
+            default: "VISITNUM",
+            description: "Optional numeric visit column ordering the visits; falls back to first-seen order when absent."
+          },
+          baseline_flag_col: {
+            type: ["string", "null"],
+            default: "ABLFL",
+            description: "Optional 'Y'-flagged baseline-record column; when present the baseline visit is excluded from the post-baseline extremes and the central-tendency change series (QT-DATA-005)."
+          },
+          measures: {
+            type: "array",
+            items: { type: "string" },
+            default: ["QTcF", "QTcB", "Heart Rate"],
+            description: "The correction / parameter options offered by the Correction control, in order (QT-CTRL-002)."
+          },
+          qtc_measures: {
+            type: "array",
+            items: { type: "string" },
+            default: ["QTcF", "QTcB"],
+            description: "Which measures are QTc corrections; the outlier scatter's absolute-threshold diagonals and the categorical absolute rows apply only to these (Heart Rate has no QTc cut-lines) (QT-OUT-003)."
+          },
+          start_measure: {
+            type: ["string", "null"],
+            default: "QTcF",
+            description: "Correction selected on first render; falls back to the first available measure (QT-CTRL-002)."
+          },
+          absolute_thresholds: {
+            type: "array",
+            items: { type: "number" },
+            default: [450, 480, 500],
+            description: "Absolute QTc cut-lines (msec) for the outlier-scatter diagonals and the categorical absolute rows (QT-OUT-003, QT-CAT-002; workflow step 3a)."
+          },
+          change_thresholds: {
+            type: "array",
+            items: { type: "number" },
+            default: [30, 60],
+            description: "Change-from-baseline cut-lines (msec) for the outlier-scatter horizontals and the categorical change rows (QT-OUT-003, QT-CAT-003; workflow step 3b)."
+          },
+          reference_threshold: {
+            type: "number",
+            default: 10,
+            description: "Central-tendency reference line (msec): the ICH-E14 threshold of regulatory concern for the mean/\u0394\u0394 change (QT-CT-003; workflow step 1a)."
+          },
+          ci_level: {
+            type: "number",
+            default: 0.9,
+            description: "Confidence level for the two-sided CI on the mean change and the mean difference; the ICH-E14 metric reads the upper bound of this interval (QT-CT-005)."
+          },
+          filters: {
+            $ref: "#/$defs/fieldList",
+            description: "Optional filter columns rendered as controls (QT-CTRL-003)."
+          }
+        }
+      }
+    },
+    $defs: {
+      fieldList: {
+        type: "array",
+        items: {
+          anyOf: [
+            { type: "string" },
+            {
+              type: "object",
+              required: ["value_col"],
+              properties: {
+                value_col: { type: "string" },
+                label: { type: "string" }
+              }
+            }
+          ]
+        }
+      }
+    }
+  };
+
+  // src/qt-explorer/checkInputs.js
+  var REQUIRED_COLUMN_SETTINGS9 = qt_explorer_default.properties.settings.required;
+  function checkInputs9(data, settings) {
+    const rows = Array.isArray(data) ? data : [];
+    const missing = REQUIRED_COLUMN_SETTINGS9.map((key) => settings[key]).filter(
+      (col) => !rows.some((row) => row[col] !== void 0)
+    );
+    if (missing.length) {
+      throw new Error(`Required variable(s) missing: ${missing.join(", ")}`);
+    }
+  }
+
+  // src/qt-explorer/configure.js
+  var VIEWS = [
+    { value: "central", label: "Central tendency" },
+    { value: "outlier", label: "Outlier scatter" },
+    { value: "categorical", label: "Categorical" }
+  ];
+  var STATISTICS = [
+    { value: "mean", label: "Mean" },
+    { value: "median", label: "Median" }
+  ];
+  var DISPLAY_MODES2 = [
+    { value: "delta", label: "\u0394 (change from baseline)" },
+    { value: "deltadelta", label: "\u0394\u0394 (placebo-corrected)" }
+  ];
+  var TIMEPOINT_MAX = "__qt_max";
+  var DEFAULT_SETTINGS9 = {
+    id_col: "USUBJID",
+    measure_col: "TEST",
+    value_col: "STRESN",
+    baseline_col: "BASE",
+    change_col: "CHG",
+    unit_col: "STRESU",
+    arm_col: "ARM",
+    placebo_arm: null,
+    visit_col: "VISIT",
+    visitn_col: "VISITNUM",
+    baseline_flag_col: "ABLFL",
+    measures: ["QTcF", "QTcB", "Heart Rate"],
+    qtc_measures: ["QTcF", "QTcB"],
+    start_measure: "QTcF",
+    absolute_thresholds: [450, 480, 500],
+    change_thresholds: [30, 60],
+    reference_threshold: 10,
+    ci_level: 0.9,
+    filters: [],
+    width: "100%",
+    height: 460
+  };
+  function arrayify7(value) {
+    if (value === void 0 || value === null || value === "") return [];
+    return Array.isArray(value) ? value : [value];
+  }
+  function fieldSpec7(value, fallbackLabel) {
+    if (typeof value === "string") return { value_col: value, label: fallbackLabel || value };
+    return { ...value, value_col: value.value_col, label: value.label || value.value_col };
+  }
+  function syncSettings9(settings) {
+    const synced = { ...DEFAULT_SETTINGS9, ...settings };
+    synced.filters = arrayify7(synced.filters).map((value) => fieldSpec7(value)).filter((d) => d.value_col);
+    synced.measures = arrayify7(synced.measures);
+    synced.qtc_measures = arrayify7(synced.qtc_measures);
+    synced.absolute_thresholds = arrayify7(synced.absolute_thresholds).map(Number).filter((n) => Number.isFinite(n)).sort((a, b) => a - b);
+    synced.change_thresholds = arrayify7(synced.change_thresholds).map(Number).filter((n) => Number.isFinite(n)).sort((a, b) => a - b);
+    if (!synced.start_measure || !synced.measures.includes(synced.start_measure)) {
+      synced.start_measure = synced.measures[0] || null;
+    }
+    if (!Number.isFinite(synced.ci_level) || synced.ci_level <= 0 || synced.ci_level >= 1) {
+      synced.ci_level = DEFAULT_SETTINGS9.ci_level;
+    }
+    return synced;
+  }
+  function zForCi(ciLevel) {
+    const table = [
+      [0.8, 1.2816],
+      [0.9, 1.6449],
+      [0.95, 1.96],
+      [0.98, 2.3263],
+      [0.99, 2.5758]
+    ];
+    if (!Number.isFinite(ciLevel)) return 1.6449;
+    if (ciLevel <= table[0][0]) return table[0][1];
+    if (ciLevel >= table[table.length - 1][0]) return table[table.length - 1][1];
+    for (let i = 0; i < table.length - 1; i += 1) {
+      const [lo, zLo] = table[i];
+      const [hi, zHi] = table[i + 1];
+      if (ciLevel >= lo && ciLevel <= hi) {
+        return zLo + (zHi - zLo) * (ciLevel - lo) / (hi - lo);
+      }
+    }
+    return 1.6449;
+  }
+  function resolvePlaceboArm(arms, placeboSetting) {
+    if (placeboSetting && arms.includes(placeboSetting)) return placeboSetting;
+    return arms.find((arm) => /placebo/i.test(arm)) || null;
+  }
+
+  // src/qt-explorer/structureData.js
+  function unique8(values) {
+    return [
+      ...new Set(values.filter((value) => value !== void 0 && value !== null && value !== ""))
+    ];
+  }
+  function mean6(values) {
+    if (!values.length) return Number.NaN;
+    return values.reduce((sum, value) => sum + value, 0) / values.length;
+  }
+  function sd4(values) {
+    if (values.length < 2) return Number.NaN;
+    const m = mean6(values);
+    return Math.sqrt(
+      values.reduce((sum, value) => sum + Math.pow(value - m, 2), 0) / (values.length - 1)
+    );
+  }
+  function quantile5(values, p) {
+    if (!values.length) return Number.NaN;
+    const sorted = [...values].sort((a, b) => a - b);
+    const idx = (sorted.length - 1) * p;
+    const lo = Math.floor(idx);
+    const hi = Math.ceil(idx);
+    if (lo === hi) return sorted[lo];
+    return sorted[lo] + (sorted[hi] - sorted[lo]) * (idx - lo);
+  }
+  function median3(values) {
+    return quantile5(values, 0.5);
+  }
+  var isFiniteNum = (v) => v !== "" && v !== null && v !== void 0 && Number.isFinite(Number(v));
+  function cleanData7(data, settings) {
+    const source = Array.isArray(data) ? data : [];
+    const hasFlagCol = !!settings.baseline_flag_col && source.some((row) => row[settings.baseline_flag_col] !== void 0);
+    const rows = [];
+    let removed = 0;
+    for (const row of source) {
+      const rawValue = row[settings.value_col];
+      if (!isFiniteNum(rawValue)) {
+        removed += 1;
+        continue;
+      }
+      const value = Number(rawValue);
+      const baselineRaw = row[settings.baseline_col];
+      const baseline = isFiniteNum(baselineRaw) ? Number(baselineRaw) : Number.NaN;
+      const changeRaw = settings.change_col ? row[settings.change_col] : void 0;
+      const change = isFiniteNum(changeRaw) ? Number(changeRaw) : Number.isFinite(baseline) ? value - baseline : Number.NaN;
+      const flag = hasFlagCol ? row[settings.baseline_flag_col] : void 0;
+      const isBaseline = hasFlagCol ? flag === "Y" || flag === "y" : Number.isFinite(change) && change === 0;
+      rows.push({
+        ...row,
+        __qt_measure: row[settings.measure_col],
+        __qt_value: value,
+        __qt_baseline: baseline,
+        __qt_change: change,
+        __qt_arm: row[settings.arm_col],
+        __qt_visit: row[settings.visit_col],
+        __qt_postBaseline: !isBaseline
+      });
+    }
+    return { rows, removed };
+  }
+  function forMeasure(rows, measure) {
+    return rows.filter((row) => row.__qt_measure === measure);
+  }
+  function measuresPresent(rows) {
+    return unique8(rows.map((row) => row.__qt_measure));
+  }
+  function armsPresent(rows, placeboArm) {
+    const arms = unique8(rows.map((row) => row.__qt_arm)).map(String);
+    const rest = arms.filter((arm) => arm !== placeboArm).sort();
+    return placeboArm && arms.includes(placeboArm) ? [placeboArm, ...rest] : rest;
+  }
+  function orderVisits(rows, settings) {
+    const seen = /* @__PURE__ */ new Map();
+    for (const row of rows) {
+      const visit = row.__qt_visit;
+      if (visit === void 0 || visit === null || visit === "") continue;
+      if (!seen.has(visit)) {
+        const n = settings.visitn_col ? Number(row[settings.visitn_col]) : Number.NaN;
+        seen.set(visit, Number.isFinite(n) ? n : Number.POSITIVE_INFINITY);
+      }
+    }
+    return [...seen.keys()].sort((a, b) => {
+      const na = seen.get(a);
+      const nb = seen.get(b);
+      if (na === nb) return String(a).localeCompare(String(b));
+      return na - nb;
+    });
+  }
+  function applyFilters7(rows, filterState) {
+    const active = Object.entries(filterState || {}).filter(
+      ([, value]) => value !== void 0 && value !== null && value !== ""
+    );
+    if (!active.length) return rows;
+    return rows.filter((row) => active.every(([col, value]) => String(row[col]) === String(value)));
+  }
+  function centralTendencySeries(measureRows, options) {
+    const {
+      statistic = "mean",
+      mode = "delta",
+      arms = [],
+      visitOrder = [],
+      placeboArm = null
+    } = options;
+    const z = zForCi(options.ciLevel);
+    const cells = /* @__PURE__ */ new Map();
+    for (const visit of visitOrder) cells.set(visit, /* @__PURE__ */ new Map());
+    for (const row of measureRows) {
+      if (!Number.isFinite(row.__qt_change)) continue;
+      const visit = row.__qt_visit;
+      if (!cells.has(visit)) continue;
+      const armMap = cells.get(visit);
+      const arm = String(row.__qt_arm);
+      if (!armMap.has(arm)) armMap.set(arm, []);
+      armMap.get(arm).push(row.__qt_change);
+    }
+    const stat = (visit, arm) => {
+      const values = (cells.get(visit) || /* @__PURE__ */ new Map()).get(arm) || [];
+      if (!values.length) return null;
+      const n = values.length;
+      const m = mean6(values);
+      const s = sd4(values);
+      const se = Number.isFinite(s) ? s / Math.sqrt(n) : Number.NaN;
+      return { n, mean: m, median: median3(values), sd: s, se };
+    };
+    const armsForSeries = mode === "deltadelta" ? arms.filter((arm) => arm !== placeboArm) : arms;
+    const series = armsForSeries.map((arm) => {
+      const points = [];
+      for (const visit of visitOrder) {
+        const cell2 = stat(visit, arm);
+        if (!cell2) continue;
+        if (mode === "deltadelta") {
+          const pbo = stat(visit, placeboArm);
+          if (!pbo) continue;
+          const value = statistic === "median" ? cell2.median - pbo.median : cell2.mean - pbo.mean;
+          const seDiff = Math.sqrt(cell2.se * cell2.se + pbo.se * pbo.se);
+          const ci = statistic === "mean" && Number.isFinite(seDiff) ? { lo: value - z * seDiff, hi: value + z * seDiff } : { lo: Number.NaN, hi: Number.NaN };
+          points.push({ visit, value, n: cell2.n, lo: ci.lo, hi: ci.hi });
+        } else {
+          const value = statistic === "median" ? cell2.median : cell2.mean;
+          const ci = statistic === "mean" && Number.isFinite(cell2.se) ? { lo: value - z * cell2.se, hi: value + z * cell2.se } : { lo: Number.NaN, hi: Number.NaN };
+          points.push({ visit, value, n: cell2.n, lo: ci.lo, hi: ci.hi });
+        }
+      }
+      return { arm, points };
+    });
+    return { mode, statistic, visitOrder, placeboArm, series };
+  }
+  function ichE14Metric(tendency, referenceThreshold) {
+    if (!tendency || tendency.mode !== "deltadelta" || tendency.statistic !== "mean") return [];
+    return tendency.series.map(({ arm, points }) => {
+      let maxUpper = Number.NEGATIVE_INFINITY;
+      let visit = null;
+      for (const point of points) {
+        if (Number.isFinite(point.hi) && point.hi > maxUpper) {
+          maxUpper = point.hi;
+          visit = point.visit;
+        }
+      }
+      const has = Number.isFinite(maxUpper);
+      return {
+        arm,
+        maxUpper: has ? maxUpper : Number.NaN,
+        visit,
+        exceeds: has && maxUpper >= referenceThreshold
+      };
+    });
+  }
+  function peakVisits(tendency) {
+    const peaks = /* @__PURE__ */ new Map();
+    if (!tendency) return peaks;
+    for (const { arm, points } of tendency.series) {
+      let best = null;
+      for (const point of points) {
+        if (!Number.isFinite(point.value)) continue;
+        if (!best || point.value > best.value) best = { visit: point.visit, value: point.value };
+      }
+      if (best) peaks.set(arm, best);
+    }
+    return peaks;
+  }
+  function subjectPoints(measureRows, options) {
+    const { timepoint, idCol } = options;
+    const bySubject = /* @__PURE__ */ new Map();
+    for (const row of measureRows) {
+      const id = row[idCol];
+      if (timepoint === "__qt_max") {
+        if (!row.__qt_postBaseline) continue;
+        const current = bySubject.get(id);
+        if (!current || row.__qt_value > current.__qt_value) bySubject.set(id, row);
+      } else if (String(row.__qt_visit) === String(timepoint)) {
+        bySubject.set(id, row);
+      }
+    }
+    const points = [];
+    for (const [id, row] of bySubject) {
+      if (!Number.isFinite(row.__qt_baseline) || !Number.isFinite(row.__qt_change)) continue;
+      points.push({
+        id: String(id),
+        arm: String(row.__qt_arm),
+        baseline: row.__qt_baseline,
+        value: row.__qt_value,
+        change: row.__qt_change,
+        visit: row.__qt_visit
+      });
+    }
+    return points;
+  }
+  function subjectExtremes(measureRows, idCol) {
+    const extremes = /* @__PURE__ */ new Map();
+    for (const row of measureRows) {
+      if (!row.__qt_postBaseline) continue;
+      const id = row[idCol];
+      const entry = extremes.get(id) || {
+        arm: String(row.__qt_arm),
+        maxValue: Number.NEGATIVE_INFINITY,
+        maxChange: Number.NEGATIVE_INFINITY
+      };
+      if (Number.isFinite(row.__qt_value)) entry.maxValue = Math.max(entry.maxValue, row.__qt_value);
+      if (Number.isFinite(row.__qt_change))
+        entry.maxChange = Math.max(entry.maxChange, row.__qt_change);
+      extremes.set(id, entry);
+    }
+    return extremes;
+  }
+  function classifyThresholds(measureRows, options) {
+    const { idCol, arms, absoluteThresholds = [], changeThresholds = [] } = options;
+    const extremes = subjectExtremes(measureRows, idCol);
+    const denominators = {};
+    arms.forEach((arm) => {
+      denominators[arm] = 0;
+    });
+    let allDenom = 0;
+    for (const entry of extremes.values()) {
+      if (denominators[entry.arm] === void 0) denominators[entry.arm] = 0;
+      denominators[entry.arm] += 1;
+      allDenom += 1;
+    }
+    const buildRow = (kind, threshold, pick) => {
+      const byArm = {};
+      let allCount = 0;
+      arms.forEach((arm) => {
+        byArm[arm] = 0;
+      });
+      for (const entry of extremes.values()) {
+        if (pick(entry) > threshold) {
+          if (byArm[entry.arm] === void 0) byArm[entry.arm] = 0;
+          byArm[entry.arm] += 1;
+          allCount += 1;
+        }
+      }
+      const cells = {};
+      arms.forEach((arm) => {
+        const denom = denominators[arm] || 0;
+        cells[arm] = { count: byArm[arm], denom, percent: denom ? byArm[arm] / denom * 100 : 0 };
+      });
+      cells.All = {
+        count: allCount,
+        denom: allDenom,
+        percent: allDenom ? allCount / allDenom * 100 : 0
+      };
+      return {
+        kind,
+        threshold,
+        label: kind === "absolute" ? `> ${threshold} ms` : `\u0394 > ${threshold} ms`,
+        cells
+      };
+    };
+    const rows = [
+      ...absoluteThresholds.map((t) => buildRow("absolute", t, (e) => e.maxValue)),
+      ...changeThresholds.map((t) => buildRow("change", t, (e) => e.maxChange))
+    ];
+    return { arms, denominators, allDenom, rows };
+  }
+  function placeboArmFor(rows, placeboSetting) {
+    return resolvePlaceboArm(unique8(rows.map((row) => String(row.__qt_arm))), placeboSetting);
+  }
+
+  // src/qt-explorer/getScales.js
+  var CORRECTION_SUFFIX = { QTcF: "Fridericia", QTcB: "Bazett" };
+  var ARM_POINT_STYLES = ["circle", "triangle", "rectRot", "rect", "star", "crossRot"];
+  function correctionSuffix(measure) {
+    return CORRECTION_SUFFIX[measure] || null;
+  }
+  function isQtcMeasure(measure, qtcMeasures) {
+    return (qtcMeasures || []).includes(measure);
+  }
+  function measureUnit(measure, qtcMeasures) {
+    return isQtcMeasure(measure, qtcMeasures) ? "ms" : "bpm";
+  }
+  function centralAxisTitle(measure, mode, qtcMeasures) {
+    const prefix = mode === "deltadelta" ? "\u0394\u0394" : "\u0394";
+    const suffix = correctionSuffix(measure);
+    const unit = measureUnit(measure, qtcMeasures);
+    return `${prefix} ${measure} (${unit})${suffix ? ` \u2212 ${suffix}` : ""}`;
+  }
+  function scatterAxisTitles(measure, qtcMeasures) {
+    const suffix = correctionSuffix(measure);
+    const unit = measureUnit(measure, qtcMeasures);
+    const tail = suffix ? ` \u2212 ${suffix}` : "";
+    return {
+      x: `Baseline ${measure} (${unit})${tail}`,
+      y: `${measure} change (${unit})${tail}`
+    };
+  }
+  function formatNumber5(value) {
+    if (!Number.isFinite(value)) return "NA";
+    return Number(value.toFixed(1)).toString();
+  }
+  function formatSigned(value) {
+    if (!Number.isFinite(value)) return "NA";
+    const rounded = Number(value.toFixed(1));
+    const sign2 = rounded > 0 ? "+" : rounded < 0 ? "\u2212" : "";
+    return `${sign2}${Math.abs(rounded)}`;
+  }
+  function paddedDomain(values, include = [], pad = 0.08) {
+    const all = [...values, ...include].filter((v) => Number.isFinite(v));
+    if (!all.length) return [0, 1];
+    let min = Math.min(...all);
+    let max = Math.max(...all);
+    if (min === max) {
+      min -= 1;
+      max += 1;
+    }
+    const span = max - min;
+    return [min - span * pad, max + span * pad];
+  }
+  function armPointStyles(arms) {
+    const styles = /* @__PURE__ */ new Map();
+    (arms || []).forEach((arm, index) => {
+      styles.set(String(arm), ARM_POINT_STYLES[index % ARM_POINT_STYLES.length]);
+    });
+    return styles;
+  }
+
+  // src/qt-explorer/getPlugins.js
+  var ARM_COLORS = [
+    "#1f78b4",
+    "#e31a1c",
+    "#33a02c",
+    "#ff7f00",
+    "#6a3d9a",
+    "#b15928",
+    "#00838f",
+    "#c2185b"
+  ];
+  var THRESHOLD_COLOR = "rgba(100, 116, 139, 0.75)";
+  function hexToRgba4(hex2, opacity) {
+    const clean = hex2.replace("#", "");
+    const r = parseInt(clean.slice(0, 2), 16);
+    const g = parseInt(clean.slice(2, 4), 16);
+    const b = parseInt(clean.slice(4, 6), 16);
+    return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+  }
+  function armColorScale(arms) {
+    const scale = /* @__PURE__ */ new Map();
+    (arms || []).forEach((arm, index) => {
+      scale.set(String(arm), ARM_COLORS[index % ARM_COLORS.length]);
+    });
+    return scale;
+  }
+  function scatterTooltip(point, measure) {
+    return [
+      `Participant: ${point.id}`,
+      `Arm: ${point.arm}`,
+      `Baseline ${measure}: ${formatNumber5(point.baseline)}`,
+      `${measure}: ${formatNumber5(point.value)}`,
+      `Change: ${formatSigned(point.change)}`,
+      `Visit: ${point.visit}`
+    ];
+  }
+  function thresholdScatterPlugin(instance) {
+    return {
+      id: `qt-thresholds-${Math.random().toString(36).slice(2)}`,
+      beforeDatasetsDraw(chart) {
+        chart.$qtThresholds = null;
+        const spec = instance.scatterThresholds || {};
+        const { ctx, chartArea, scales } = chart;
+        if (!scales.x || !scales.y) return;
+        const xMin = scales.x.min;
+        const xMax = scales.x.max;
+        if (!Number.isFinite(xMin) || !Number.isFinite(xMax) || xMin === xMax) return;
+        const recorded = { zero: false, absolute: [], change: [] };
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(chartArea.left, chartArea.top, chartArea.width, chartArea.height);
+        ctx.clip();
+        const yZero = scales.y.getPixelForValue(0);
+        if (yZero >= chartArea.top && yZero <= chartArea.bottom) {
+          ctx.strokeStyle = "rgba(71, 85, 105, 0.9)";
+          ctx.lineWidth = 1;
+          ctx.setLineDash([]);
+          ctx.beginPath();
+          ctx.moveTo(chartArea.left, yZero);
+          ctx.lineTo(chartArea.right, yZero);
+          ctx.stroke();
+          recorded.zero = true;
+        }
+        ctx.strokeStyle = THRESHOLD_COLOR;
+        ctx.fillStyle = "rgba(71, 85, 105, 0.85)";
+        ctx.lineWidth = 1;
+        ctx.setLineDash([5, 4]);
+        ctx.font = "11px system-ui, sans-serif";
+        if (spec.showAbsolute) {
+          for (const threshold of spec.absolute || []) {
+            const left = {
+              x: scales.x.getPixelForValue(xMin),
+              y: scales.y.getPixelForValue(threshold - xMin)
+            };
+            const right = {
+              x: scales.x.getPixelForValue(xMax),
+              y: scales.y.getPixelForValue(threshold - xMax)
+            };
+            ctx.beginPath();
+            ctx.moveTo(left.x, left.y);
+            ctx.lineTo(right.x, right.y);
+            ctx.stroke();
+            const enters = left.y <= chartArea.bottom && right.y >= chartArea.top;
+            if (enters) {
+              ctx.textAlign = "left";
+              ctx.textBaseline = "bottom";
+              let labelX = chartArea.left + 4;
+              let labelY = left.y - 2;
+              if (left.y < chartArea.top) {
+                const topBaseline = threshold - scales.y.max;
+                labelX = Math.min(
+                  Math.max(scales.x.getPixelForValue(topBaseline) + 4, chartArea.left + 4),
+                  chartArea.right - 44
+                );
+                labelY = chartArea.top + 12;
+              }
+              ctx.fillText(`${threshold} ms`, labelX, labelY);
+            }
+            recorded.absolute.push(threshold);
+          }
+        }
+        if (spec.showChange) {
+          ctx.textAlign = "right";
+          ctx.textBaseline = "bottom";
+          for (const threshold of spec.change || []) {
+            const y = scales.y.getPixelForValue(threshold);
+            if (y < chartArea.top || y > chartArea.bottom) continue;
+            ctx.beginPath();
+            ctx.moveTo(chartArea.left, y);
+            ctx.lineTo(chartArea.right, y);
+            ctx.stroke();
+            ctx.fillText(`\u0394 ${threshold} ms`, chartArea.right - 4, y - 2);
+            recorded.change.push(threshold);
+          }
+        }
+        ctx.restore();
+        chart.$qtThresholds = recorded;
+      }
+    };
+  }
+  function centralTendencyPlugin(instance) {
+    return {
+      id: `qt-central-${Math.random().toString(36).slice(2)}`,
+      beforeDatasetsDraw(chart) {
+        chart.$qtCentral = null;
+        const spec = instance.centralSpec;
+        if (!spec) return;
+        const { ctx, chartArea, scales } = chart;
+        if (!scales.x || !scales.y) return;
+        const xOf = (visit) => scales.x.getPixelForValue(spec.visitIndex.get(visit));
+        const yOf = (value) => scales.y.getPixelForValue(value);
+        const recorded = { bands: [], reference: null, peaks: [] };
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(chartArea.left, chartArea.top, chartArea.width, chartArea.height);
+        ctx.clip();
+        for (const band of spec.series) {
+          const withCi = band.points.filter(
+            (p) => Number.isFinite(p.lo) && Number.isFinite(p.hi) && spec.visitIndex.has(p.visit)
+          );
+          if (withCi.length < 2) continue;
+          const color2 = spec.colorScale.get(String(band.arm)) || ARM_COLORS[0];
+          ctx.fillStyle = hexToRgba4(color2, 0.14);
+          ctx.beginPath();
+          withCi.forEach((p, i) => {
+            const x = xOf(p.visit);
+            const y = yOf(p.hi);
+            if (i === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+          });
+          for (let i = withCi.length - 1; i >= 0; i -= 1) {
+            ctx.lineTo(xOf(withCi[i].visit), yOf(withCi[i].lo));
+          }
+          ctx.closePath();
+          ctx.fill();
+          recorded.bands.push({ arm: band.arm, n: withCi.length });
+        }
+        if (spec.showReference) {
+          const y = yOf(spec.referenceThreshold);
+          if (y >= chartArea.top && y <= chartArea.bottom) {
+            ctx.strokeStyle = THRESHOLD_COLOR;
+            ctx.lineWidth = 1;
+            ctx.setLineDash([5, 4]);
+            ctx.beginPath();
+            ctx.moveTo(chartArea.left, y);
+            ctx.lineTo(chartArea.right, y);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.fillStyle = "rgba(71, 85, 105, 0.85)";
+            ctx.font = "11px system-ui, sans-serif";
+            ctx.textAlign = "right";
+            ctx.textBaseline = "bottom";
+            ctx.fillText(spec.referenceLabel, chartArea.right - 4, y - 2);
+            recorded.reference = spec.referenceThreshold;
+          }
+        }
+        if (spec.peak && spec.visitIndex.has(spec.peak.visit)) {
+          const x = xOf(spec.peak.visit);
+          if (x >= chartArea.left && x <= chartArea.right) {
+            const color2 = spec.colorScale.get(String(spec.peak.arm)) || ARM_COLORS[0];
+            ctx.strokeStyle = hexToRgba4(color2, 0.7);
+            ctx.lineWidth = 1;
+            ctx.setLineDash([2, 3]);
+            ctx.beginPath();
+            ctx.moveTo(x, chartArea.top);
+            ctx.lineTo(x, chartArea.bottom);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.fillStyle = hexToRgba4(color2, 0.95);
+            ctx.font = "10px system-ui, sans-serif";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "top";
+            ctx.fillText("Peak-effect visit", x, chartArea.top + 2);
+            recorded.peaks.push({ arm: spec.peak.arm, visit: spec.peak.visit });
+          }
+        }
+        ctx.restore();
+        chart.$qtCentral = recorded;
+      }
+    };
+  }
+
+  // src/qt-explorer.js
+  Chart.register(ScatterController, PointElement, LineElement, LinearScale, plugin_tooltip, plugin_legend);
+  var QT_STYLE_ID = "safety-viz-qt-explorer-styles";
+  var QT_STYLES = `
+.safety-qt-explorer .qt-legend{display:flex;flex-wrap:wrap;align-items:center;gap:.35rem .9rem;font-size:.8rem;color:#52616f;margin:0 0 .5rem}
+.safety-qt-explorer .qt-legend-item{display:inline-flex;align-items:center;gap:.3rem}
+.safety-qt-explorer .qt-note{color:#9a3412;font-size:.85rem;margin:0 0 .5rem}
+.safety-qt-explorer .qt-ich{margin:.6rem 0 0;font-size:.85rem;color:#1f2933}
+.safety-qt-explorer .qt-ich table,.safety-qt-explorer .qt-table table{border-collapse:collapse;font-size:.85rem;background:#fff}
+.safety-qt-explorer .qt-ich th,.safety-qt-explorer .qt-ich td,.safety-qt-explorer .qt-table th,.safety-qt-explorer .qt-table td{border-bottom:1px solid #e3e8ee;padding:.35rem .6rem;text-align:left}
+.safety-qt-explorer .qt-table th.qt-num,.safety-qt-explorer .qt-table td.qt-num,.safety-qt-explorer .qt-ich td.qt-num{text-align:right;font-variant-numeric:tabular-nums}
+.safety-qt-explorer .qt-table th{border-bottom:2px solid #d8dee4;font-size:.75rem;text-transform:uppercase;letter-spacing:.03em;color:#52616f;white-space:nowrap}
+.safety-qt-explorer .qt-table caption,.safety-qt-explorer .qt-ich caption{caption-side:top;text-align:left;font-weight:600;margin-bottom:.35rem}
+.safety-qt-explorer .qt-flag{color:#9a3412;font-weight:600}
+.safety-qt-explorer .qt-empty{display:none}
+.safety-qt-explorer .qt-view-list{display:flex;flex-direction:column;gap:.35rem}
+.safety-qt-explorer .qt-view-option{display:block;width:100%;text-align:left;padding:.45rem .55rem;border:1px solid #d8dee4;border-radius:8px;background:#fff;font:inherit;font-size:.85rem;line-height:1.3;color:#1f2933;cursor:pointer}
+.safety-qt-explorer .qt-view-option:hover{border-color:#b8c0cc;background:#f6f8fa}
+.safety-qt-explorer .qt-view-option.is-active{border-color:#0b62a4;background:#eaf2fb;color:#0b3d63;font-weight:600;box-shadow:inset 0 0 0 1px #0b62a4}
+.safety-qt-explorer .qt-view-option:focus-visible{outline:2px solid #0b62a4;outline-offset:1px}
+`;
+  function applyQtStyles() {
+    if (typeof document === "undefined" || document.getElementById(QT_STYLE_ID)) return;
+    const style = document.createElement("style");
+    style.id = QT_STYLE_ID;
+    style.textContent = QT_STYLES;
+    document.head.append(style);
+  }
+  var SafetyQtExplorer = class {
+    constructor(element = "body", settings = {}) {
+      this.element = typeof element === "string" ? document.querySelector(element) : element;
+      if (!this.element) throw new Error(`Safety QT Explorer target not found: ${element}`);
+      this.settings = syncSettings9(settings);
+      this.rawData = [];
+      this.cleanRows = [];
+      this.filteredRows = [];
+      this.charts = [];
+      this.arms = [];
+      this.availableMeasures = [];
+      this.state = {
+        view: "central",
+        measure: this.settings.start_measure,
+        statistic: "mean",
+        mode: "delta",
+        timepoint: TIMEPOINT_MAX,
+        filters: {}
+      };
+      this.renderShellDom();
+    }
+    /** Build the shell + module-owned slots (legend, note, table, ICH callout). @private */
+    renderShellDom() {
+      Object.assign(
+        this,
+        renderShell(this.element, {
+          moduleClass: "safety-qt-explorer",
+          onToggle: () => this.resize()
+        })
+      );
+      applyQtStyles();
+      this.legendEl = createElement("div", "qt-legend");
+      this.noteEl = createElement("div", "qt-note qt-empty");
+      this.main.insertBefore(this.noteEl, this.chartWrap);
+      this.main.insertBefore(this.legendEl, this.chartWrap);
+      this.tableWrap = createElement("div", "qt-table qt-empty");
+      this.ichWrap = createElement("div", "qt-ich qt-empty");
+      this.chartWrap.after(this.ichWrap);
+      this.ichWrap.after(this.tableWrap);
+    }
+    /**
+     * Load data and render — an alias for setData keeping the two-step
+     * create-then-init call shape (QT-API-001).
+     * @param {Object[]} data Long-format ECG records matching the qt-explorer data contract.
+     * @returns {SafetyQtExplorer} The instance, for chaining.
+     */
+    init(data) {
+      return this.setData(data);
+    }
+    /**
+     * Replace the bound data and re-render: validate (throwing and rendering the
+     * message into the target when required columns are missing), clean, rebuild
+     * controls, and render the active view.
+     * @param {Object[]} data Long-format ECG records matching the qt-explorer data contract.
+     * @returns {SafetyQtExplorer} The instance, for chaining.
+     */
+    setData(data) {
+      this.rawData = Array.isArray(data) ? data : [];
+      this.validateAndCleanData();
+      this.buildControls();
+      this.render();
+      return this;
+    }
+    /**
+     * Merge setting overrides, re-normalize (same rules as the factory), rebuild
+     * controls, and re-render.
+     * @param {QtExplorerSettings} settings Setting overrides to merge.
+     * @returns {SafetyQtExplorer} The instance, for chaining.
+     */
+    setSettings(settings) {
+      this.settings = syncSettings9({ ...this.settings, ...settings });
+      if ("start_measure" in settings || "measures" in settings) {
+        this.state.measure = this.settings.start_measure;
+      }
+      if (this.rawData.length) this.validateAndCleanData();
+      this.buildControls();
+      this.render();
+      return this;
+    }
+    /** Validate + clean; resolve measures, arms, placebo, visits, and prune stale state. @private */
+    validateAndCleanData() {
+      try {
+        checkInputs9(this.rawData, this.settings);
+      } catch (error) {
+        this.destroyCharts();
+        this.element.innerHTML = `<div class="sv-warning">${error.message}</div>`;
+        throw error;
+      }
+      const { rows, removed } = cleanData7(this.rawData, this.settings);
+      this.cleanRows = rows;
+      this.removedRecords = removed;
+      if (removed) console.warn(`${removed} missing or non-numeric results have been removed.`);
+      this.placeboArm = placeboArmFor(rows, this.settings.placebo_arm);
+      this.arms = armsPresent(rows, this.placeboArm);
+      this.colorScale = armColorScale(this.arms);
+      this.pointStyles = armPointStyles(this.arms);
+      const measures = measuresPresent(rows);
+      const available = this.settings.measures.filter((m) => measures.includes(m));
+      this.availableMeasures = available.length ? available : measures;
+      if (!this.availableMeasures.includes(this.state.measure)) {
+        this.state.measure = this.availableMeasures[0];
+      }
+      const configured = new Set(this.settings.filters.map((f) => f.value_col));
+      for (const col of Object.keys(this.state.filters)) {
+        const present = rows.some((row) => String(row[col]) === String(this.state.filters[col]));
+        if (!configured.has(col) || !present) delete this.state.filters[col];
+      }
+    }
+    /**
+     * Render the View selector into its own section as a visible list of options
+     * (QT-CTRL-001): one styled, clickable row per view with the active view
+     * highlighted, so all three views are always shown rather than hidden inside
+     * a dropdown (matching the hep-explorer view selector).
+     * @param {Function} addSection The shell's section builder.
+     * @private
+     */
+    buildViewControl(addSection) {
+      const section = addSection("View");
+      const list = createElement("div", "qt-view-list");
+      VIEWS.forEach((view) => {
+        const active = view.value === this.state.view;
+        const optionButton = createElement(
+          "button",
+          `qt-view-option${active ? " is-active" : ""}`,
+          view.label
+        );
+        optionButton.type = "button";
+        optionButton.setAttribute("aria-pressed", String(active));
+        optionButton.onclick = () => {
+          if (this.state.view === view.value) return;
+          this.state.view = view.value;
+          this.buildControls();
+          this.render();
+        };
+        list.append(optionButton);
+      });
+      section.append(list);
+    }
+    /** Build the sidebar controls for the active view. @private */
+    buildControls() {
+      this.controls.innerHTML = "";
+      const { addSection, addControl } = controlBuilders(this.controls);
+      this.buildViewControl(addSection);
+      const section = addSection("Display");
+      const measureSelect = addControl("Correction", document.createElement("select"), section);
+      this.availableMeasures.forEach((m) => option(measureSelect, m, m, m === this.state.measure));
+      measureSelect.onchange = () => {
+        this.state.measure = measureSelect.value;
+        this.buildControls();
+        this.render();
+      };
+      if (this.state.view === "central") {
+        const statSelect = addControl("Statistic", document.createElement("select"), section);
+        STATISTICS.forEach(
+          (s) => option(statSelect, s.value, s.label, s.value === this.state.statistic)
+        );
+        statSelect.onchange = () => {
+          this.state.statistic = statSelect.value;
+          this.render();
+        };
+        const modeSelect = addControl("Display type", document.createElement("select"), section);
+        DISPLAY_MODES2.forEach(
+          (m) => option(modeSelect, m.value, m.label, m.value === this.state.mode)
+        );
+        modeSelect.onchange = () => {
+          this.state.mode = modeSelect.value;
+          this.render();
+        };
+      }
+      if (this.state.view === "outlier") {
+        const visits = this.postBaselineVisits();
+        if (this.state.timepoint !== TIMEPOINT_MAX && !visits.includes(this.state.timepoint)) {
+          this.state.timepoint = TIMEPOINT_MAX;
+        }
+        const tpSelect = addControl("Timepoint", document.createElement("select"), section);
+        option(
+          tpSelect,
+          TIMEPOINT_MAX,
+          "Maximum post-baseline",
+          this.state.timepoint === TIMEPOINT_MAX
+        );
+        visits.forEach((v) => option(tpSelect, v, v, this.state.timepoint === v));
+        tpSelect.onchange = () => {
+          this.state.timepoint = tpSelect.value;
+          this.render();
+        };
+      }
+      if (this.settings.filters.length) {
+        const filterSection = addSection("Filters");
+        this.settings.filters.forEach((filter) => {
+          const select = addControl(filter.label, document.createElement("select"), filterSection);
+          option(select, "", "All", !this.state.filters[filter.value_col]);
+          unique8(this.cleanRows.map((row) => row[filter.value_col])).map(String).sort().forEach(
+            (value) => option(select, value, value, this.state.filters[filter.value_col] === value)
+          );
+          select.onchange = () => {
+            if (select.value) this.state.filters[filter.value_col] = select.value;
+            else delete this.state.filters[filter.value_col];
+            this.render();
+          };
+        });
+      }
+    }
+    /** Post-baseline visit labels for the current measure. @private */
+    postBaselineVisits() {
+      const rows = forMeasure(this.cleanRows, this.state.measure).filter((r) => r.__qt_postBaseline);
+      return orderVisits(rows, this.settings);
+    }
+    /** Destroy live charts before re-rendering into the shared canvas. @private */
+    destroyCharts() {
+      this.charts.forEach((chart) => chart.destroy());
+      this.charts = [];
+      this.chart = null;
+    }
+    /**
+     * Render the active view into the shared canvas: destroy prior charts, apply
+     * the filters, and dispatch to the central-tendency, outlier, or categorical
+     * renderer.
+     * @returns {void}
+     */
+    render() {
+      this.destroyCharts();
+      this.legendEl.classList.add("qt-empty");
+      this.noteEl.classList.add("qt-empty");
+      this.tableWrap.classList.add("qt-empty");
+      this.ichWrap.classList.add("qt-empty");
+      this.footnote.textContent = "";
+      this.chartWrap.style.display = "";
+      if (!this.cleanRows.length) {
+        if (this.rawData.length) {
+          this.chartWrap.style.display = "none";
+          this.noteEl.classList.remove("qt-empty");
+          this.noteEl.textContent = "No usable ECG results after cleaning the data.";
+        }
+        return;
+      }
+      this.filteredRows = applyFilters7(this.cleanRows, this.state.filters);
+      if (this.state.view === "central") this.renderCentral();
+      else if (this.state.view === "outlier") this.renderOutlier();
+      else this.renderCategorical();
+    }
+    /** Show a "select a QTc correction" note and hide chart/table (HR, QTc-only views). @private */
+    showQtcOnlyNote() {
+      this.chartWrap.style.display = "none";
+      this.tableWrap.classList.add("qt-empty");
+      this.legendEl.classList.add("qt-empty");
+      this.noteEl.classList.remove("qt-empty");
+      this.noteEl.textContent = `${this.state.measure} is a heart-rate parameter \u2014 the outlier scatter and categorical exceedance apply to the QTc corrections (${this.settings.qtc_measures.join(", ")}). Select a QTc correction, or use the Central tendency view for heart rate.`;
+    }
+    /** Draw the "Treatments" arm legend (color swatch per arm). @private */
+    drawLegend(arms) {
+      this.legendEl.classList.remove("qt-empty");
+      this.legendEl.innerHTML = "";
+      this.legendEl.append(createElement("strong", null, "Treatments:"));
+      arms.forEach((arm) => {
+        const chip = createElement("span", "qt-legend-item");
+        const swatch = createElement("span");
+        swatch.style.cssText = `display:inline-block;width:.75rem;height:.75rem;border-radius:2px;background:${this.colorScale.get(
+          String(arm)
+        )}`;
+        chip.append(swatch, document.createTextNode(String(arm)));
+        this.legendEl.append(chip);
+      });
+    }
+    // ---- Central tendency (QT-CT-*) -----------------------------------------
+    /**
+     * Render the central-tendency view. @private
+     */
+    /**
+     * Render the central-tendency view. @private
+     */
+    /**
+     * Render the central-tendency view. @private
+     */
+    renderCentral() {
+      const measure = this.state.measure;
+      const isQtc = isQtcMeasure(measure, this.settings.qtc_measures);
+      const measureRows = forMeasure(this.filteredRows, measure);
+      const visitOrder = orderVisits(measureRows, this.settings);
+      const tendency = centralTendencySeries(measureRows, {
+        statistic: this.state.statistic,
+        mode: this.state.mode,
+        arms: this.arms,
+        visitOrder,
+        placeboArm: this.placeboArm,
+        ciLevel: this.settings.ci_level
+      });
+      if (this.state.mode === "deltadelta" && !this.placeboArm) {
+        this.chartWrap.style.display = "none";
+        this.noteEl.classList.remove("qt-empty");
+        this.noteEl.textContent = "\u0394\u0394 (placebo-corrected) needs a placebo arm; none was found. Switch to \u0394, or set placebo_arm.";
+        return;
+      }
+      const visitIndex = new Map(visitOrder.map((visit, index) => [visit, index]));
+      const seriesArms = tendency.series.map((s) => s.arm);
+      const datasets = tendency.series.map((band) => {
+        const color2 = this.colorScale.get(String(band.arm)) || ARM_COLORS[0];
+        const points = band.points.filter((p) => visitIndex.has(p.visit) && Number.isFinite(p.value)).map((p) => ({ x: visitIndex.get(p.visit), y: p.value, __point: p, __arm: band.arm }));
+        return {
+          label: band.arm,
+          data: points,
+          showLine: true,
+          borderColor: color2,
+          backgroundColor: color2,
+          pointBackgroundColor: color2,
+          pointBorderColor: color2,
+          pointStyle: this.pointStyles.get(String(band.arm)) || "circle",
+          pointRadius: 3,
+          pointHoverRadius: 5,
+          borderWidth: 2,
+          tension: 0
+        };
+      });
+      const peaks = peakVisits(tendency);
+      let peak = null;
+      for (const [arm, p] of peaks) {
+        if (!peak || p.value > peak.value) peak = { arm, visit: p.visit, value: p.value };
+      }
+      const showReference = isQtc;
+      this.centralSpec = {
+        visitIndex,
+        series: tendency.series,
+        colorScale: this.colorScale,
+        showReference,
+        referenceThreshold: this.settings.reference_threshold,
+        referenceLabel: this.state.mode === "deltadelta" ? `ICH-E14 reference (${this.settings.reference_threshold} ms)` : `Step 1a screening (${this.settings.reference_threshold} ms)`,
+        peak
+      };
+      const values = tendency.series.flatMap(
+        (s) => s.points.flatMap((p) => [p.value, p.lo, p.hi].filter(Number.isFinite))
+      );
+      const yDomain = paddedDomain(
+        values,
+        showReference ? [0, this.settings.reference_threshold] : [0]
+      );
+      this.chart = new Chart(this.canvas.getContext("2d"), {
+        type: "scatter",
+        data: { datasets },
+        options: {
+          maintainAspectRatio: false,
+          responsive: true,
+          animation: false,
+          plugins: {
+            legend: { display: false },
+            title: {
+              display: true,
+              text: `${this.state.mode === "deltadelta" ? "\u0394\u0394" : "\u0394"} ${measure} \u2014 ${this.state.statistic === "mean" ? "Mean" : "Median"} over time by arm`
+            },
+            tooltip: {
+              callbacks: {
+                title: () => "",
+                label: (ctx) => {
+                  const p = ctx.raw && ctx.raw.__point;
+                  if (!p) return "";
+                  const lines = [
+                    `${ctx.raw.__arm} @ ${p.visit}`,
+                    `${formatSigned(p.value)} (n=${p.n})`
+                  ];
+                  if (Number.isFinite(p.lo) && Number.isFinite(p.hi)) {
+                    lines.push(
+                      `${Math.round(this.settings.ci_level * 100)}% CI ${formatSigned(p.lo)}, ${formatSigned(p.hi)}`
+                    );
+                  }
+                  return lines;
+                }
+              }
+            }
+          },
+          scales: {
+            x: {
+              type: "linear",
+              min: -0.5,
+              max: Math.max(visitOrder.length - 0.5, 0.5),
+              offset: false,
+              grid: { display: false },
+              title: { display: true, text: "Visit" },
+              ticks: {
+                stepSize: 1,
+                autoSkip: false,
+                maxRotation: 45,
+                callback: (value) => Number.isInteger(value) ? visitOrder[value] ?? "" : ""
+              },
+              afterBuildTicks: (axis) => {
+                axis.ticks = visitOrder.map((_, index) => ({ value: index }));
+              }
+            },
+            y: {
+              type: "linear",
+              min: yDomain[0],
+              max: yDomain[1],
+              title: {
+                display: true,
+                text: centralAxisTitle(measure, this.state.mode, this.settings.qtc_measures)
+              }
+            }
+          }
+        },
+        plugins: [centralTendencyPlugin(this)]
+      });
+      this.charts.push(this.chart);
+      this.drawLegend(seriesArms);
+      this.drawIchCallout(tendency, isQtc);
+      this.setCentralFootnote(measure, isQtc);
+    }
+    /** ICH-E14 metric callout (mean + ΔΔ + QTc only). @private */
+    drawIchCallout(tendency, isQtc) {
+      if (!isQtc || this.state.mode !== "deltadelta" || this.state.statistic !== "mean") return;
+      const metric = ichE14Metric(tendency, this.settings.reference_threshold);
+      if (!metric.length) return;
+      this.ichWrap.classList.remove("qt-empty");
+      this.ichWrap.innerHTML = "";
+      const table = createElement("table");
+      const caption = createElement(
+        "caption",
+        null,
+        `ICH-E14 metric \u2014 largest upper bound of the two-sided ${Math.round(
+          this.settings.ci_level * 100
+        )}% CI for \u0394\u0394 ${this.state.measure} vs ${this.settings.reference_threshold} ms`
+      );
+      table.append(caption);
+      const thead = document.createElement("thead");
+      const hr = document.createElement("tr");
+      ["Arm", "Max upper CI (ms)", "Peak visit", ""].forEach(
+        (h) => hr.append(createElement("th", h.startsWith("Max") ? "qt-num" : null, h))
+      );
+      thead.append(hr);
+      table.append(thead);
+      const tbody = document.createElement("tbody");
+      metric.forEach((m) => {
+        const tr = document.createElement("tr");
+        tr.append(createElement("td", null, m.arm));
+        tr.append(createElement("td", "qt-num", formatNumber5(m.maxUpper)));
+        tr.append(createElement("td", null, m.visit || "\u2014"));
+        tr.append(
+          createElement("td", m.exceeds ? "qt-flag" : null, m.exceeds ? "\u2265 threshold" : "below")
+        );
+        tbody.append(tr);
+      });
+      table.append(tbody);
+      this.ichWrap.append(table);
+    }
+    /** Central-tendency footnote: method + mode caveats. @private */
+    setCentralFootnote(measure, isQtc) {
+      const parts = [];
+      if (this.state.mode === "deltadelta") {
+        parts.push(
+          "\u0394\u0394 is the exploratory difference of mean changes (arm \u2212 placebo); the CI is a large-sample normal approximation, not the regulatory ANCOVA/MMRM bound."
+        );
+      }
+      if (measure === "QTcB") {
+        parts.push(
+          "QTcB (Bazett) overcorrects at high heart rate; QTcF/QTcI are the workflow\u2019s preferred corrections."
+        );
+      }
+      if (!isQtc) {
+        parts.push("Heart rate has no ICH-E14 QTc reference; read alongside the QTc corrections.");
+      }
+      parts.push("Exploratory tool \u2014 confirm signals with validated ICH-E14 analyses.");
+      this.footnote.textContent = parts.join(" ");
+    }
+    // ---- Outlier scatter (QT-OUT-*) -----------------------------------------
+    /**
+     * Render the outlier-scatter view. @private
+     */
+    /**
+     * Render the outlier-scatter view. @private
+     */
+    /**
+     * Render the outlier-scatter view. @private
+     */
+    renderOutlier() {
+      const measure = this.state.measure;
+      if (!isQtcMeasure(measure, this.settings.qtc_measures)) {
+        this.showQtcOnlyNote();
+        this.footnote.textContent = "";
+        return;
+      }
+      const measureRows = forMeasure(this.filteredRows, measure);
+      const points = subjectPoints(measureRows, {
+        timepoint: this.state.timepoint,
+        idCol: this.settings.id_col
+      });
+      const isMax = this.state.timepoint === TIMEPOINT_MAX;
+      this.scatterThresholds = {
+        showAbsolute: true,
+        absolute: this.settings.absolute_thresholds,
+        showChange: !isMax,
+        change: this.settings.change_thresholds
+      };
+      const armsWithPoints = this.arms.filter((arm) => points.some((p) => p.arm === arm));
+      const datasets = armsWithPoints.map((arm) => {
+        const color2 = this.colorScale.get(String(arm)) || ARM_COLORS[0];
+        return {
+          label: arm,
+          data: points.filter((p) => p.arm === arm).map((p) => ({ x: p.baseline, y: p.change, __point: p })),
+          pointStyle: this.pointStyles.get(String(arm)) || "circle",
+          backgroundColor: hexToRgba4(color2, 0.75),
+          borderColor: color2,
+          pointRadius: 4,
+          pointHoverRadius: 6,
+          showLine: false
+        };
+      });
+      const titles = scatterAxisTitles(measure, this.settings.qtc_measures);
+      const xDomain = paddedDomain(points.map((p) => p.baseline));
+      const yDomain = paddedDomain(
+        points.map((p) => p.change),
+        [0, ...isMax ? [] : this.settings.change_thresholds]
+      );
+      const tpLabel = isMax ? "Maximum post-baseline" : `Visit: ${this.state.timepoint}`;
+      this.chart = new Chart(this.canvas.getContext("2d"), {
+        type: "scatter",
+        data: { datasets },
+        options: {
+          maintainAspectRatio: false,
+          responsive: true,
+          animation: false,
+          plugins: {
+            legend: { display: false },
+            title: { display: true, text: `${measure} outlier scatter \u2014 ${tpLabel}` },
+            tooltip: {
+              callbacks: {
+                title: () => "",
+                label: (ctx) => ctx.raw && ctx.raw.__point ? scatterTooltip(ctx.raw.__point, measure) : ""
+              }
+            }
+          },
+          scales: {
+            x: {
+              type: "linear",
+              min: xDomain[0],
+              max: xDomain[1],
+              title: { display: true, text: titles.x }
+            },
+            y: {
+              type: "linear",
+              min: yDomain[0],
+              max: yDomain[1],
+              title: { display: true, text: titles.y }
+            }
+          }
+        },
+        plugins: [thresholdScatterPlugin(this)]
+      });
+      this.charts.push(this.chart);
+      this.drawLegend(armsWithPoints);
+      const footParts = [
+        `${points.length} participants.`,
+        isMax ? "Each point is a participant\u2019s maximum post-baseline value; change-from-baseline lines are shown only in per-visit mode \u2014 see the categorical table for change-threshold counts." : "Each point is the selected visit\u2019s reading; diagonals are absolute-QTc thresholds, horizontals are change-from-baseline thresholds.",
+        "Exploratory tool \u2014 confirm signals with validated ICH-E14 analyses."
+      ];
+      this.footnote.textContent = footParts.join(" ");
+    }
+    // ---- Categorical exceedance (QT-CAT-*) ----------------------------------
+    /**
+     * Render the categorical-exceedance view. @private
+     */
+    /**
+     * Render the categorical-exceedance view. @private
+     */
+    /**
+     * Render the categorical-exceedance view. @private
+     */
+    renderCategorical() {
+      const measure = this.state.measure;
+      if (!isQtcMeasure(measure, this.settings.qtc_measures)) {
+        this.showQtcOnlyNote();
+        this.footnote.textContent = "";
+        return;
+      }
+      const measureRows = forMeasure(this.filteredRows, measure);
+      const classification = classifyThresholds(measureRows, {
+        idCol: this.settings.id_col,
+        arms: this.arms,
+        absoluteThresholds: this.settings.absolute_thresholds,
+        changeThresholds: this.settings.change_thresholds
+      });
+      this.classification = classification;
+      this.chartWrap.style.display = "none";
+      this.tableWrap.classList.remove("qt-empty");
+      this.tableWrap.innerHTML = "";
+      const table = createElement("table");
+      table.append(
+        createElement(
+          "caption",
+          null,
+          `${measure} \u2014 participants exceeding thresholds by arm (maximum post-baseline)`
+        )
+      );
+      const thead = document.createElement("thead");
+      const hr = document.createElement("tr");
+      hr.append(createElement("th", null, "Threshold"));
+      const columns = [...classification.arms, "All"];
+      columns.forEach((arm) => {
+        const denom = arm === "All" ? classification.allDenom : classification.denominators[arm] || 0;
+        hr.append(createElement("th", "qt-num", `${arm} (n=${denom})`));
+      });
+      thead.append(hr);
+      table.append(thead);
+      const tbody = document.createElement("tbody");
+      classification.rows.forEach((row) => {
+        const tr = document.createElement("tr");
+        tr.append(createElement("td", null, row.label));
+        columns.forEach((arm) => {
+          const cell2 = row.cells[arm] || { count: 0, percent: 0 };
+          tr.append(createElement("td", "qt-num", `${cell2.count} (${formatNumber5(cell2.percent)}%)`));
+        });
+        tbody.append(tr);
+      });
+      table.append(tbody);
+      this.tableWrap.append(table);
+      this.drawLegend(classification.arms);
+      this.footnote.textContent = "Absolute rows use each participant\u2019s maximum post-baseline value; change rows use the maximum post-baseline change (they may fall at different visits). Exploratory tool \u2014 confirm signals with validated ICH-E14 analyses.";
+    }
+    /**
+     * Resize the live charts (e.g. after the sidebar collapses).
+     * @returns {void}
+     */
+    resize() {
+      this.charts.forEach((chart) => chart.resize());
+    }
+    /**
+     * Destroy the charts and empty the target element.
+     * @returns {void}
+     */
+    destroy() {
+      this.destroyCharts();
+      this.element.innerHTML = "";
+    }
+  };
+  function qtExplorer(element = "body", settings = {}) {
+    return new SafetyQtExplorer(element, settings);
+  }
+
   // src/main.js
   var main_default = {
     histogram,
@@ -19885,7 +23742,9 @@ Change in ${this.state.measureY}: ${formatDelta(point.delta_y)}`;
     resultsOverTime,
     outlierExplorer,
     aeTimelines,
-    hepExplorer
+    hepExplorer,
+    aeExplorer,
+    qtExplorer
   };
   return __toCommonJS(main_exports);
 })();

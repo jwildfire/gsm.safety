@@ -64,7 +64,7 @@ test_that("every widget ships its htmlwidgets binding, dependency yaml, schema, 
 
   expect_true(
     nzchar(system.file(
-      "htmlwidgets", "lib", "safety.viz-1.2.0", "safety.viz.js",
+      "htmlwidgets", "lib", "safety.viz-1.4.0", "safety.viz.js",
       package = "gsm.safety"
     ))
   )

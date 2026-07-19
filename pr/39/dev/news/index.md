@@ -8,7 +8,7 @@ interactive chart library, mirroring the gsm.kri / gsm.viz architecture.
 ### New features
 
 - Seven interactive safety widgets built on the vendored safety.viz
-  1.2.0 bundle:
+  1.4.0 bundle:
   [`Widget_Histogram()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_Histogram.md),
   [`Widget_ShiftPlot()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_ShiftPlot.md),
   [`Widget_DeltaDelta()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_DeltaDelta.md),

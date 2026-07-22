@@ -24,7 +24,9 @@
     <li><a class="dropdown-item" href="../examples/Example_ResultsOverTime.html">Results Over Time</a></li>
     <li><a class="dropdown-item" href="../examples/Example_OutlierExplorer.html">Outlier Explorer</a></li>
     <li><a class="dropdown-item" href="../examples/Example_AeTimelines.html">AE Timelines</a></li>
+    <li><a class="dropdown-item" href="../examples/Example_AeExplorer.html">AE Explorer</a></li>
     <li><a class="dropdown-item" href="../examples/Example_HepExplorer.html">Hepatic Safety Explorer</a></li>
+    <li><a class="dropdown-item" href="../examples/Example_QtExplorer.html">QT Safety Explorer</a></li>
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -46,10 +48,10 @@
 <p>First stable release: gsm.safety is now the R home of the safety.viz interactive chart library, mirroring the gsm.kri / gsm.viz architecture.</p>
 <div class="section level3">
 <h3 id="new-features-1-0-0">New features<a class="anchor" aria-label="anchor" href="#new-features-1-0-0"></a></h3>
-<ul><li>Seven interactive safety widgets built on the vendored safety.viz 1.4.0 bundle: <code><a href="../reference/Widget_Histogram.html">Widget_Histogram()</a></code>, <code><a href="../reference/Widget_ShiftPlot.html">Widget_ShiftPlot()</a></code>, <code><a href="../reference/Widget_DeltaDelta.html">Widget_DeltaDelta()</a></code>, <code><a href="../reference/Widget_ResultsOverTime.html">Widget_ResultsOverTime()</a></code>, <code><a href="../reference/Widget_OutlierExplorer.html">Widget_OutlierExplorer()</a></code>, <code><a href="../reference/Widget_AeTimelines.html">Widget_AeTimelines()</a></code>, and <code><a href="../reference/Widget_HepExplorer.html">Widget_HepExplorer()</a></code> (eDISH).</li>
+<ul><li>Nine interactive safety widgets built on the vendored safety.viz 1.4.0 bundle — a binding for every renderer the bundle exports: <code><a href="../reference/Widget_Histogram.html">Widget_Histogram()</a></code>, <code><a href="../reference/Widget_ShiftPlot.html">Widget_ShiftPlot()</a></code>, <code><a href="../reference/Widget_DeltaDelta.html">Widget_DeltaDelta()</a></code>, <code><a href="../reference/Widget_ResultsOverTime.html">Widget_ResultsOverTime()</a></code>, <code><a href="../reference/Widget_OutlierExplorer.html">Widget_OutlierExplorer()</a></code>, <code><a href="../reference/Widget_AeTimelines.html">Widget_AeTimelines()</a></code>, <code><a href="../reference/Widget_AeExplorer.html">Widget_AeExplorer()</a></code>, <code><a href="../reference/Widget_HepExplorer.html">Widget_HepExplorer()</a></code> (eDISH), and <code><a href="../reference/Widget_QtExplorer.html">Widget_QtExplorer()</a></code> (QT/QTc, safety.viz QT Explorer Phase 1).</li>
 <li>Every widget validates its inputs against the module’s vendored JSON data contract (<code>inst/schema/</code>), so bad column mappings fail fast in R instead of silently in the browser.</li>
 <li>
-<code><a href="../reference/ExampleData.html">ExampleData()</a></code> ships pharmaverseadam-derived demo datasets — <code>adbds</code> (long-format labs and vitals) and <code>adae</code> (adverse events) — identical to the safety.viz site demos.</li>
+<code><a href="../reference/ExampleData.html">ExampleData()</a></code> ships pharmaverseadam-derived demo datasets — <code>adbds</code> (long-format labs and vitals), <code>adae</code> (adverse events, carrying placeholder rows for AE-free participants so prevalence denominators cover the whole safety population), and <code>adeg</code> (ECG: QTcF, QTcB, and Heart Rate) — identical to the safety.viz site demos.</li>
 <li>
 <code><a href="../reference/SaveWidgetReport.html">SaveWidgetReport()</a></code> writes any widget as a self-contained standalone HTML report.</li>
 <li>Report workflows under <code>inst/workflow/3_reports/</code> render each widget end-to-end via <code><a href="https://gilead-biostats.github.io/gsm.core/reference/RunWorkflow.html" class="external-link">gsm.core::RunWorkflow()</a></code>, with matching runner scripts in <code>inst/examples/</code>.</li>
@@ -60,7 +62,7 @@
 </ul></div>
 <div class="section level3">
 <h3 id="breaking-changes-1-0-0">Breaking changes<a class="anchor" aria-label="anchor" href="#breaking-changes-1-0-0"></a></h3>
-<ul><li>The experimental safetyCharts bridge is retired: <code>RenderSafetyChartsWidget()</code>, <code>MakeExampleData()</code>, and the safetyCharts-era report scaffolds (ae_explorer, hep_explorer, paneled_outlier_explorer) are removed, along with the safetyCharts and Tendril dependencies.</li>
+<ul><li>The experimental safetyCharts bridge is retired: <code>RenderSafetyChartsWidget()</code>, <code>MakeExampleData()</code>, and the safetyCharts-era report scaffolds are removed, along with the safetyCharts and Tendril dependencies. The <code>ae_explorer</code> and <code>hep_explorer</code> report workflows return, rebuilt on the <code>Widget_*</code> pattern; <code>paneled_outlier_explorer</code> has no safety.viz module and is gone for good.</li>
 </ul></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>

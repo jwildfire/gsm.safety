@@ -1,13 +1,13 @@
 # Example safety data
 
-Reads one of the example datasets vendored with the package. Both are
-derived from pharmaverseadam (CDISC Pilot 01 ADaM) and match the data
-used by the safety.viz demos:
+Reads one of the example datasets vendored with the package. All three
+are derived from pharmaverseadam (CDISC Pilot 01 ADaM) and match the
+data used by the safety.viz demos:
 
 ## Usage
 
 ``` r
-ExampleData(strDataset = c("adbds", "adae"))
+ExampleData(strDataset = c("adbds", "adae", "adeg"))
 ```
 
 ## Arguments
@@ -29,7 +29,18 @@ columns otherwise.
 
 - `adae`: adverse events, one record per event (`USUBJID`, `ARM`,
   `AESEQ`, `AEBODSYS`, `AEDECOD`, `AETERM`, `AESEV`, `AESER`, `ASTDY`,
-  `AENDY`).
+  `AENDY`), plus one placeholder row per participant with no adverse
+  events. A placeholder carries a blank `AEBODSYS` and exists so the
+  [`Widget_AeExplorer()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_AeExplorer.md)
+  population denominator covers the whole safety population (254
+  participants, 217 of them with events) rather than only participants
+  who reported an event.
+
+- `adeg`: long-format ECG results, one record per measurement
+  (`USUBJID`, `SITE`, `SITEID`, `SEX`, `RACE`, `AGE`, `ARM`, `VISIT`,
+  `VISITNUM`, `PARAMCD`, `TEST`, `STRESU`, `STRESN`, `BASE`, `CHG`,
+  `ABLFL`), carrying QTcF, QTcB, and Heart Rate for
+  [`Widget_QtExplorer()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_QtExplorer.md).
 
 ## Examples
 
@@ -81,4 +92,21 @@ head(dfAE)
 #> 4    NA
 #> 5    26
 #> 6    26
+
+dfEG <- ExampleData("adeg")
+head(dfEG)
+#>       USUBJID              SITE SITEID SEX  RACE AGE     ARM    VISIT VISITNUM
+#> 1 01-701-1015 Clinical Site 701    701   F WHITE  63 Placebo Baseline        0
+#> 2 01-701-1015 Clinical Site 701    701   F WHITE  63 Placebo   Week 2        2
+#> 3 01-701-1015 Clinical Site 701    701   F WHITE  63 Placebo   Week 4        4
+#> 4 01-701-1015 Clinical Site 701    701   F WHITE  63 Placebo   Week 6        6
+#> 5 01-701-1015 Clinical Site 701    701   F WHITE  63 Placebo   Week 8        8
+#> 6 01-701-1015 Clinical Site 701    701   F WHITE  63 Placebo  Week 12       12
+#>   PARAMCD       TEST    STRESU STRESN BASE CHG ABLFL
+#> 1      HR Heart Rate beats/min     56   56   0     Y
+#> 2      HR Heart Rate beats/min     58   56   2      
+#> 3      HR Heart Rate beats/min     59   56   3      
+#> 4      HR Heart Rate beats/min     55   56  -1      
+#> 5      HR Heart Rate beats/min     57   56   1      
+#> 6      HR Heart Rate beats/min     54   56  -2      
 ```

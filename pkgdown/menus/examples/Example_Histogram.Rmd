@@ -25,7 +25,7 @@ div.html-widget {
 </style>
 
 <div class="example-nav" aria-label="Example navigation" style="display: flex; justify-content: space-between; gap: 1rem; margin: 0.75rem 0 1.25rem 0;">
-<a class="btn btn-outline-secondary btn-sm" href="Example_HepExplorer.html">&larr; Previous: Hepatic Safety Explorer</a>
+<a class="btn btn-outline-secondary btn-sm" href="Example_QtExplorer.html">&larr; Previous: QT Safety Explorer</a>
 <a class="btn btn-outline-secondary btn-sm" href="Example_ShiftPlot.html">Next: Shift Plot &rarr;</a>
 </div>
 

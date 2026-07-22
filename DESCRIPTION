@@ -5,11 +5,12 @@ Authors@R: c(
     person("obot", role = c("aut", "cre"), email = "obot@users.noreply.github.com")
   )
 Description: HTML widget bindings for the 'safety.viz' JavaScript chart
-    library, providing seven interactive clinical safety displays -
+    library, providing nine interactive clinical safety displays -
     histogram, shift plot, delta-delta, results over time, outlier
-    explorer, adverse event timelines, and the eDISH hepatic safety
-    explorer - as htmlwidgets, plus bundled
-    example data and report workflows for Good Statistical Monitoring.
+    explorer, adverse event timelines, adverse event explorer, the eDISH
+    hepatic safety explorer, and the QT safety explorer - as htmlwidgets,
+    plus bundled example data and report workflows for Good Statistical
+    Monitoring.
 License: Apache License (>= 2)
 URL: https://github.com/jwildfire/gsm.safety
 BugReports: https://github.com/jwildfire/gsm.safety/issues

@@ -23,7 +23,9 @@ reference:
       - Widget_ResultsOverTime
       - Widget_OutlierExplorer
       - Widget_AeTimelines
+      - Widget_AeExplorer
       - Widget_HepExplorer
+      - Widget_QtExplorer
   - title: Data
     contents:
       - ExampleData

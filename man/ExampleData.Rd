@@ -4,7 +4,7 @@
 \alias{ExampleData}
 \title{Example safety data}
 \usage{
-ExampleData(strDataset = c("adbds", "adae"))
+ExampleData(strDataset = c("adbds", "adae", "adeg"))
 }
 \arguments{
 \item{strDataset}{\code{character} Name of the example dataset to read. Default:
@@ -15,7 +15,7 @@ A \code{data.frame} with numeric result/range/day columns and character
 columns otherwise.
 }
 \description{
-Reads one of the example datasets vendored with the package. Both are
+Reads one of the example datasets vendored with the package. All three are
 derived from pharmaverseadam (CDISC Pilot 01 ADaM) and match the data used
 by the safety.viz demos:
 }
@@ -25,7 +25,16 @@ by the safety.viz demos:
 measurement (\code{USUBJID}, \code{SITE}, \code{SITEID}, \code{SEX}, \code{RACE}, \code{ARM}, \code{VISIT},
 \code{VISITNUM}, \code{TEST}, \code{STRESU}, \code{STRESN}, \code{STNRLO}, \code{STNRHI}).
 \item \code{adae}: adverse events, one record per event (\code{USUBJID}, \code{ARM}, \code{AESEQ},
-\code{AEBODSYS}, \code{AEDECOD}, \code{AETERM}, \code{AESEV}, \code{AESER}, \code{ASTDY}, \code{AENDY}).
+\code{AEBODSYS}, \code{AEDECOD}, \code{AETERM}, \code{AESEV}, \code{AESER}, \code{ASTDY}, \code{AENDY}),
+plus one placeholder row per participant with no adverse events. A
+placeholder carries a blank \code{AEBODSYS} and exists so the
+\code{\link[=Widget_AeExplorer]{Widget_AeExplorer()}} population denominator covers the whole safety
+population (254 participants, 217 of them with events) rather than only
+participants who reported an event.
+\item \code{adeg}: long-format ECG results, one record per measurement (\code{USUBJID},
+\code{SITE}, \code{SITEID}, \code{SEX}, \code{RACE}, \code{AGE}, \code{ARM}, \code{VISIT}, \code{VISITNUM},
+\code{PARAMCD}, \code{TEST}, \code{STRESU}, \code{STRESN}, \code{BASE}, \code{CHG}, \code{ABLFL}), carrying
+QTcF, QTcB, and Heart Rate for \code{\link[=Widget_QtExplorer]{Widget_QtExplorer()}}.
 }
 }
 \examples{
@@ -34,5 +43,8 @@ head(dfResults)
 
 dfAE <- ExampleData("adae")
 head(dfAE)
+
+dfEG <- ExampleData("adeg")
+head(dfEG)
 
 }

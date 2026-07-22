@@ -26,7 +26,7 @@ div.html-widget {
 
 <div class="example-nav" aria-label="Example navigation" style="display: flex; justify-content: space-between; gap: 1rem; margin: 0.75rem 0 1.25rem 0;">
 <a class="btn btn-outline-secondary btn-sm" href="Example_OutlierExplorer.html">&larr; Previous: Outlier Explorer</a>
-<a class="btn btn-outline-secondary btn-sm" href="Example_HepExplorer.html">Next: Hepatic Safety Explorer &rarr;</a>
+<a class="btn btn-outline-secondary btn-sm" href="Example_AeExplorer.html">Next: AE Explorer &rarr;</a>
 </div>
 
 Per-participant adverse-event timelines colored by severity, with seriousness highlighting and filters. The chart below is live — rendered by the safety.viz `aeTimelines` module on the package's example data, with the full control sidebar.

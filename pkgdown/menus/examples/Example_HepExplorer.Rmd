@@ -2,7 +2,7 @@
 title: "Hepatic Safety Explorer"
 author: "gsm.safety Example"
 description: "eDISH scatter of peak liver measures with Hy's Law quadrants and participant drill-down to standardized values by study day."
-index: 7
+index: 8
 output:
   html_document:
     code_folding: hide
@@ -25,8 +25,8 @@ div.html-widget {
 </style>
 
 <div class="example-nav" aria-label="Example navigation" style="display: flex; justify-content: space-between; gap: 1rem; margin: 0.75rem 0 1.25rem 0;">
-<a class="btn btn-outline-secondary btn-sm" href="Example_AeTimelines.html">&larr; Previous: AE Timelines</a>
-<a class="btn btn-outline-secondary btn-sm" href="Example_Histogram.html">Next: Histogram &rarr;</a>
+<a class="btn btn-outline-secondary btn-sm" href="Example_AeExplorer.html">&larr; Previous: AE Explorer</a>
+<a class="btn btn-outline-secondary btn-sm" href="Example_QtExplorer.html">Next: QT Safety Explorer &rarr;</a>
 </div>
 
 eDISH scatter of peak liver measures with Hy's Law quadrants and participant drill-down to standardized values by study day. The chart below is live — rendered by the safety.viz `hepExplorer` module on the package's example data, with the full control sidebar. `measure_values` maps the ALT/AST/TB/ALP keys onto this dataset's measure names, and the visit sequence stands in for study day.

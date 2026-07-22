@@ -78,11 +78,12 @@ test_that("ExampleData('adeg') supplies the ECG measures qt-explorer expects (#4
 test_that("ExampleData('adeg') QTc values are physiologically plausible (#42)", {
   dfEG <- ExampleData("adeg")
 
-  # Regression guard for safety.viz#79. The v1.4.0 extract carried QTcF/QTcB
-  # rederived upstream from a corrupt RR column, inflating them by ~80 ms —
-  # median QTcF 555 ms, above the highest ICH E14 category boundary, which
-  # saturated every threshold in the chart. A median corrected QT interval above
-  # 500 ms is not a population, it is a derivation bug: fail loudly if a future
+  # Regression guard for safety.viz#79. The v1.4.0 extract took QTcF/QTcB from the
+  # CDISC Pilot 01 source's own pre-derived parameters, which are corrected against
+  # a collected RR that contradicts the recorded heart rate — inflating them by
+  # ~80 ms to a median QTcF of 555 ms, above the highest ICH E14 category boundary,
+  # which saturated every threshold in the chart. A median corrected QT interval
+  # above 500 ms is not a population, it is uncleaned data: fail loudly if a future
   # re-vendor reintroduces one.
   for (strMeasure in c("QTcF", "QTcB")) {
     vValues <- dfEG$STRESN[dfEG$TEST == strMeasure]

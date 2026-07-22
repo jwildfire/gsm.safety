@@ -1,7 +1,7 @@
 ^\.git$
 ^\.github$
 ^\.gitignore$
-^docs/.*\.html$
+^docs$
 ^_pkgdown\.yml$
 ^pkgdown$
 ^design$

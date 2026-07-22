@@ -12,7 +12,8 @@ Description: HTML widget bindings for the 'safety.viz' JavaScript chart
     plus bundled example data and report workflows for Good Statistical
     Monitoring.
 License: Apache License (>= 2)
-URL: https://github.com/jwildfire/gsm.safety
+URL: https://github.com/jwildfire/gsm.safety,
+    https://jwildfire.github.io/gsm.safety/
 BugReports: https://github.com/jwildfire/gsm.safety/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

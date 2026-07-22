@@ -102,11 +102,11 @@ head(dfEG)
 #> 4 01-701-1015 Clinical Site 701    701   F WHITE  63 Placebo   Week 6        6
 #> 5 01-701-1015 Clinical Site 701    701   F WHITE  63 Placebo   Week 8        8
 #> 6 01-701-1015 Clinical Site 701    701   F WHITE  63 Placebo  Week 12       12
-#>   PARAMCD       TEST    STRESU STRESN BASE CHG ABLFL
-#> 1      HR Heart Rate beats/min     56   56   0     Y
-#> 2      HR Heart Rate beats/min     58   56   2      
-#> 3      HR Heart Rate beats/min     59   56   3      
-#> 4      HR Heart Rate beats/min     55   56  -1      
-#> 5      HR Heart Rate beats/min     57   56   1      
-#> 6      HR Heart Rate beats/min     54   56  -2      
+#>   PARAMCD TEST STRESU STRESN  BASE  CHG ABLFL
+#> 1    QTCF QTcF   msec  328.4 328.4  0.0     Y
+#> 2    QTCF QTcF   msec  332.2 328.4  3.8      
+#> 3    QTCF QTcF   msec  381.9 328.4 53.5      
+#> 4    QTCF QTcF   msec  320.6 328.4 -7.8      
+#> 5    QTCF QTcF   msec  395.2 328.4 66.8      
+#> 6    QTCF QTcF   msec  393.9 328.4 65.5      
 ```

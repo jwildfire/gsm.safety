@@ -75,6 +75,27 @@ test_that("ExampleData('adeg') supplies the ECG measures qt-explorer expects (#4
   expect_identical(length(unique(dfEG$USUBJID)), 254L)
 })
 
+test_that("ExampleData('adeg') QTc values are physiologically plausible (#42)", {
+  dfEG <- ExampleData("adeg")
+
+  # Regression guard for safety.viz#79. The v1.4.0 extract carried QTcF/QTcB
+  # rederived upstream from a corrupt RR column, inflating them by ~80 ms —
+  # median QTcF 555 ms, above the highest ICH E14 category boundary, which
+  # saturated every threshold in the chart. A median corrected QT interval above
+  # 500 ms is not a population, it is a derivation bug: fail loudly if a future
+  # re-vendor reintroduces one.
+  for (strMeasure in c("QTcF", "QTcB")) {
+    vValues <- dfEG$STRESN[dfEG$TEST == strMeasure]
+    expect_lt(stats::median(vValues), 500)
+    expect_gt(stats::median(vValues), 350)
+  }
+
+  # Heart rate is measured, not derived, and should sit in a resting range.
+  vHR <- dfEG$STRESN[dfEG$TEST == "Heart Rate"]
+  expect_gt(stats::median(vHR), 50)
+  expect_lt(stats::median(vHR), 90)
+})
+
 test_that("Widget_QtExplorer renders standalone HTML with the SafetyViz bundle and data (#42)", {
   dfResults <- ExampleData("adeg")
 

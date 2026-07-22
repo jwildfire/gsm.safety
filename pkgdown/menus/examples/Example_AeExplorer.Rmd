@@ -1,35 +1,24 @@
 ---
 title: "AE Explorer"
-author: "gsm.safety Example"
 description: "Adverse event prevalence by System Organ Class and preferred term, with per-arm rates, between-arm differences, and participant drill-down."
 index: 7
 output:
   html_document:
     code_folding: hide
+    includes:
+      before_body: util/example-chrome.html
 ---
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+source("util/example-page.R")
 ```
 
-<style>
-.main-container {
-  max-width: min(1700px, 96vw) !important;
-}
-div.html-widget {
-  width: 100% !important;
-  height: auto !important;
-  min-height: 480px;
-}
-.example-nav a { text-decoration: none; }
-</style>
+```{r, echo = FALSE, results = "asis"}
+cat(ExampleHeader())
+```
 
-<div class="example-nav" aria-label="Example navigation" style="display: flex; justify-content: space-between; gap: 1rem; margin: 0.75rem 0 1.25rem 0;">
-<a class="btn btn-outline-secondary btn-sm" href="Example_AeTimelines.html">&larr; Previous: AE Timelines</a>
-<a class="btn btn-outline-secondary btn-sm" href="Example_HepExplorer.html">Next: Hepatic Safety Explorer &rarr;</a>
-</div>
-
-Adverse event prevalence by System Organ Class and preferred term, with per-arm rates, between-arm differences, and participant drill-down. The chart below is live — rendered by the safety.viz `aeExplorer` module on the package's example data, with the full control sidebar. Expand a System Organ Class to see its preferred terms, or click a row to list the participants behind it.
+The chart below is live — rendered by the safety.viz `aeExplorer` module on the package's example data, with the full control sidebar. Expand a System Organ Class to see its preferred terms, or click a row to list the participants behind it.
 
 The bundled `adae` dataset uses the ADaM ADAE column names the module expects (`USUBJID`, `AEBODSYS`, `AEDECOD`, `ARM`), so the chart initializes with no settings at all; the settings below only add the filters and drill-down columns.
 
@@ -39,7 +28,7 @@ The bundled `adae` dataset uses the ADaM ADAE column names the module expects (`
 
 The same chart ships as a gsm-idiom report workflow. Run it with `gsm.core::RunWorkflow()` to produce a standalone HTML report, or use the matching runner script:
 
-```{r, eval = FALSE}
+```{r, eval = FALSE, class.source = "fold-show"}
 lWorkflow <- yaml::read_yaml(
   system.file("workflow", "3_reports", "ae_explorer.yaml", package = "gsm.safety")
 )
@@ -52,6 +41,10 @@ gsm.core::RunWorkflow(
 
 ```sh
 Rscript inst/examples/ae-explorer.R <output-dir>
+```
+
+```{r, echo = FALSE, results = "asis"}
+cat(ExampleWorkflow("ae_explorer.yaml"))
 ```
 
 ## The live chart
@@ -75,4 +68,8 @@ Widget_AeExplorer(
     )
   )
 )
+```
+
+```{r, echo = FALSE, results = "asis"}
+cat(ExampleFooter())
 ```

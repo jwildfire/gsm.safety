@@ -10,6 +10,12 @@ First stable release: gsm.safety is now the R home of the safety.viz interactive
 - `SaveWidgetReport()` writes any widget as a self-contained standalone HTML report.
 - Report workflows under `inst/workflow/3_reports/` render each widget end-to-end via `gsm.core::RunWorkflow()`, with matching runner scripts in `inst/examples/`.
 
+## Documentation
+
+- A thumbnail gallery on the package home page links every widget to its live example page.
+- Each example page shows the full report workflow that renders its chart — read from the installed package, so the listing is always the shipped YAML — collapsed by default.
+- The example pages carry site chrome: a header band linking back to the package home, the reference index, and the safety.viz chart library, plus navigation across all nine examples generated from the pages themselves.
+
 ## Quality
 
 - Full qcthat-style qualification: every test is traceable to its GitHub issue, covering widget contracts, input validation, standalone rendering, and workflow execution.

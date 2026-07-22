@@ -1,42 +1,31 @@
 ---
 title: "Delta-Delta"
-author: "gsm.safety Example"
 description: "Per-participant change on two measures at once — ALT versus AST by default — with an optional regression line."
 index: 3
 output:
   html_document:
     code_folding: hide
+    includes:
+      before_body: util/example-chrome.html
 ---
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+source("util/example-page.R")
 ```
 
-<style>
-.main-container {
-  max-width: min(1700px, 96vw) !important;
-}
-div.html-widget {
-  width: 100% !important;
-  height: auto !important;
-  min-height: 480px;
-}
-.example-nav a { text-decoration: none; }
-</style>
+```{r, echo = FALSE, results = "asis"}
+cat(ExampleHeader())
+```
 
-<div class="example-nav" aria-label="Example navigation" style="display: flex; justify-content: space-between; gap: 1rem; margin: 0.75rem 0 1.25rem 0;">
-<a class="btn btn-outline-secondary btn-sm" href="Example_ShiftPlot.html">&larr; Previous: Shift Plot</a>
-<a class="btn btn-outline-secondary btn-sm" href="Example_ResultsOverTime.html">Next: Results Over Time &rarr;</a>
-</div>
-
-Per-participant change on two measures at once — ALT versus AST by default — with an optional regression line. The chart below is live — rendered by the safety.viz `deltaDelta` module on the package's example data, with the full control sidebar.
+The chart below is live — rendered by the safety.viz `deltaDelta` module on the package's example data, with the full control sidebar.
 
 
 ## Render this report from a workflow
 
 The same chart ships as a gsm-idiom report workflow. Run it with `gsm.core::RunWorkflow()` to produce a standalone HTML report, or use the matching runner script:
 
-```{r, eval = FALSE}
+```{r, eval = FALSE, class.source = "fold-show"}
 lWorkflow <- yaml::read_yaml(
   system.file("workflow", "3_reports", "safety_delta_delta.yaml", package = "gsm.safety")
 )
@@ -49,6 +38,10 @@ gsm.core::RunWorkflow(
 
 ```sh
 Rscript inst/examples/delta-delta.R <output-dir>
+```
+
+```{r, echo = FALSE, results = "asis"}
+cat(ExampleWorkflow("safety_delta_delta.yaml"))
 ```
 
 ## The live chart
@@ -73,4 +66,8 @@ Widget_DeltaDelta(
     add_regression_line = TRUE
   )
 )
+```
+
+```{r, echo = FALSE, results = "asis"}
+cat(ExampleFooter())
 ```

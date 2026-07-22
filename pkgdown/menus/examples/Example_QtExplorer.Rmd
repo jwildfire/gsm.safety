@@ -1,33 +1,22 @@
 ---
 title: "QT Safety Explorer"
-author: "gsm.safety Example"
 description: "QT/QTc central tendency against the ICH E14 threshold, outlier scatter, and categorical summaries of participants crossing the 450/480/500 ms boundaries."
 index: 9
 output:
   html_document:
     code_folding: hide
+    includes:
+      before_body: util/example-chrome.html
 ---
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+source("util/example-page.R")
 ```
 
-<style>
-.main-container {
-  max-width: min(1700px, 96vw) !important;
-}
-div.html-widget {
-  width: 100% !important;
-  height: auto !important;
-  min-height: 480px;
-}
-.example-nav a { text-decoration: none; }
-</style>
-
-<div class="example-nav" aria-label="Example navigation" style="display: flex; justify-content: space-between; gap: 1rem; margin: 0.75rem 0 1.25rem 0;">
-<a class="btn btn-outline-secondary btn-sm" href="Example_HepExplorer.html">&larr; Previous: Hepatic Safety Explorer</a>
-<a class="btn btn-outline-secondary btn-sm" href="Example_Histogram.html">Next: Histogram &rarr;</a>
-</div>
+```{r, echo = FALSE, results = "asis"}
+cat(ExampleHeader())
+```
 
 QT/QTc cardiac safety across three linked views. The chart below is live — rendered by the safety.viz `qtExplorer` module on the package's example ECG data, with the full control sidebar.
 
@@ -47,7 +36,7 @@ Even so, the pilot's *measured* QT intervals are long for a resting population (
 
 The same chart ships as a gsm-idiom report workflow. Run it with `gsm.core::RunWorkflow()` to produce a standalone HTML report, or use the matching runner script:
 
-```{r, eval = FALSE}
+```{r, eval = FALSE, class.source = "fold-show"}
 lWorkflow <- yaml::read_yaml(
   system.file("workflow", "3_reports", "qt_explorer.yaml", package = "gsm.safety")
 )
@@ -60,6 +49,10 @@ gsm.core::RunWorkflow(
 
 ```sh
 Rscript inst/examples/qt-explorer.R <output-dir>
+```
+
+```{r, echo = FALSE, results = "asis"}
+cat(ExampleWorkflow("qt_explorer.yaml"))
 ```
 
 ## The live chart
@@ -80,4 +73,8 @@ Widget_QtExplorer(
     )
   )
 )
+```
+
+```{r, echo = FALSE, results = "asis"}
+cat(ExampleFooter())
 ```

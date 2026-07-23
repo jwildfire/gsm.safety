@@ -1,0 +1,80 @@
+---
+title: "QT Safety Explorer"
+description: "QT/QTc central tendency against the ICH E14 threshold, outlier scatter, and categorical summaries of participants crossing the 450/480/500 ms boundaries."
+index: 9
+output:
+  html_document:
+    code_folding: hide
+    includes:
+      before_body: util/example-chrome.html
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+source("util/example-page.R")
+```
+
+```{r, echo = FALSE, results = "asis"}
+cat(ExampleHeader())
+```
+
+QT/QTc cardiac safety across three linked views. The chart below is live — rendered by the safety.viz `qtExplorer` module on the package's example ECG data, with the full control sidebar.
+
+- **Central tendency** — mean change from baseline (Δ) by visit and arm, and, when `placebo_arm` is set, the placebo-corrected change (ΔΔ) with confidence intervals against the ICH E14 10 ms threshold of regulatory concern.
+- **Outliers** — a scatter of absolute values against change from baseline, with the 450 / 480 / 500 ms and 30 / 60 ms category boundaries drawn in.
+- **Categorical** — counts and rates of participants crossing each of those boundaries, by arm.
+
+The bundled `adeg` dataset uses the ADaM ADEG column names the module expects (`TEST`, `STRESN`, `BASE`, `ARM`, plus `VISIT`/`VISITNUM`/`ABLFL`), so the chart initializes with no settings at all; the settings below name the placebo arm to unlock the ΔΔ view and add subgroup filters.
+
+This is safety.viz **QT Explorer Phase 1**. QTcI, PR/QRS intervals, participant drill-down, and hysteresis plots are Phase 2 work, tracked upstream.
+
+**A note on the demo data.** `adeg` comes from the CDISC Pilot 01 ECG data, which — like plenty of real trial data — is internally inconsistent: it collects RR and heart rate as separate measurements, and the two contradict each other (they were generated independently, so only 0.8% of readings agree). The QTc values here are therefore cleaned at ingestion rather than taken from the source's own pre-derived parameters: `QTcF = QT / (RR/1000)^(1/3)` and `QTcB = QT / (RR/1000)^(1/2)`, correcting against the RR implied by the recorded heart rate, which is the more credible of the two inputs. See [safety.viz#79](https://github.com/jwildfire/safety.viz/issues/79) for the full working.
+
+Even so, the pilot's *measured* QT intervals are long for a resting population (median 444 ms), so QTcF centres near 468 ms and a majority of participants cross the 450 / 480 / 500 ms categories below. No correction formula can address that — it is a property of the synthetic source, not of the chart. The views exercise every threshold, but the crossing rates here should not be read as clinically typical.
+
+## Render this report from a workflow
+
+The same chart ships as a gsm-idiom report workflow. Run it with `gsm.core::RunWorkflow()` to produce a standalone HTML report, or use the matching runner script:
+
+```{r, eval = FALSE, class.source = "fold-show"}
+lWorkflow <- yaml::read_yaml(
+  system.file("workflow", "3_reports", "qt_explorer.yaml", package = "gsm.safety")
+)
+
+gsm.core::RunWorkflow(
+  lWorkflow = lWorkflow,
+  lData = list(dfResults = ExampleData("adeg"))
+)
+```
+
+```sh
+Rscript inst/examples/qt-explorer.R <output-dir>
+```
+
+```{r, echo = FALSE, results = "asis"}
+cat(ExampleWorkflow("qt_explorer.yaml"))
+```
+
+## The live chart
+
+```{r}
+library(gsm.safety)
+
+dfResults <- ExampleData("adeg")
+
+Widget_QtExplorer(
+  dfResults,
+  lSettings = list(
+    placebo_arm = "Placebo",
+    filters = list(
+      list(value_col = "SEX", label = "Sex"),
+      list(value_col = "RACE", label = "Race"),
+      list(value_col = "SITE", label = "Site")
+    )
+  )
+)
+```
+
+```{r, echo = FALSE, results = "asis"}
+cat(ExampleFooter())
+```

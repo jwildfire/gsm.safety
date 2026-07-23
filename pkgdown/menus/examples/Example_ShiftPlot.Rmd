@@ -1,0 +1,71 @@
+---
+title: "Shift Plot"
+description: "Baseline-versus-comparison shifts for each participant, with visit and summary-stat controls."
+index: 2
+output:
+  html_document:
+    code_folding: hide
+    includes:
+      before_body: util/example-chrome.html
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+source("util/example-page.R")
+```
+
+```{r, echo = FALSE, results = "asis"}
+cat(ExampleHeader())
+```
+
+The chart below is live — rendered by the safety.viz `shiftPlot` module on the package's example data, with the full control sidebar.
+
+
+## Render this report from a workflow
+
+The same chart ships as a gsm-idiom report workflow. Run it with `gsm.core::RunWorkflow()` to produce a standalone HTML report, or use the matching runner script:
+
+```{r, eval = FALSE, class.source = "fold-show"}
+lWorkflow <- yaml::read_yaml(
+  system.file("workflow", "3_reports", "safety_shift_plot.yaml", package = "gsm.safety")
+)
+
+gsm.core::RunWorkflow(
+  lWorkflow = lWorkflow,
+  lData = list(dfResults = ExampleData("adbds"))
+)
+```
+
+```sh
+Rscript inst/examples/shift-plot.R <output-dir>
+```
+
+```{r, echo = FALSE, results = "asis"}
+cat(ExampleWorkflow("safety_shift_plot.yaml"))
+```
+
+## The live chart
+
+```{r}
+library(gsm.safety)
+
+dfResults <- ExampleData("adbds")
+
+Widget_ShiftPlot(
+  dfResults,
+  lSettings = list(
+    filters = list(
+      list(value_col = "SITEID", label = "Site ID"),
+      list(value_col = "SEX", label = "Sex"),
+      list(value_col = "RACE", label = "Race"),
+      list(value_col = "ARM", label = "Treatment Group")
+    ),
+    baseline_visits = list("Baseline"),
+    comparison_visits = list("Week 26")
+  )
+)
+```
+
+```{r, echo = FALSE, results = "asis"}
+cat(ExampleFooter())
+```

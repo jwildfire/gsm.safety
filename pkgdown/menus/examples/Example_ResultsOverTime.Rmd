@@ -1,0 +1,76 @@
+---
+title: "Results Over Time"
+description: "Longitudinal view of results by visit with grouping and normal-range context."
+index: 4
+output:
+  html_document:
+    code_folding: hide
+    includes:
+      before_body: util/example-chrome.html
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+source("util/example-page.R")
+```
+
+```{r, echo = FALSE, results = "asis"}
+cat(ExampleHeader())
+```
+
+The chart below is live — rendered by the safety.viz `resultsOverTime` module on the package's example data, with the full control sidebar.
+
+
+## Render this report from a workflow
+
+The same chart ships as a gsm-idiom report workflow. Run it with `gsm.core::RunWorkflow()` to produce a standalone HTML report, or use the matching runner script:
+
+```{r, eval = FALSE, class.source = "fold-show"}
+lWorkflow <- yaml::read_yaml(
+  system.file("workflow", "3_reports", "safety_results_over_time.yaml", package = "gsm.safety")
+)
+
+gsm.core::RunWorkflow(
+  lWorkflow = lWorkflow,
+  lData = list(dfResults = ExampleData("adbds"))
+)
+```
+
+```sh
+Rscript inst/examples/results-over-time.R <output-dir>
+```
+
+```{r, echo = FALSE, results = "asis"}
+cat(ExampleWorkflow("safety_results_over_time.yaml"))
+```
+
+## The live chart
+
+```{r}
+library(gsm.safety)
+
+dfResults <- ExampleData("adbds")
+
+Widget_ResultsOverTime(
+  dfResults,
+  lSettings = list(
+    filters = list(
+      list(value_col = "SITEID", label = "Site ID"),
+      list(value_col = "SEX", label = "Sex"),
+      list(value_col = "RACE", label = "Race"),
+      list(value_col = "ARM", label = "Treatment Group")
+    ),
+    groups = list(
+      list(value_col = "ARM", label = "Treatment Group"),
+      list(value_col = "SEX", label = "Sex"),
+      list(value_col = "RACE", label = "Race"),
+      list(value_col = "SITEID", label = "Site")
+    ),
+    group_by = "ARM"
+  )
+)
+```
+
+```{r, echo = FALSE, results = "asis"}
+cat(ExampleFooter())
+```

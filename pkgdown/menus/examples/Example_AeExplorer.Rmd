@@ -1,0 +1,75 @@
+---
+title: "AE Explorer"
+description: "Adverse event prevalence by System Organ Class and preferred term, with per-arm rates, between-arm differences, and participant drill-down."
+index: 7
+output:
+  html_document:
+    code_folding: hide
+    includes:
+      before_body: util/example-chrome.html
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+source("util/example-page.R")
+```
+
+```{r, echo = FALSE, results = "asis"}
+cat(ExampleHeader())
+```
+
+The chart below is live — rendered by the safety.viz `aeExplorer` module on the package's example data, with the full control sidebar. Expand a System Organ Class to see its preferred terms, or click a row to list the participants behind it.
+
+The bundled `adae` dataset uses the ADaM ADAE column names the module expects (`USUBJID`, `AEBODSYS`, `AEDECOD`, `ARM`), so the chart initializes with no settings at all; the settings below only add the filters and drill-down columns.
+
+**A note on denominators.** `ExampleData("adae")` carries one placeholder row — a record with a blank System Organ Class — for each of the 37 participants who reported no adverse events. The module counts those participants in the population denominator but never renders them as events, so the prevalence rates below are over all 254 participants rather than only the 217 who had an event.
+
+## Render this report from a workflow
+
+The same chart ships as a gsm-idiom report workflow. Run it with `gsm.core::RunWorkflow()` to produce a standalone HTML report, or use the matching runner script:
+
+```{r, eval = FALSE, class.source = "fold-show"}
+lWorkflow <- yaml::read_yaml(
+  system.file("workflow", "3_reports", "ae_explorer.yaml", package = "gsm.safety")
+)
+
+gsm.core::RunWorkflow(
+  lWorkflow = lWorkflow,
+  lData = list(dfResults = ExampleData("adae"))
+)
+```
+
+```sh
+Rscript inst/examples/ae-explorer.R <output-dir>
+```
+
+```{r, echo = FALSE, results = "asis"}
+cat(ExampleWorkflow("ae_explorer.yaml"))
+```
+
+## The live chart
+
+```{r}
+library(gsm.safety)
+
+dfResults <- ExampleData("adae")
+
+Widget_AeExplorer(
+  dfResults,
+  lSettings = list(
+    filters = list(
+      list(value_col = "AESEV", label = "Severity"),
+      list(value_col = "AESER", label = "Serious")
+    ),
+    details = list(
+      list(value_col = "AETERM", label = "Reported Term"),
+      list(value_col = "AESEV", label = "Severity"),
+      list(value_col = "ASTDY", label = "Start Day")
+    )
+  )
+)
+```
+
+```{r, echo = FALSE, results = "asis"}
+cat(ExampleFooter())
+```

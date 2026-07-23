@@ -3,90 +3,56 @@ meta:
   ID: safety_outlier_explorer
   Output: html
   Name: Safety Outlier Explorer Report
-  Description: Safety Outlier Explorer report scaffold for SafetyCharts lab review
-  ParentIssue: 23
-  domains:
-    dm: Mapped_SUBJ
-    labs: Mapped_LB
-  widgetName: safetyOutlierExplorer
-  widgetSettings:
-    dm:
-      id_col: subjid
-      age_col: age
-      sex_col: sex
-      race_col: race
-    labs:
-      id_col: subjid
-      visit_col: visit
-      visitn_col: visitn
-      studyday_col: studyday
-      measure_col: measure
-      value_col: value
-      normal_col_low: normal_low
-      normal_col_high: normal_high
-      group_by: sex
-      group_cols:
-        - value_col: sex
-          label: Sex
+  Description: Interactive safety.viz outlier explorer of long-format labs and vitals results.
+  lSettings:
+    filters:
+      - value_col: SITEID
+        label: Site ID
+      - value_col: SEX
+        label: Sex
+      - value_col: RACE
+        label: Race
+      - value_col: ARM
+        label: Treatment Group
+    groups:
+      - value_col: ARM
+        label: Treatment Group
+      - value_col: SEX
+        label: Sex
+      - value_col: RACE
+        label: Race
+      - value_col: SITE
+        label: Site
+    details:
+      - value_col: USUBJID
+        label: Participant ID
+      - value_col: STRESN
+        label: Result
+      - value_col: SEX
+        label: Sex
+      - value_col: RACE
+        label: Race
+      - value_col: ARM
+        label: Treatment Group
 spec:
-  Mapped_SUBJ:
-    _all:
-      required: true
-    subjid:
+  dfResults:
+    USUBJID:
       type: character
-    age:
-      type: integer
-      required: false
-    sex:
+    TEST:
       type: character
-      required: false
-    race:
-      type: character
-      required: false
-  Mapped_LB:
-    _all:
-      required: true
-    subjid:
-      type: character
-    visit:
-      type: character
-    visitn:
-      type: integer
-    studyday:
-      type: integer
-    measure:
-      type: character
-    value:
+    STRESN:
       type: numeric
-    unit:
-      type: character
-      required: false
-    normal_low:
-      type: numeric
-      required: false
-    normal_high:
-      type: numeric
-      required: false
-    baseline_flag:
-      type: character
-      required: false
 steps:
-  - output: WidgetData
-    name: list
-    params:
-      dm: Mapped_SUBJ
-      labs: Mapped_LB
-  - output: InitializedWidget
-    name: safetyCharts::init_safetyOutlierExplorer
-    params:
-      data: WidgetData
-      settings: widgetSettings
   - output: strOutputDir
     name: getwd
-  - output: Report
-    name: gsm.safety::RenderSafetyChartsWidget
+  - output: lWidget
+    name: gsm.safety::Widget_OutlierExplorer
     params:
-      lInitialized: InitializedWidget
-      strWidgetName: widgetName
+      dfResults: dfResults
+      lSettings: lSettings
+  - output: strReportPath
+    name: gsm.safety::SaveWidgetReport
+    params:
+      widget: lWidget
       strOutputDir: strOutputDir
       strOutputFile: ID

@@ -2,79 +2,48 @@ meta:
   Type: Report
   ID: hep_explorer
   Output: html
-  Name: Hep Explorer Report
-  Description: Hep Explorer report scaffold for SafetyCharts lab review
-  ParentIssue: 18
-  domains:
-    labs: Mapped_LB
-  widgetName: hepExplorer
-  widgetSettings:
-    id_col: subjid
-    visit_col: visit
-    visitn_col: visitn
-    studyday_col: studyday
-    measure_col: measure
-    value_col: value
-    normal_col_low: normal_low
-    normal_col_high: normal_high
-    group_by: sex
-    group_cols:
-      - value_col: sex
-        label: Sex
-    baseline:
-      value_col: studyday
-      values:
-        - 1
+  Name: Hepatic Safety Explorer Report
+  Description: Interactive safety.viz eDISH hepatic safety explorer with Hy's Law quadrants and participant drill-down.
+  lSettings:
+    studyday_col: VISITNUM
+    visit_col: VISIT
+    visitn_col: VISITNUM
     measure_values:
-      ALT: ALT
-      AST: AST
-      TB: TB
-      ALP: ALP
-    x_default: ALT
-    y_default: TB
+      ALT: Alanine Aminotransferase
+      AST: Aspartate Aminotransferase
+      TB: Bilirubin
+      ALP: Alkaline Phosphatase
+    filters:
+      - value_col: SEX
+        label: Sex
+      - value_col: ARM
+        label: Treatment Group
+    groups:
+      - value_col: ARM
+        label: Treatment Group
+      - value_col: SEX
+        label: Sex
 spec:
-  Mapped_LB:
-    _all:
-      required: true
-    subjid:
+  dfResults:
+    USUBJID:
       type: character
-    visit:
+    TEST:
       type: character
-    visitn:
-      type: integer
-    studyday:
-      type: integer
-    measure:
-      type: character
-    value:
+    STRESN:
       type: numeric
-    unit:
-      type: character
-      required: false
-    normal_low:
+    STNRHI:
       type: numeric
-      required: false
-    normal_high:
-      type: numeric
-      required: false
-    baseline_flag:
-      type: character
-      required: false
-    sex:
-      type: character
-      required: false
 steps:
-  - output: InitializedWidget
-    name: list
-    params:
-      data: Mapped_LB
-      settings: widgetSettings
   - output: strOutputDir
     name: getwd
-  - output: Report
-    name: gsm.safety::RenderSafetyChartsWidget
+  - output: lWidget
+    name: gsm.safety::Widget_HepExplorer
     params:
-      lInitialized: InitializedWidget
-      strWidgetName: widgetName
+      dfResults: dfResults
+      lSettings: lSettings
+  - output: strReportPath
+    name: gsm.safety::SaveWidgetReport
+    params:
+      widget: lWidget
       strOutputDir: strOutputDir
       strOutputFile: ID

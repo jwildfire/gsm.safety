@@ -1,34 +1,34 @@
 Package: gsm.safety
 Title: Safety Visualizations for Good Statistical Monitoring Workflows
-Version: 0.1.0
+Version: 1.0.0
 Authors@R: c(
     person("obot", role = c("aut", "cre"), email = "obot@users.noreply.github.com")
   )
-Description: Experimental bridge package for generating clinical safety visualization artifacts from Good Statistical Monitoring workflows.
+Description: HTML widget bindings for the 'safety.viz' JavaScript chart
+    library, providing nine interactive clinical safety displays -
+    histogram, shift plot, delta-delta, results over time, outlier
+    explorer, adverse event timelines, adverse event explorer, the eDISH
+    hepatic safety explorer, and the QT safety explorer - as htmlwidgets,
+    plus bundled example data and report workflows for Good Statistical
+    Monitoring.
 License: Apache License (>= 2)
-URL: https://github.com/obot-claw/gsm.safety
-BugReports: https://github.com/obot-claw/gsm.safety/issues
+URL: https://github.com/jwildfire/gsm.safety,
+    https://jwildfire.github.io/gsm.safety/
+BugReports: https://github.com/jwildfire/gsm.safety/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Imports:
     gsm.core,
-    htmltools,
     htmlwidgets,
-    safetyCharts,
-    Tendril
+    jsonlite,
+    stats,
+    utils
 Suggests:
-    gsm.datasim,
+    qcthat,
     testthat (>= 3.0.0),
-    workr,
     yaml
 Remotes:
     gsm.core=Gilead-BioStats/gsm.core@main,
-    gsm.datasim=Gilead-BioStats/gsm.datasim@dev,
-    gsm.kri=Gilead-BioStats/gsm.kri@main,
-    gsm.mapping=Gilead-BioStats/gsm.mapping@main,
-    gsm.reporting=Gilead-BioStats/gsm.reporting@main,
-    SafetyGraphics/safetyCharts,
-    AstraZeneca/Tendril,
-    Gilead-BioStats/workr
+    qcthat=Gilead-BioStats/qcthat@main
 Config/testthat/edition: 3

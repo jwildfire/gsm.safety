@@ -1,4 +1,4 @@
-url: https://obot-claw.github.io/gsm.safety
+url: https://jwildfire.github.io/gsm.safety
 
 template:
   bootstrap: 5
@@ -11,10 +11,24 @@ navbar:
     github:
       icon: fab fa-github
       aria-label: GitHub
-      href: https://github.com/obot-claw/gsm.safety
+      href: https://github.com/jwildfire/gsm.safety
 
 reference:
-  - title: AE Explorer report
+  - title: Safety widgets
+    desc: Interactive safety.viz charts as htmlwidgets.
     contents:
-      - RenderSafetyChartsWidget
-      - MakeExampleData
+      - Widget_Histogram
+      - Widget_ShiftPlot
+      - Widget_DeltaDelta
+      - Widget_ResultsOverTime
+      - Widget_OutlierExplorer
+      - Widget_AeTimelines
+      - Widget_AeExplorer
+      - Widget_HepExplorer
+      - Widget_QtExplorer
+  - title: Data
+    contents:
+      - ExampleData
+  - title: Reports
+    contents:
+      - SaveWidgetReport

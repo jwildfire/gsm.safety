@@ -3,53 +3,42 @@ meta:
   ID: safety_shift_plot
   Output: html
   Name: Safety Shift Plot Report
-  Description: Safety Shift Plot report scaffold for SafetyCharts lab review
-  ParentIssue: 25
-  domains:
-    labs: Mapped_LB
-  widgetName: safetyShiftPlot
-  widgetSettings:
-    id_col: subjid
-    visit_col: visit
-    visitn_col: visitn
-    measure_col: measure
-    value_col: value
-    group_by: sex
-    group_cols:
-      - value_col: sex
+  Description: Interactive safety.viz shift plot pairing baseline and comparison visit results.
+  lSettings:
+    filters:
+      - value_col: SITEID
+        label: Site ID
+      - value_col: SEX
         label: Sex
+      - value_col: RACE
+        label: Race
+      - value_col: ARM
+        label: Treatment Group
+    baseline_visits:
+      - Baseline
+    comparison_visits:
+      - Week 26
 spec:
-  Mapped_LB:
-    _all:
-      required: true
-    subjid:
+  dfResults:
+    USUBJID:
       type: character
-    visit:
+    TEST:
       type: character
-    visitn:
-      type: integer
-    measure:
+    VISIT:
       type: character
-    value:
+    STRESN:
       type: numeric
-    unit:
-      type: character
-      required: false
-    sex:
-      type: character
-      required: false
 steps:
-  - output: InitializedWidget
-    name: safetyCharts::init_safetyShiftPlot
-    params:
-      data: Mapped_LB
-      settings: widgetSettings
   - output: strOutputDir
     name: getwd
-  - output: Report
-    name: gsm.safety::RenderSafetyChartsWidget
+  - output: lWidget
+    name: gsm.safety::Widget_ShiftPlot
     params:
-      lInitialized: InitializedWidget
-      strWidgetName: widgetName
+      dfResults: dfResults
+      lSettings: lSettings
+  - output: strReportPath
+    name: gsm.safety::SaveWidgetReport
+    params:
+      widget: lWidget
       strOutputDir: strOutputDir
       strOutputFile: ID

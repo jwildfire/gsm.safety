@@ -1,0 +1,276 @@
+<!-- Shared chrome for the standalone example pages (#43).
+
+     gsm.utils::build_assets() renders each Example_*.Rmd with rmarkdown and
+     drops the HTML into pkgdown/assets/examples/, so these pages land on the
+     site outside pkgdown's template with no navbar, no footer, and no styling
+     beyond rmarkdown's Bootstrap default. This file supplies all three, pulled
+     in by every page as `includes: before_body:` — which pandoc places above
+     rmarkdown's own title block, so the band reads as a site header rather than
+     as page content.
+
+     Files under util/ are never rendered as pages of their own: build_assets()
+     globs *.Rmd non-recursively in the menu directory.
+
+     The palette is safety.viz's keynote theme (espresso bands, orange accent,
+     Instrument Serif headings) so the R package's example pages and the chart
+     library's own documentation site read as one family. The document body
+     keeps rmarkdown's light styling; only the band and the page furniture are
+     themed. -->
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Instrument+Serif&display=swap');
+
+:root {
+  --gs-band: #271810;
+  --gs-band-ink: #f5ede4;
+  --gs-band-soft: #c4a995;
+  --gs-accent: #c2410c;
+  --gs-accent-bright: #f97316;
+  --gs-ink: #2a211b;
+  --gs-muted: #6b5d52;
+  --gs-faint: #a3958a;
+  --gs-rule: #e7ded4;
+  --gs-panel: #f7f3ed;
+  --gs-serif: 'Instrument Serif', Georgia, serif;
+  --gs-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+/* The charts want room; the prose does not. */
+.main-container {
+  max-width: min(1700px, 96vw) !important;
+}
+
+div.html-widget {
+  width: 100% !important;
+  height: auto !important;
+  min-height: 480px;
+}
+
+/* ---- Header band --------------------------------------------------------
+   Breaks out of the centred .main-container to span the viewport. Negative
+   auto-width margins rather than `width: 100vw`, which overflows by the width
+   of the vertical scrollbar. */
+
+.gs-band {
+  background: var(--gs-band);
+  border-top: 4px solid var(--gs-accent-bright);
+  margin: 0 calc(50% - 50vw) 1.9rem;
+}
+
+.gs-band-inner {
+  max-width: min(1700px, 96vw);
+  margin: 0 auto;
+  padding: 0.9rem 15px 1rem;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.5rem;
+}
+
+a.gs-brand,
+a.gs-brand:hover,
+a.gs-brand:focus {
+  font-family: var(--gs-serif);
+  font-size: 1.4rem;
+  color: var(--gs-band-ink);
+  text-decoration: none;
+}
+
+.gs-brand-tag {
+  font: 500 0.7rem/1.5 var(--gs-mono);
+  color: var(--gs-band-soft);
+  border: 1px solid rgb(196 169 149 / 40%);
+  border-radius: 999px;
+  padding: 0.05rem 0.6rem;
+  margin-left: 0.55rem;
+  vertical-align: 0.12rem;
+}
+
+.gs-band-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem 1.2rem;
+}
+
+.gs-band-nav a,
+.gs-band-nav a:focus {
+  font: 0.84rem/1.6 var(--gs-mono);
+  color: var(--gs-band-soft);
+  text-decoration: none;
+}
+
+.gs-band-nav a:hover {
+  color: var(--gs-accent-bright);
+  text-decoration: none;
+}
+
+/* ---- Title block --------------------------------------------------------- */
+
+#header h1.title {
+  font-family: var(--gs-serif);
+  font-size: 2.7rem;
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  margin: 0 0 0.5rem;
+}
+
+#header {
+  margin-bottom: 0.4rem;
+}
+
+.gs-lede {
+  font-size: 1.1rem;
+  line-height: 1.55;
+  color: var(--gs-muted);
+  max-width: 60rem;
+  margin: 0 0 0.6rem;
+}
+
+.gs-meta {
+  font: 0.75rem/1.5 var(--gs-mono);
+  color: var(--gs-faint);
+  margin: 0 0 0.9rem;
+}
+
+/* ---- Chip strip: every example, current one marked ----------------------- */
+
+.gs-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.4rem;
+  border-top: 1px solid var(--gs-rule);
+  padding-top: 0.9rem;
+  margin: 0 0 2rem;
+}
+
+.gs-chips a,
+.gs-chips a:focus {
+  font: 0.78rem/1 var(--gs-mono);
+  color: var(--gs-muted);
+  background: #fff;
+  border: 1px solid var(--gs-rule);
+  border-radius: 999px;
+  padding: 0.33rem 0.72rem;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.gs-chips a:hover {
+  color: var(--gs-accent);
+  border-color: var(--gs-accent-bright);
+  text-decoration: none;
+}
+
+.gs-chips a[aria-current='page'],
+.gs-chips a[aria-current='page']:hover {
+  background: var(--gs-band);
+  border-color: var(--gs-band);
+  color: var(--gs-band-ink);
+}
+
+/* ---- Workflow disclosure ------------------------------------------------- */
+
+.gs-workflow {
+  border: 1px solid var(--gs-rule);
+  border-radius: 8px;
+  background: #fff;
+  margin: 1.2rem 0 1.8rem;
+}
+
+.gs-workflow > summary {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 0.9rem;
+  font: 0.88rem/1.4 var(--gs-mono);
+  color: var(--gs-muted);
+  list-style: none;
+}
+
+.gs-workflow > summary::-webkit-details-marker {
+  display: none;
+}
+
+.gs-workflow > summary::before {
+  content: '\25B8';
+  color: var(--gs-accent-bright);
+}
+
+.gs-workflow[open] > summary::before {
+  content: '\25BE';
+}
+
+.gs-workflow[open] > summary {
+  border-bottom: 1px solid var(--gs-rule);
+}
+
+.gs-workflow > summary:hover {
+  color: var(--gs-accent);
+}
+
+.gs-workflow pre {
+  margin: 0;
+  border: 0;
+  border-radius: 0 0 8px 8px;
+  background: var(--gs-panel);
+  max-height: 34rem;
+  overflow: auto;
+}
+
+/* ---- Previous / next pager ----------------------------------------------- */
+
+.gs-pager {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  border-top: 1px solid var(--gs-rule);
+  padding-top: 1.3rem;
+  margin: 3rem 0 1.5rem;
+}
+
+.gs-pager a,
+.gs-pager a:hover,
+.gs-pager a:focus {
+  color: var(--gs-ink);
+  text-decoration: none;
+  max-width: 48%;
+}
+
+.gs-pager-next {
+  text-align: right;
+  margin-left: auto;
+}
+
+.gs-pager-dir {
+  display: block;
+  font: 0.7rem/1.6 var(--gs-mono);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--gs-faint);
+}
+
+.gs-pager-title {
+  display: block;
+  font-weight: 600;
+}
+
+.gs-pager a:hover .gs-pager-title {
+  color: var(--gs-accent);
+  text-decoration: underline;
+}
+</style>
+
+<div class="gs-band">
+  <div class="gs-band-inner">
+    <a class="gs-brand" href="../index.html">gsm.safety<span class="gs-brand-tag">examples</span></a>
+    <nav class="gs-band-nav" aria-label="Site">
+      <a href="../index.html">Package home</a>
+      <a href="../reference/index.html">Reference</a>
+      <a href="https://jwildfire.github.io/safety.viz/">safety.viz charts</a>
+      <a href="https://github.com/jwildfire/gsm.safety">GitHub</a>
+    </nav>
+  </div>
+</div>

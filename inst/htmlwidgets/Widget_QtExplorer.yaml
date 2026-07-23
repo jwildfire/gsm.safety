@@ -1,0 +1,5 @@
+dependencies:
+  - name: safety-viz
+    version: 1.4.0
+    src: 'htmlwidgets/lib/safety.viz-1.4.0'
+    script: 'safety.viz.js'

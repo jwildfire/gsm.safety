@@ -7,16 +7,16 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/obot-claw/gsm.safety/blob/main/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/jwildfire/gsm.safety/blob/main/DESCRIPTION)
 
 obot (2026). *gsm.safety: Safety Visualizations for Good Statistical
-Monitoring Workflows*. R package version 0.1.0,
-<https://github.com/obot-claw/gsm.safety>.
+Monitoring Workflows*. R package version 1.0.0,
+<https://github.com/jwildfire/gsm.safety>.
 
     @Manual{,
       title = {gsm.safety: Safety Visualizations for Good Statistical Monitoring Workflows},
       author = {{obot}},
       year = {2026},
-      note = {R package version 0.1.0},
-      url = {https://github.com/obot-claw/gsm.safety},
+      note = {R package version 1.0.0},
+      url = {https://github.com/jwildfire/gsm.safety},
     }

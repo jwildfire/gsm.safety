@@ -64,7 +64,7 @@ test_that("Widget_DeltaDelta renders standalone HTML with the SafetyViz bundle a
 
 test_that("safety_delta_delta workflow renders an HTML report from ExampleData (#33, #38)", {
   strWorkflowPath <- system.file(
-    "workflow", "3_reports", "safety_delta_delta.yaml",
+    "workflow", "4_modules", "safety_delta_delta.yaml",
     package = "gsm.safety"
   )
   expect_true(file.exists(strWorkflowPath))

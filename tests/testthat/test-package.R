@@ -2,7 +2,7 @@ test_that("package metadata is available (#31)", {
   expect_equal(utils::packageDescription("gsm.safety")$Package, "gsm.safety")
 })
 
-test_that("gsm.safety exports the nine safety.viz widgets plus data and report helpers (#31, #41, #42)", {
+test_that("gsm.safety exports the nine safety.viz widgets plus data, report and metric helpers (#31, #41, #42, #45)", {
   expect_setequal(
     getNamespaceExports("gsm.safety"),
     c(
@@ -16,7 +16,11 @@ test_that("gsm.safety exports the nine safety.viz widgets plus data and report h
       "Widget_AeExplorer",
       "Widget_QtExplorer",
       "ExampleData",
-      "SaveWidgetReport"
+      "SaveWidgetReport",
+      # The 2_metrics phase: one Input_* step per participant-level metric.
+      "Input_HysLaw",
+      "Input_QtProlongation",
+      "Input_SafetyAE"
     )
   )
 })
@@ -96,7 +100,7 @@ test_that("every widget ships its htmlwidgets binding, dependency yaml, schema, 
     )
     expect_true(
       nzchar(system.file(
-        "workflow", "3_reports", paste0(lWidget$workflow, ".yaml"),
+        "workflow", "4_modules", paste0(lWidget$workflow, ".yaml"),
         package = "gsm.safety"
       )),
       info = strWidget
@@ -118,7 +122,7 @@ test_that("the legacy safetyCharts bridge is fully retired (#31, #41)", {
   # The paneled outlier variant had no safety.viz module and is gone for good.
   expect_identical(
     system.file(
-      "workflow", "3_reports", "paneled_outlier_explorer.yaml",
+      "workflow", "4_modules", "paneled_outlier_explorer.yaml",
       package = "gsm.safety"
     ),
     "",
@@ -128,7 +132,7 @@ test_that("the legacy safetyCharts bridge is fully retired (#31, #41)", {
   # ae_explorer came back in #41, but as a Widget_* workflow — every surviving
   # report workflow must render through a widget, never the retired bridge.
   chrWorkflows <- list.files(
-    system.file("workflow", "3_reports", package = "gsm.safety"),
+    system.file("workflow", "4_modules", package = "gsm.safety"),
     pattern = "[.]yaml$",
     full.names = TRUE
   )

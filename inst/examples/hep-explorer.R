@@ -26,7 +26,7 @@ if (!dir.exists(strOutputDir)) {
 
 lWorkflow <- yaml::read_yaml(
   system.file(
-    "workflow", "3_reports", "hep_explorer.yaml",
+    "workflow", "4_modules", "hep_explorer.yaml",
     package = "gsm.safety"
   )
 )

@@ -61,7 +61,7 @@ test_that("Widget_ResultsOverTime renders standalone HTML with the SafetyViz bun
 
 test_that("safety_results_over_time workflow renders an HTML report from ExampleData (#34, #38)", {
   strWorkflowPath <- system.file(
-    "workflow", "3_reports", "safety_results_over_time.yaml",
+    "workflow", "4_modules", "safety_results_over_time.yaml",
     package = "gsm.safety"
   )
   expect_true(file.exists(strWorkflowPath))

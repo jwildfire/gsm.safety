@@ -83,7 +83,7 @@ test_that("Widget_AeExplorer renders standalone HTML with the SafetyViz bundle a
 
 test_that("ae_explorer workflow renders an HTML report from ExampleData (#41, #38)", {
   strWorkflowPath <- system.file(
-    "workflow", "3_reports", "ae_explorer.yaml",
+    "workflow", "4_modules", "ae_explorer.yaml",
     package = "gsm.safety"
   )
   expect_true(file.exists(strWorkflowPath))

@@ -20,7 +20,9 @@ test_that("gsm.safety exports the nine safety.viz widgets plus data, report and 
       # The 2_metrics phase: one Input_* step per participant-level metric.
       "Input_HysLaw",
       "Input_QtProlongation",
-      "Input_SafetyAE"
+      "Input_SafetyAE",
+      # The Safety overview's denominators.
+      "SafetyCensus"
     )
   )
 })

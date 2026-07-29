@@ -27,7 +27,7 @@ The same chart ships as a gsm-idiom report workflow. Run it with `gsm.core::RunW
 
 ```{r, eval = FALSE, class.source = "fold-show"}
 lWorkflow <- yaml::read_yaml(
-  system.file("workflow", "3_reports", "safety_outlier_explorer.yaml", package = "gsm.safety")
+  system.file("workflow", "4_modules", "safety_outlier_explorer.yaml", package = "gsm.safety")
 )
 
 gsm.core::RunWorkflow(

@@ -1,6 +1,6 @@
 test_that("safety_histogram workflow renders an HTML report from ExampleData (#30, #38)", {
   strWorkflowPath <- system.file(
-    "workflow", "3_reports", "safety_histogram.yaml",
+    "workflow", "4_modules", "safety_histogram.yaml",
     package = "gsm.safety"
   )
   expect_true(file.exists(strWorkflowPath))

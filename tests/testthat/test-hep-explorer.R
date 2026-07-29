@@ -74,7 +74,7 @@ test_that("Widget_HepExplorer renders standalone HTML with the SafetyViz bundle 
 
 test_that("hep_explorer workflow renders an HTML report from ExampleData (#40, #38)", {
   strWorkflowPath <- system.file(
-    "workflow", "3_reports", "hep_explorer.yaml",
+    "workflow", "4_modules", "hep_explorer.yaml",
     package = "gsm.safety"
   )
   expect_true(file.exists(strWorkflowPath))

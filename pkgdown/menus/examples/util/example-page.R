@@ -123,7 +123,7 @@ ExampleHeader <- function(strFile = ExampleCurrentFile(), strDir = ".") {
 # collapsed. Read from the installed package so the listing is the shipped file
 # rather than a copy of it.
 ExampleWorkflow <- function(strWorkflow) {
-  strPath <- system.file("workflow", "3_reports", strWorkflow, package = "gsm.safety")
+  strPath <- system.file("workflow", "4_modules", strWorkflow, package = "gsm.safety")
   if (!nzchar(strPath)) {
     stop("No report workflow named '", strWorkflow, "' ships with gsm.safety.")
   }

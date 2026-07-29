@@ -1,3 +1,20 @@
+# gsm.safety (development version)
+
+## New features
+
+- A `2_metrics/` phase: three participant-level safety metrics — `saf0001` Hy's Law candidate, `saf0002` QTcF prolongation, and `saf0003` serious / related AE — each scoring one row per participant through `gsm.core::Analyze_Identity()` and `gsm.core::Flag()` into the standard `analyticsSummary` contract, so the existing gsm reporting machinery consumes them unchanged (#45).
+- The liver and QT metrics inherit their cut-points from the charts' own vendored data contracts (`inst/schema/hep-explorer.json`, `inst/schema/qt-explorer.json`) and keep every threshold in the workflow YAML, so a flag is traceable to the chart and the cut-point it came from without reading R.
+- `Input_HysLaw()`, `Input_QtProlongation()` and `Input_SafetyAE()` build the participant-level `analyticsInput` frames, carrying the evidence behind each flag — peak ×ULN by measure, max QTc and change, AE counts — alongside the score.
+- `SafetyCensus()` reduces the mapped domains to the denominators a safety overview leads with: enrolment, exposure in person-years, disposition, deaths, and — the figure most often missing — data coverage per visit, as a participant count against the enrolled population (#45).
+
+## Notes
+
+- Every figure `SafetyCensus()` produces is pooled across treatment arms. A study-team safety view is a blinded view, and FDA guidance treats even coded arms as unblinded data, so no arm split is produced.
+
+## Breaking changes
+
+- Report workflows moved from `inst/workflow/3_reports/` to `inst/workflow/4_modules/`, the standard gsm phase directory for `meta.Type: Report` workflows and the one gsm.kri already uses. Code calling `system.file("workflow", "3_reports", ...)` needs updating (#46).
+
 # gsm.safety 1.0.0
 
 First stable release: gsm.safety is now the R home of the safety.viz interactive chart library, mirroring the gsm.kri / gsm.viz architecture.

@@ -14,6 +14,7 @@ data and report workflows for Good Statistical Monitoring.
 Useful links:
 \itemize{
   \item \url{https://github.com/jwildfire/gsm.safety}
+  \item \url{https://jwildfire.github.io/gsm.safety/}
   \item Report bugs at \url{https://github.com/jwildfire/gsm.safety/issues}
 }
 

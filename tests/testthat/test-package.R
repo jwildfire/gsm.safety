@@ -2,7 +2,7 @@ test_that("package metadata is available (#31)", {
   expect_equal(utils::packageDescription("gsm.safety")$Package, "gsm.safety")
 })
 
-test_that("gsm.safety exports the nine safety.viz widgets plus data, report and metric helpers (#31, #41, #42, #45)", {
+test_that("gsm.safety exports the eleven safety.viz widgets plus data, report and metric helpers (#31, #41, #42, #45, #49)", {
   expect_setequal(
     getNamespaceExports("gsm.safety"),
     c(
@@ -15,6 +15,8 @@ test_that("gsm.safety exports the nine safety.viz widgets plus data, report and 
       "Widget_HepExplorer",
       "Widget_AeExplorer",
       "Widget_QtExplorer",
+      "Widget_HepWaterfall",
+      "Widget_NepExplorer",
       "ExampleData",
       "SaveWidgetReport",
       # The 2_metrics phase: one Input_* step per participant-level metric.
@@ -27,18 +29,27 @@ test_that("gsm.safety exports the nine safety.viz widgets plus data, report and 
   )
 })
 
-test_that("every renderer exported by the vendored safety.viz bundle has a widget binding (#41, #42)", {
+test_that("every renderer exported by the vendored safety.viz bundle has a widget binding (#41, #42, #49)", {
   # The bundle's public module collection is the contract: a renderer that
   # ships in safety.viz but has no Widget_* binding is unreachable from R.
+  strVersion <- utils::packageDescription("gsm.safety")[["Config/safetyviz/version"]]
   strBundle <- system.file(
-    "htmlwidgets", "lib", "safety.viz-1.4.0", "safety.viz.js",
+    "htmlwidgets", "lib", paste0("safety.viz-", strVersion), "safety.viz.js",
     package = "gsm.safety"
   )
   expect_true(nzchar(strBundle))
 
   chrModules <- c(
     "histogram", "shiftPlot", "deltaDelta", "resultsOverTime",
-    "outlierExplorer", "aeTimelines", "hepExplorer", "aeExplorer", "qtExplorer"
+    "outlierExplorer", "aeTimelines", "hepExplorer", "aeExplorer", "qtExplorer",
+    "hepWaterfall", "nepExplorer"
+  )
+  # Deferred wraps: every entry MUST cite its filed requirement (the parity
+  # rule's single-release clause) and mirror .github/parity-allowlist.yaml.
+  chrDeferred <- c(
+    # Multi-domain payload + selection semantics need design first:
+    # https://github.com/jwildfire/obot.roadmap/issues/165
+    "participantProfile"
   )
   chrBindings <- basename(list.files(
     system.file("htmlwidgets", package = "gsm.safety"),
@@ -61,10 +72,18 @@ test_that("every renderer exported by the vendored safety.viz bundle has a widge
       info = strModule
     )
   }
+  for (strModule in chrDeferred) {
+    expect_no_match(
+      strBindingSource,
+      paste0("SafetyViz.", strModule, "("),
+      fixed = TRUE,
+      info = paste0(strModule, " is deferred — wrap it or drop it from chrDeferred")
+    )
+  }
   expect_length(chrBindings, length(chrModules))
 })
 
-test_that("every widget ships its htmlwidgets binding, dependency yaml, schema, and report workflow (#31, #38)", {
+test_that("every widget ships its htmlwidgets binding, dependency yaml, schema, and report workflow (#31, #38, #49)", {
   lWidgets <- list(
     Widget_Histogram = list(slug = "histogram", workflow = "safety_histogram"),
     Widget_ShiftPlot = list(slug = "shift-plot", workflow = "safety_shift_plot"),
@@ -74,7 +93,9 @@ test_that("every widget ships its htmlwidgets binding, dependency yaml, schema, 
     Widget_AeTimelines = list(slug = "ae-timelines", workflow = "ae_timelines"),
     Widget_HepExplorer = list(slug = "hep-explorer", workflow = "hep_explorer"),
     Widget_AeExplorer = list(slug = "ae-explorer", workflow = "ae_explorer"),
-    Widget_QtExplorer = list(slug = "qt-explorer", workflow = "qt_explorer")
+    Widget_QtExplorer = list(slug = "qt-explorer", workflow = "qt_explorer"),
+    Widget_HepWaterfall = list(slug = "hep-waterfall", workflow = "hep_waterfall"),
+    Widget_NepExplorer = list(slug = "nep-explorer", workflow = "nep_explorer")
   )
 
   for (strWidget in names(lWidgets)) {
@@ -109,9 +130,10 @@ test_that("every widget ships its htmlwidgets binding, dependency yaml, schema, 
     )
   }
 
+  strVersion <- utils::packageDescription("gsm.safety")[["Config/safetyviz/version"]]
   expect_true(
     nzchar(system.file(
-      "htmlwidgets", "lib", "safety.viz-1.4.0", "safety.viz.js",
+      "htmlwidgets", "lib", paste0("safety.viz-", strVersion), "safety.viz.js",
       package = "gsm.safety"
     ))
   )

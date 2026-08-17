@@ -96,7 +96,7 @@ test_that("the chip strip links every example and marks the current page (#43)",
 
 test_that("the workflow disclosure embeds the shipped YAML verbatim and collapsed (#43)", {
   env <- envExampleUtil()
-  strWorkflowDir <- testthat::test_path("..", "..", "inst", "workflow", "3_reports")
+  strWorkflowDir <- testthat::test_path("..", "..", "inst", "workflow", "4_modules")
   skip_if_not(dir.exists(strWorkflowDir), "inst/workflow not available in this check context")
 
   for (strFile in list.files(strWorkflowDir, pattern = "[.]yaml$")) {
@@ -119,7 +119,7 @@ test_that("the workflow disclosure embeds the shipped YAML verbatim and collapse
 
 test_that("every example page shows the workflow that renders its own widget (#43)", {
   strDir <- strExamplesDir()
-  strWorkflowDir <- testthat::test_path("..", "..", "inst", "workflow", "3_reports")
+  strWorkflowDir <- testthat::test_path("..", "..", "inst", "workflow", "4_modules")
   skip_if_not(dir.exists(strWorkflowDir), "inst/workflow not available in this check context")
 
   for (strPage in chrPageFiles(strDir)) {

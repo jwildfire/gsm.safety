@@ -66,7 +66,7 @@ test_that("Widget_OutlierExplorer renders standalone HTML with the SafetyViz bun
 
 test_that("safety_outlier_explorer workflow renders an HTML report from ExampleData (#35, #38)", {
   strWorkflowPath <- system.file(
-    "workflow", "3_reports", "safety_outlier_explorer.yaml",
+    "workflow", "4_modules", "safety_outlier_explorer.yaml",
     package = "gsm.safety"
   )
   expect_true(file.exists(strWorkflowPath))

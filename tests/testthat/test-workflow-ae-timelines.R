@@ -1,6 +1,6 @@
 test_that("ae_timelines workflow renders an HTML report from ExampleData (#36, #38)", {
   strWorkflowPath <- system.file(
-    "workflow", "3_reports", "ae_timelines.yaml",
+    "workflow", "4_modules", "ae_timelines.yaml",
     package = "gsm.safety"
   )
   expect_true(file.exists(strWorkflowPath))

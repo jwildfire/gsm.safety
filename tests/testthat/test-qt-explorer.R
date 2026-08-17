@@ -115,7 +115,7 @@ test_that("Widget_QtExplorer renders standalone HTML with the SafetyViz bundle a
 
 test_that("qt_explorer workflow renders an HTML report from ExampleData (#42, #38)", {
   strWorkflowPath <- system.file(
-    "workflow", "3_reports", "qt_explorer.yaml",
+    "workflow", "4_modules", "qt_explorer.yaml",
     package = "gsm.safety"
   )
   expect_true(file.exists(strWorkflowPath))

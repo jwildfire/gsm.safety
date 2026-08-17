@@ -5,7 +5,11 @@ work accumulates under a vX.Y.Z (Upcoming) heading that loses the suffix when
 the release is cut; the GitHub release publishes from the section verbatim.
 -->
 
-# gsm.safety v1.1.0 (Upcoming)
+# gsm.safety v1.2.0 (Upcoming)
+
+Nothing yet — merged-but-unreleased work lands here.
+
+# gsm.safety v1.1.0
 
 **See it move:** the [annotated v1.1 demo](https://jwildfire.github.io/obot.roadmap/reports/gs-v1.1-demo/) walks the new metrics running live on the [DEMO-301 study site](https://jwildfire.github.io/demo-301/#/safety), with captures and try-it-yourself steps.
 

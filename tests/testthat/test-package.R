@@ -49,7 +49,11 @@ test_that("every renderer exported by the vendored safety.viz bundle has a widge
   chrDeferred <- c(
     # Multi-domain payload + selection semantics need design first:
     # https://github.com/jwildfire/obot.roadmap/issues/165
-    "participantProfile"
+    "participantProfile",
+    # Two data frames (ADAE-shaped events + ADSL-shaped population) do not fit
+    # the single-dfResults widget contract; same design gate:
+    # https://github.com/jwildfire/obot.roadmap/issues/165
+    "timeToEvent"
   )
   chrBindings <- basename(list.files(
     system.file("htmlwidgets", package = "gsm.safety"),

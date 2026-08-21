@@ -6,3 +6,6 @@
 - module: participantProfile
   requirement: https://github.com/jwildfire/obot.roadmap/issues/165
   reason: Standalone mount waits on a participantsSelected event and v2 adds an AE data domain — the R surface (initial cohort? compound widget? host-chart variants?) needs design before a binding.
+- module: timeToEvent
+  requirement: https://github.com/jwildfire/obot.roadmap/issues/165
+  reason: The renderer composes its endpoint from two frames — ADAE-shaped event records plus an ADSL-shaped population extract (safety.viz#131 rework) — and the single-`dfResults` widget contract cannot carry two. Shares participant-profile's R-surface design gate.

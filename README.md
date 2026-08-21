@@ -1,6 +1,6 @@
 # gsm.safety
 
-`gsm.safety` provides R bindings for the [safety.viz](https://github.com/jwildfire/safety.viz) JavaScript chart library: eleven interactive clinical safety displays as htmlwidgets — tracking the renderers the library ships (vendored at safety.viz v1.6.0; see `Config/safetyviz/version` in DESCRIPTION) — plus bundled example data and report workflows for Good Statistical Monitoring. It mirrors the `gsm.kri` / `gsm.viz` architecture.
+`gsm.safety` provides R bindings for the [safety.viz](https://github.com/jwildfire/safety.viz) JavaScript chart library: eleven interactive clinical safety displays as htmlwidgets — tracking the renderers the library ships (vendored at safety.viz v1.7.0; see `Config/safetyviz/version` in DESCRIPTION) — plus bundled example data and report workflows for Good Statistical Monitoring. It mirrors the `gsm.kri` / `gsm.viz` architecture.
 
 ## Gallery
 

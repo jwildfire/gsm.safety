@@ -38,6 +38,8 @@ MODULES=(
   ae-explorer
   hep-explorer
   qt-explorer
+  hep-waterfall
+  nep-explorer
 )
 
 if [ ! -d "$SRC_REPO/site/assets" ]; then

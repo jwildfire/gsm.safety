@@ -1,0 +1,61 @@
+# The cross-repo half of the safety.viz parity guard (#49; hub requirement
+# jwildfire/obot.roadmap#164): every renderer in the latest safety.viz RELEASE
+# has an R widget here (or a requirement-cited deferral), and the vendored
+# bundle is that release.
+#
+# Blocking on pull requests — an undocumented deferral fails the build. On the
+# weekly schedule, drift files (or updates) an adoption issue in this repo, so
+# a safety.viz release triggers the gsm.safety work without any cross-repo
+# token: this repo checks its own upstream and nags itself.
+name: safety.viz parity
+
+on:
+  pull_request:
+  push:
+    branches: [dev, main]
+  schedule:
+    - cron: '17 11 * * 1' # Mondays 11:17 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  parity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check widget parity against the latest safety.viz release
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -o pipefail
+          bash tools/check-safety-viz-parity.sh 2>&1 | tee parity.log
+
+      - name: File or update the adoption issue on drift (scheduled runs)
+        if: failure() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          title="Adopt the latest safety.viz release: widget parity drift detected"
+          body_file=$(mktemp)
+          {
+            echo "The scheduled [safety.viz parity check](../actions/workflows/safety-viz-parity.yaml) failed — safety.viz has moved past the vendored bundle and/or ships renderers with no widget binding."
+            echo
+            echo "Under the widget-parity rule (@jwildfire, 2026-08-15: every renderer gets an R widget; hub requirement [obot.roadmap#164](https://github.com/jwildfire/obot.roadmap/issues/164)), this needs a filed requirement and a catch-up release — not an informal follow-up."
+            echo
+            echo '```'
+            cat parity.log
+            echo '```'
+            echo
+            echo "_Filed automatically by the safety-viz-parity workflow._"
+          } > "$body_file"
+          existing=$(gh issue list --state open --search "\"$title\" in:title" --json number -q '.[0].number')
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body-file "$body_file"
+          else
+            gh issue create --title "$title" --body-file "$body_file" --label enhancement
+          fi

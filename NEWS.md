@@ -11,7 +11,7 @@ the release is cut; the GitHub release publishes from the section verbatim.
 - **The vendored safety.viz bundle moves from v1.4.0 to v1.6.0**, so every widget now renders with two releases of upstream fixes and features it was missing — including the corrected eDISH peak computation ([safety.viz#91](https://github.com/jwildfire/safety.viz/issues/91): the v1.4.0 bundle counted a participant's own baseline as an on-treatment peak when no day-0 record existed), participant-profile drill-down on six charts, the migration Sankey view, eDISH direct manipulation, study-day playback, and the shared hep/qt view selector. ([#49](https://github.com/jwildfire/gsm.safety/issues/49))
 - **A safety.viz parity guard makes the next drift loud**: `DESCRIPTION` declares the wrapped library version (`Config/safetyviz/version`), an offline test keeps the declaration, the vendored bundle, and every widget binding in agreement, and a CI workflow checks the latest safety.viz release — blocking PRs on unwrapped renderers unless `.github/parity-allowlist.yaml` cites a filed requirement, and filing an adoption issue automatically on its weekly schedule. ([obot.roadmap#164](https://github.com/jwildfire/obot.roadmap/issues/164), [#49](https://github.com/jwildfire/gsm.safety/issues/49))
 
-# gsm.safety v1.1.0 (Upcoming)
+# gsm.safety v1.1.0
 
 **See it move:** the [annotated v1.1 demo](https://jwildfire.github.io/obot.roadmap/reports/gs-v1.1-demo/) walks the new metrics running live on the [DEMO-301 study site](https://jwildfire.github.io/demo-301/#/safety), with captures and try-it-yourself steps.
 
@@ -24,6 +24,7 @@ gsm.safety could draw the eDISH chart but could not tell you how many participan
 - **Report workflows move to `inst/workflow/4_modules/`** ([#46](https://github.com/jwildfire/gsm.safety/issues/46), PR [#47](https://github.com/jwildfire/gsm.safety/pull/47); hub [obot.roadmap#136](https://github.com/jwildfire/obot.roadmap/issues/136)) — the standard gsm phase directory for `meta.Type: Report` workflows, the one gsm.kri already uses. Update any pipeline that globbed `3_reports/`.
 
 1 286 tests pass; `R CMD check` clean.
+
 # Earlier releases
 
 - [v1.0.0](https://github.com/jwildfire/gsm.safety/releases/tag/v1.0.0) — 2026-07-23.

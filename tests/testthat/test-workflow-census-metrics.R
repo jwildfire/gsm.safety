@@ -209,6 +209,31 @@ test_that("a declared column that goes missing stops the metric (#58)", {
   }
 })
 
+test_that("EVERY declared column, dropped, stops the metric (#58)", {
+  # The stronger form of the rule above, and the one that survives a metric
+  # being edited later: it is not enough that one column is guarded. A column
+  # a definition declares but no step reads would be a promise to a reader that
+  # nothing keeps, so every declared column of every census metric is dropped
+  # in turn and the metric has to stop.
+  for (lMetric in LCENSUS) {
+    lSpec <- CensusWorkflow(lMetric$id)$spec
+    for (strDomain in names(lSpec)) {
+      for (strCol in names(lSpec[[strDomain]])) {
+        lData <- CENSUS_DATA()
+        lData[[strDomain]][[strCol]] <- NULL
+
+        expect_error(
+          suppressWarnings(suppressMessages(
+            gsm.core::RunWorkflow(CensusWorkflow(lMetric$id), lData = lData)
+          )),
+          strCol,
+          info = paste(lMetric$id, strDomain, strCol)
+        )
+      }
+    }
+  }
+})
+
 test_that("a domain the study does not supply stops the metric (#58)", {
   for (lMetric in LCENSUS) {
     lData <- CENSUS_DATA()

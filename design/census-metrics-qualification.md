@@ -194,6 +194,13 @@ And one state the counting metrics have that `saf0004` does not: a subject
 domain with no rows at all is **no denominator**, which is not a denominator of
 zero. Nothing is published, and the warning says why.
 
+The absent state is checked in its strongest form: for every census metric,
+every column its definition declares is dropped in turn and the metric has to
+stop — 30 combinations across the eleven, plus the four of `saf0004`, all of
+which stop. A column a definition declares but no step reads would be a promise
+to a reader that nothing keeps; this is what makes that impossible to leave
+behind when a definition is edited later.
+
 `gsm.core::CheckSpec()` **errors on a missing data.frame but only warns on a
 missing declared column**. Verified again here against 1.3.1 rather than taken
 from the design, which calls the false-zero defect "fixed by construction".

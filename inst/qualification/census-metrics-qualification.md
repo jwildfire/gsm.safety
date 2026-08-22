@@ -57,7 +57,7 @@ participants of the 1000 in `Raw_SUBJ` have `enrollyn == "Y"`, and
 | `saf0010` | Participants with a lab result | 598 | 598 | 598 |
 | `saf0011` | Participants with an ECG | *no domain* | *no domain* | *blank* |
 | `saf0012` | Participants with a reported AE | 661 | 661 | 661 |
-| `saf0013` | Participants with a disposition record | 77 | 76 | 100 |
+| `saf0013` | Participants with a disposition record | 76 | 76 | 100 |
 | `saf0014` | Participants who completed | 19 | 19 | *inside a table* |
 | `saf0015` | Participants who discontinued | 9 | 9 | *inside a table* |
 

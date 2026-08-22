@@ -56,7 +56,7 @@ The published row, from both routes:
 
 | GroupID | GroupLevel | Numerator | Denominator | Metric | Score | Flag |
 |---|---|---|---|---|---|---|
-| AA-AA-000-0000 | Study | 14 | 762 | 0.0170603… | 13 | *(empty)* |
+| AA-AA-000-0000 | Study | 13 | 762 | 0.0170603… | 13 | *(empty)* |
 
 The two routes agree on 13. The flag is empty rather than zero — this metric
 does not flag.

@@ -51,7 +51,17 @@ The published row, from both routes:
 | AA-AA-000-0000 | Study | 13 | 762 | 0.0170603… | 13 | *(empty)* |
 
 The two routes agree on 13. The flag is empty rather than zero — this metric
-does not flag. `SafetyCensus()` reports **1** on the same study.
+does not flag.
+
+> **Corrected 2026-08-21**, while qualifying the remaining twelve metrics
+> ([#58](https://github.com/jwildfire/gsm.safety/issues/58)). This line said
+> `SafetyCensus()` reports **1** on the same study. Measured on `gsm.core`
+> 1.3.1 with the standard mapped domains it reports **4**: one is what it
+> reported on 1.2.0, and the function does not anchor its death count to the
+> enrolled population, so it counts all four participants whose discontinuation
+> reason says `Death` — three of them enrolled, one not. The correction this
+> metric makes is 4 → 13. The count of 13 below was re-measured on 1.3.1 and is
+> unchanged. See `design/census-metrics-qualification.md`.
 
 ## The finding: sixteen, then thirteen
 
@@ -63,7 +73,8 @@ that makes the number trustworthy rather than a coincidence.
 On this study the two sources name **sixteen** distinct participants — 12 from
 the death domain, 4 from the discontinuation reason, with no overlap. Three of
 the sixteen have `enrollyn = "N"`: never enrolled, no enrolment date, no time on
-study. The standard mapping's `Mapped_SUBJ` is `WHERE enrollyn == 'Y'`, so they
+study — two of them from the death domain (`S42425`, `S97688`) and one from the
+discontinuation reason (`S78705`), re-measured 2026-08-21. The standard mapping's `Mapped_SUBJ` is `WHERE enrollyn == 'Y'`, so they
 are not in the enrolled population, and the design's own rule excludes them:
 
 > Every one of them uses the standard rate step, which anchors the count to the

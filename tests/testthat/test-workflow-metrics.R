@@ -10,7 +10,12 @@ MetricWorkflow <- function(strID) {
 # Participant-level flagging metrics, following gsm.kri's pat0015 precedent.
 CHR_METRICS <- c("saf0001", "saf0002", "saf0003")
 # Descriptive census metrics: study level, no threshold, no flag (D0023.3/.4).
-CHR_CENSUS_METRICS <- c("saf0004")
+# Their own rules are asserted in test-workflow-census-metrics.R; what they
+# share with the flagging metrics is asserted here.
+CHR_CENSUS_METRICS <- c(
+  "saf0004", "saf0005", "saf0006", "saf0007", "saf0008", "saf0009",
+  "saf0010", "saf0011", "saf0012", "saf0013", "saf0014", "saf0015"
+)
 CHR_ALL_METRICS <- c(CHR_METRICS, CHR_CENSUS_METRICS)
 
 test_that("every metric workflow declares the pat0015 participant-level meta (#45)", {

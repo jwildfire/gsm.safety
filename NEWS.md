@@ -5,6 +5,36 @@ work accumulates under a vX.Y.Z (Upcoming) heading that loses the suffix when
 the release is cut; the GitHub release publishes from the section verbatim.
 -->
 
+# gsm.safety v1.3.0 (Upcoming)
+
+The first of the thirteen census metrics: the death count. Step one of four in the SafetyCensus rebuild ([obot.roadmap#274](https://github.com/jwildfire/obot.roadmap/issues/274), design [D0023](https://jwildfire.github.io/obot.roadmap/reports/decisions/2026-08-20-safety-census-rebuild/) approved 2026-08-20). It is first because it is the number the review was written about.
+
+## The figure that moves, and why it was wrong
+
+`SafetyCensus()` reports one death on the ecosystem's bundled study. It reaches that number by matching the text of a discontinuation reason in the study-completion domain, which on that study names exactly one participant. It never reads the study's death domain at all, and that domain holds twelve more.
+
+The new `saf0004` metric reports 12 deaths of 760 enrolled participants on the same study — a twelvefold correction to a published clinical figure, and the entire reason this rebuild exists.
+
+Three numbers, kept apart, because they answer different questions:
+
+- **13** — `gsm.mapping`'s union of the two death sources: 12 participants with a death record, plus 1 whose discontinuation reason is `Death`, with no overlap between them. This is the figure D0023 published, and it is correct for what it names.
+- **12** — what the metric publishes. One of the thirteen, `S39113`, has a death record but `enrollyn = "N"`: never enrolled, no enrolment date, no time on study. Every gsm metric anchors its count to the enrolled population, so publishing 13 over a denominator of 760 would put a person in the numerator who is not in the denominator — the defect shape the review caught elsewhere as five completers in a four-person study. The anchor wins; the difference is one identifiable participant, named here rather than absorbed.
+- **1** — what `SafetyCensus()` still returns, and will keep returning until step four rewrites it. This release adds the metric beside the function; it does not change the function, so no figure on the demo study's safety page moves yet. The gap between 1 and 12 is now measured, recorded, and reproducible instead of unknown.
+
+The count is qualified rather than asserted: it is measured twice on the same study by two routes that share no code — the death records read directly with base R, and the standard mapping run through the workflow — and both land on 12. The evidence, the versions, and the reproducer are recorded in `design/death-count-qualification.md` and run in the suite as `tests/testthat/test-qualification-death-count.R`, so a change in the bundled study or in the mapping is loud rather than silent.
+
+## What's new
+
+- **`saf0004`, a descriptive study-level death count** ([#56](https://github.com/jwildfire/gsm.safety/issues/56)) — counted from `Mapped_Death`, which is `gsm.mapping`'s own union of the death domain and the discontinuation reason, so no clinical definition of death is written in this package. The metric declares every column it reads, counts each participant once however many rows the domain carries for them, and anchors the count to the enrolled population.
+- **The metric does not flag, and cannot** ([#56](https://github.com/jwildfire/gsm.safety/issues/56)) — no threshold in its meta, no flagging step in its workflow, nothing amber and nothing red (D0023.3). New exported step `Flag_None()` stands where `gsm.core::Flag()` would and leaves the flag empty, following gsm.kri's `srs0001` site risk score, which has published its rows that way in production throughout. Empty, not zero: a zero would mean measured and found fine. Because the metric carries no threshold it contributes no weights, so gsm.kri's risk-score builder skips it and this figure cannot move a site's risk score.
+- **New exported step `Input_Deaths()`** ([#56](https://github.com/jwildfire/gsm.safety/issues/56)) — the numerator behind `saf0004`, and where the three states are kept apart: a study with no death domain, or a death domain missing a declared column, errors; a death domain with no rows at all publishes no figure and warns; a populated death domain marking nobody as died publishes zero. Absent is not empty and empty is not zero — only the last of the three is a measurement.
+- **Study level is a setting, not a rewrite** ([#56](https://github.com/jwildfire/gsm.safety/issues/56)) — `GroupLevel` and `GroupCol` are meta values the workflow reads, so moving the metric to site or country level is two lines rather than a second definition (D0023.4).
+
+## Worth knowing
+
+- **`gsm.core::CheckSpec()` only warns on a missing column.** The design assumed a declared column that is missing would stop the workflow with an error. Measured against gsm.core 1.2.0, it errors on a missing *data.frame* but merely warns on a missing *column*. Declaring the columns is therefore necessary but not sufficient, and `Input_Deaths()` checks its own columns and stops. The remaining twelve metrics need the same guard.
+- **Nothing upstream changed and nothing downstream moved.** `SafetyCensus()` resolves and returns exactly what it returned before, the three existing `saf000*` metrics are untouched, and the new row lands beside the flagging ones through the ordinary `Analyze` → `Summarize` chain.
+
 # gsm.safety v1.2.0 (Upcoming)
 
 - **Two new widgets — `Widget_HepWaterfall()` and `Widget_NepExplorer()`** — the hepatic ALT waterfall for abnormal-baseline trials (Amirzadegan et al. 2025, Fig. 5) and the KDIGO nephrotoxicity explorer, each with its report workflow, example page, and bundled demo cohort (`adbds_abnbl`; synthetic `AKI-*` participants join `adbds`). ([obot.roadmap#164](https://github.com/jwildfire/obot.roadmap/issues/164), [#49](https://github.com/jwildfire/gsm.safety/issues/49))

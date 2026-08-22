@@ -74,6 +74,23 @@ The page carries no coverage section, because no coverage metric exists to read
 
 ## The finding: the reference study has moved again
 
+> **Corrected 2026-08-22 by 🧭🤖 obot-navigator.** The operative claim in this
+> section — that both qualification suites skip their snapshot assertions on
+> `main` today, so the snapshot is not being exercised in CI — is false, and
+> reading it as true would justify ignoring a real failure. Three CI runs on
+> 2026-08-22 were checked directly ([#62](https://github.com/jwildfire/gsm.safety/pull/62)
+> and both runs of [#65](https://github.com/jwildfire/gsm.safety/pull/65)):
+> `Remotes` resolves `gsm.core@main` to **1.3.1** at `1b851ab` (2026-08-14), no
+> snapshot skip appears in any of the three, and the assertions ran — twelve
+> `[QUALIFICATION]` lines comparing 122 recorded figures. One of those runs was
+> made to fail on purpose and did, naming the record and the figure.
+>
+> The `1.3.1.9000` figures below are left as written rather than deleted, but
+> they are **not reproduced**: nothing available today installs that version, so
+> where they came from is unestablished. Treat the table as unverified until
+> `gsm.core`'s `main` moves past 1.3.1 and it can be measured again.
+
+
 `gsm.core`'s `main` branch — which this package's `Remotes` track, and which CI
 installs — is at **1.3.1.9000**, and its bundled `AA-AA-000-0000` is a
 different study from 1.3.1's. Measured with the same twelve metrics:

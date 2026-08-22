@@ -2,7 +2,7 @@ test_that("package metadata is available (#31)", {
   expect_equal(utils::packageDescription("gsm.safety")$Package, "gsm.safety")
 })
 
-test_that("gsm.safety exports the eleven safety.viz widgets plus data, report and metric helpers (#31, #41, #42, #45, #49, #56, #58)", {
+test_that("gsm.safety exports the eleven safety.viz widgets plus data, report and metric helpers (#31, #41, #42, #45, #49, #56, #58, #61)", {
   expect_setequal(
     getNamespaceExports("gsm.safety"),
     c(
@@ -30,7 +30,13 @@ test_that("gsm.safety exports the eleven safety.viz widgets plus data, report an
       "Input_ParticipantDays",
       "Flag_None",
       # The Safety overview's denominators.
-      "SafetyCensus"
+      "SafetyCensus",
+      # The census report: the steps of the safety_census workflow, which read
+      # the figures the census metrics published and compute nothing.
+      "Report_CensusFigures",
+      "Report_CensusCoverage",
+      "Report_CensusProvenance",
+      "Report_SafetyCensus"
     )
   )
 })
@@ -164,7 +170,10 @@ test_that("the legacy safetyCharts bridge is fully retired (#31, #41)", {
   )
 
   # ae_explorer came back in #41, but as a Widget_* workflow — every surviving
-  # report workflow must render through a widget, never the retired bridge.
+  # module workflow must render through this package's own steps, never the
+  # retired bridge. Since #61 there are two kinds: the widget modules render
+  # through gsm.safety::Widget_*, and the census report renders through
+  # gsm.safety::Report_*.
   chrWorkflows <- list.files(
     system.file("workflow", "4_modules", package = "gsm.safety"),
     pattern = "[.]yaml$",
@@ -172,10 +181,9 @@ test_that("the legacy safetyCharts bridge is fully retired (#31, #41)", {
   )
   for (strWorkflow in chrWorkflows) {
     strYAML <- paste(readLines(strWorkflow, warn = FALSE), collapse = "\n")
-    expect_match(
-      strYAML,
-      "gsm.safety::Widget_",
-      fixed = TRUE,
+    expect_true(
+      grepl("gsm.safety::Widget_", strYAML, fixed = TRUE) ||
+        grepl("gsm.safety::Report_", strYAML, fixed = TRUE),
       info = basename(strWorkflow)
     )
     expect_false(

@@ -5,7 +5,7 @@
 #
 # Measures the count twice by two routes that share no code, prints the
 # evidence, and exits non-zero if they disagree. The recorded result is
-# design/death-count-qualification.md; the same two routes run in the test
+# inst/qualification/death-count-qualification.md; the same two routes run in the test
 # suite as tests/testthat/test-qualification-death-count.R.
 #
 # Route B  the study's death records read directly with base R.

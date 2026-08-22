@@ -2,7 +2,7 @@
 # no ECG records, so on the studies available today this metric has no domain
 # to read and stops rather than publishing a zero - which is the designed
 # behaviour, and the reason this figure alone could not be measured against a
-# real study. See design/census-metrics-qualification.md.
+# real study. See inst/qualification/census-metrics-qualification.md.
 meta:
   Type: Analysis
   ID: saf0011

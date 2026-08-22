@@ -20,11 +20,16 @@
 # version skips it with both numbers named rather than asserting a stale one.
 #
 # The recorded result and the reproducer are in
-# design/death-count-qualification.md and tools/qualify-death-count.R.
+# inst/qualification/death-count-qualification.md and
+# tools/qualify-death-count.R. The record is installed content, so the checks
+# at the bottom of this file - the record against the code - run under
+# R CMD check as well as under devtools::test() (#63).
 
 # Measured 2026-08-21 against gsm.core 1.3.1 and gsm.mapping 1.1.6.
 RECORDED <- list(
   gsm.core = "1.3.1",
+  StudyID = "AA-AA-000-0000",
+  Subjects = 1000L, # every participant in Raw_SUBJ, enrolled or not
   Enrolled = 762L,
   DeathDomain = 12L, # distinct participants with a death record
   Discontinuation = 4L, # distinct participants whose compreas is "Death"
@@ -50,6 +55,8 @@ RouteB <- function() {
 
   chrUnion <- union(chrDeathDomain, chrDiscontinuation)
   list(
+    StudyID = unique(as.character(dfSubjects$studyid)),
+    Subjects = unique(as.character(dfSubjects$subjid)),
     Enrolled = chrEnrolled,
     DeathDomain = chrDeathDomain,
     Discontinuation = chrDiscontinuation,
@@ -72,7 +79,7 @@ SkipUnlessRecordedVersion <- function(l) {
     RECORDED$Enrolled, " enrolled. Installed gsm.core ", strInstalled,
     " reports ", length(l$UnionEnrolled), " of ", length(l$Enrolled),
     ". Re-run tools/qualify-death-count.R and update ",
-    "design/death-count-qualification.md and this file."
+    "inst/qualification/death-count-qualification.md and this file."
   ))
 }
 
@@ -93,7 +100,8 @@ test_that("route B: the two death sources read directly hold together (#56)", {
   )
   expect_lte(length(l$UnionEnrolled), length(l$Union))
   # SafetyCensus() reports four on this study, not the one recorded here
-  # before 2026-08-21 (see design/census-metrics-qualification.md). Whatever
+  # before 2026-08-21 (see inst/qualification/census-metrics-qualification.md).
+  # Whatever
   # the study, the correction this metric exists to make has to be larger than
   # the single participant the pre-1.3.1 study gave that reason to.
   expect_gt(length(l$UnionEnrolled), 1L)
@@ -103,6 +111,10 @@ test_that("route B: the recorded snapshot of the bundled study (#56)", {
   l <- RouteB()
   SkipUnlessRecordedVersion(l)
 
+  # The study and its size are recorded too, because the qualification record
+  # names both and nothing else measures them.
+  expect_identical(l$StudyID, RECORDED$StudyID)
+  expect_identical(length(l$Subjects), RECORDED$Subjects)
   expect_identical(length(l$Enrolled), RECORDED$Enrolled)
   expect_identical(length(l$DeathDomain), RECORDED$DeathDomain)
   expect_identical(length(l$Discontinuation), RECORDED$Discontinuation)
@@ -178,4 +190,184 @@ test_that("route A: the recorded snapshot of the published row (#56)", {
 
   expect_identical(dfSummary$Numerator, as.numeric(RECORDED$UnionEnrolled))
   expect_identical(dfSummary$Denominator, as.numeric(RECORDED$Enrolled))
+})
+
+# ---- The record against the code (#63) --------------------------------------
+#
+# Everything above measures the study. What follows measures the document:
+# every figure in inst/qualification/death-count-qualification.md against the
+# constants the tests above assert against the pipeline. Until #63 this record
+# had no such layer, and it carried a wrong figure for a day - caught by a
+# person reading it, not by a test.
+#
+# These checks are deliberately not version-pinned. The record and the
+# constants are one statement made twice; they have to agree on whatever study
+# is installed, and a re-qualification that updates one and not the other is
+# exactly what this catches.
+
+STR_DEATH_RECORD <- "death-count-qualification.md"
+
+test_that("the record's measured figures are the qualified figures (#63)", {
+  chrLines <- QualificationRecord(STR_DEATH_RECORD)
+  lTable <- QualificationTable(
+    chrLines, "^[|] Figure [|] Count [|]", STR_DEATH_RECORD
+  )
+
+  lExpected <- list(
+    "^Participants in" = RECORDED$Subjects,
+    "^Enrolled [(]" = RECORDED$Enrolled,
+    "^Death domain [(]" = RECORDED$DeathDomain,
+    "^Discontinuation reason" = RECORDED$Discontinuation,
+    # The union is the sum of the two sources only because they name nobody in
+    # common, so the record's overlap row is the arithmetic, not a constant.
+    "^Named by both sources" =
+      RECORDED$DeathDomain + RECORDED$Discontinuation - RECORDED$UnionAll,
+    "^Union, all participants" = RECORDED$UnionAll,
+    "^[*][*]Union, enrolled" = RECORDED$UnionEnrolled,
+    "^In the union but never enrolled" =
+      RECORDED$UnionAll - RECORDED$UnionEnrolled
+  )
+
+  for (strPattern in names(lExpected)) {
+    chrCells <- QualificationRow(
+      lTable, strPattern, STR_DEATH_RECORD, strPattern
+    )
+    if (length(chrCells) < 2L) next
+    ExpectRecordFigure(
+      STR_DEATH_RECORD, chrCells[[1]],
+      QualificationNumber(chrCells[[2]]), lExpected[[strPattern]]
+    )
+  }
+
+  # The three excluded participants are named in the record, not just counted.
+  chrCells <- QualificationRow(
+    lTable, "^In the union but never enrolled", STR_DEATH_RECORD,
+    "the participants who were never enrolled"
+  )
+  if (length(chrCells) >= 2L) {
+    expect_setequal(
+      regmatches(chrCells[[2]], gregexpr("S[0-9]+", chrCells[[2]]))[[1]],
+      RECORDED$NotEnrolled
+    )
+  }
+
+  RecordDocumentAgreement(STR_DEATH_RECORD, length(lExpected) + 1L)
+})
+
+test_that("the record's published row is the row the metric publishes (#63)", {
+  chrLines <- QualificationRecord(STR_DEATH_RECORD)
+  lTable <- QualificationTable(
+    chrLines, "^[|] GroupID [|] GroupLevel [|] Numerator [|]", STR_DEATH_RECORD
+  )
+  chrCells <- QualificationRow(
+    lTable, paste0("^", RECORDED$StudyID), STR_DEATH_RECORD,
+    "the published row"
+  )
+  expect_gte(length(chrCells), 7L)
+  if (length(chrCells) >= 7L) {
+    expect_identical(chrCells[[2]], "Study")
+    ExpectRecordFigure(
+      STR_DEATH_RECORD, "the published numerator",
+      QualificationNumber(chrCells[[3]]), RECORDED$UnionEnrolled
+    )
+    ExpectRecordFigure(
+      STR_DEATH_RECORD, "the published denominator",
+      QualificationNumber(chrCells[[4]]), RECORDED$Enrolled
+    )
+    # The record rounds the rate, so the comparison is to the digits it prints.
+    ExpectRecordFigure(
+      STR_DEATH_RECORD, "the published metric",
+      QualificationNumber(chrCells[[5]]),
+      RECORDED$UnionEnrolled / RECORDED$Enrolled,
+      tolerance = 1e-4
+    )
+    ExpectRecordFigure(
+      STR_DEATH_RECORD, "the published score",
+      QualificationNumber(chrCells[[6]]), RECORDED$UnionEnrolled
+    )
+    # Empty is not zero: this metric does not flag.
+    expect_match(chrCells[[7]], "empty")
+  }
+
+  RecordDocumentAgreement(STR_DEATH_RECORD, 5L)
+})
+
+test_that("the record's version table is pinned to the version recorded (#63)", {
+  chrLines <- QualificationRecord(STR_DEATH_RECORD)
+  strHeader <- "^[|] Figure [|] gsm[.]core "
+  lTable <- QualificationTable(chrLines, strHeader, STR_DEATH_RECORD)
+
+  # The right-hand column has to be the version the constants were measured on,
+  # or the table below it is describing a study nothing here checks.
+  chrHeader <- QualificationCells(grep(strHeader, chrLines, value = TRUE)[[1]])
+  expect_match(
+    chrHeader[[length(chrHeader)]], RECORDED$gsm.core,
+    fixed = TRUE,
+    info = paste0(STR_DEATH_RECORD, " pins its version table to the record")
+  )
+
+  lExpected <- list(
+    "^Enrolled$" = RECORDED$Enrolled,
+    "^Death domain$" = RECORDED$DeathDomain,
+    "^Discontinuation reason" = RECORDED$Discontinuation,
+    "^Union, all$" = RECORDED$UnionAll,
+    "^Union, enrolled" = RECORDED$UnionEnrolled
+  )
+  for (strPattern in names(lExpected)) {
+    chrCells <- QualificationRow(
+      lTable, strPattern, STR_DEATH_RECORD, strPattern
+    )
+    if (length(chrCells) < 3L) next
+    ExpectRecordFigure(
+      STR_DEATH_RECORD, paste(chrCells[[1]], "on gsm.core", RECORDED$gsm.core),
+      QualificationNumber(chrCells[[length(chrCells)]]), lExpected[[strPattern]]
+    )
+  }
+
+  RecordDocumentAgreement(STR_DEATH_RECORD, length(lExpected) + 1L)
+})
+
+test_that("the two records agree on the correction this metric makes (#63)", {
+  # This is the figure that went wrong. For a day this record said
+  # SafetyCensus() reports one death on this study; the function reports four,
+  # which census-metrics-qualification.md measures against the live function.
+  # Neither record checked the other, so the disagreement sat there until a
+  # person read it. Now it fails.
+  strCensus <- "census-metrics-qualification.md"
+  lMoves <- QualificationTable(
+    QualificationRecord(strCensus), "^[|] Figure [|] From [|] To [|]", strCensus
+  )
+  chrDeaths <- QualificationRow(lMoves, "^Deaths$", strCensus, "the deaths row")
+  expect_gte(length(chrDeaths), 3L)
+  if (length(chrDeaths) < 3L) {
+    return(invisible(NULL))
+  }
+
+  nFrom <- QualificationNumber(chrDeaths[[2]])
+  nTo <- QualificationNumber(chrDeaths[[3]])
+  ExpectRecordFigure(
+    strCensus, "the count this metric corrects to", nTo, RECORDED$UnionEnrolled
+  )
+
+  # The same pair, stated in prose in both records. Prose is where the wrong
+  # figure lived, so prose is checked.
+  for (strFile in c(STR_DEATH_RECORD, strCensus)) {
+    strProse <- QualificationProse(QualificationRecord(strFile))
+    chrPair <- regmatches(strProse, regexec(
+      "correction [a-z ]*metric makes is [^0-9]*([0-9]+)[^0-9]+([0-9]+)",
+      strProse
+    ))[[1]]
+    expect_length(chrPair, 3L)
+    if (length(chrPair) != 3L) next
+    ExpectRecordFigure(
+      strFile, "what SafetyCensus() reports today",
+      as.numeric(chrPair[[2]]), nFrom
+    )
+    ExpectRecordFigure(
+      strFile, "what this metric corrects it to",
+      as.numeric(chrPair[[3]]), nTo
+    )
+  }
+
+  RecordDocumentAgreement(STR_DEATH_RECORD, 5L)
 })

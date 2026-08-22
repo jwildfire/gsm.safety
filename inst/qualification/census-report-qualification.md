@@ -90,6 +90,18 @@ The page carries no coverage section, because no coverage metric exists to read
 > where they came from is unestablished. Treat the table as unverified until
 > `gsm.core`'s `main` moves past 1.3.1 and it can be measured again.
 
+> **Where 1.3.1.9000 came from, established 2026-08-22**
+> ([#66](https://github.com/jwildfire/gsm.safety/issues/66)). `gsm.core`'s
+> **default** branch is `dev`, not `main`, and `dev` carries 1.3.1.9000
+> (`ac425e1`, "Increment version number to 1.3.1.9000", 2026-08-13). `main` is
+> at `1b851ab`, the v1.3.1 release (2026-08-11), and `DESCRIPTION` pins
+> `gsm.core@main`, so CI installs 1.3.1 — which is why the snapshot assertions
+> run rather than skip. A plain `git clone` checks out `dev`, so the section
+> below is a measurement of the default branch reported as a measurement of
+> `main`: the version is accounted for, the eleven figures are still not
+> re-measured here, and the sentence in the section that the correction above
+> refutes is refuted for that reason.
+
 
 `gsm.core`'s `main` branch — which this package's `Remotes` track, and which CI
 installs — is at **1.3.1.9000**, and its bundled `AA-AA-000-0000` is a
@@ -144,3 +156,13 @@ metric layer, and the reason breakdown wants an enumeration that layer has no
 way to declare in advance. The blank-reason defect D0023's table marks as
 "fixed in the report's disposition helper" is therefore **not** fixed by this
 step; it is still inside `SafetyCensus()`, which step four rewrites.
+
+> **What step four did with it, 2026-08-22**
+> ([#66](https://github.com/jwildfire/gsm.safety/issues/66)). It removed it
+> rather than fixing it. `SafetyCensus()` computes nothing now, so there is no
+> disposition helper left to read a free-text reason: its disposition table is
+> the three states the disposition metrics publish — completed, discontinued
+> and died — and the `Discontinued - <reason>` rows, `Ongoing`, and
+> `Not in the disposition domain` are gone with the arithmetic that made them.
+> The median went the same way. Neither is lost work: both are still the
+> missing metrics named above, and the release notes say so.

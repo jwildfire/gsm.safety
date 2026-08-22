@@ -176,8 +176,9 @@ test_that("route A: the saf0004 workflow agrees with the records (#56)", {
   expect_identical(dfSummary$Numerator, as.numeric(length(lB$UnionEnrolled)))
   expect_identical(dfSummary$Denominator, as.numeric(length(lB$Enrolled)))
   expect_lte(dfSummary$Numerator, dfSummary$Denominator)
-  # And the number the function reports today is the one being replaced: four
-  # on gsm.core 1.3.1, one on 1.2.0, so the version-invariant floor is one.
+  # And it exceeds the number the function reported before v1.3.0, which is
+  # what it replaced: four on gsm.core 1.3.1, one on 1.2.0, so the
+  # version-invariant floor is one.
   expect_gt(dfSummary$Numerator, 1)
 })
 

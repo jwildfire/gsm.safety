@@ -2,7 +2,7 @@
 % Please edit documentation in R/SafetyCensus.R
 \name{SafetyCensus}
 \alias{SafetyCensus}
-\title{Study census, exposure and data coverage for a safety overview}
+\title{Study census, exposure and follow-up for a safety overview}
 \usage{
 SafetyCensus(
   dfSubjects,
@@ -20,81 +20,132 @@ SafetyCensus(
   strECGVisitNumCol = "visnum",
   strCompleteCol = "compyn",
   strReasonCol = "compreas",
-  chrDeathValues = c("DEATH", "DIED")
+  chrDeathValues = c("DEATH", "DIED"),
+  dfDeath = NULL,
+  dfRandomization = NULL,
+  strGroupCol = "studyid"
 )
 }
 \arguments{
-\item{dfSubjects}{\code{data.frame} Subject-level domain, one row per participant.}
+\item{dfSubjects}{\code{data.frame} Mapped subject-level domain, the enrolled
+population — \code{gsm.mapping}'s \code{Mapped_SUBJ}. It is both the anchor and the
+denominator of every other figure.}
 
-\item{dfLabs}{\code{data.frame} or \code{NULL} Long-format lab results, for lab
-coverage by visit.}
+\item{dfLabs}{\code{data.frame} or \code{NULL} Mapped lab domain (\code{Mapped_LB}).}
 
-\item{dfECG}{\code{data.frame} or \code{NULL} Long-format ECG records, for ECG coverage
-by visit.}
+\item{dfECG}{\code{data.frame} or \code{NULL} Mapped ECG domain (\code{Mapped_EG}).}
 
-\item{dfAE}{\code{data.frame} or \code{NULL} Adverse events, for the AE reporting rate.}
+\item{dfAE}{\code{data.frame} or \code{NULL} Mapped adverse-event domain
+(\code{Mapped_AE}).}
 
-\item{dfDisposition}{\code{data.frame} or \code{NULL} Study-completion domain, for
-disposition and deaths.}
+\item{dfDisposition}{\code{data.frame} or \code{NULL} Mapped study-completion domain
+(\code{Mapped_STUDCOMP}).}
 
 \item{strIDCol}{\code{character} Participant ID column, shared by every domain.
-Default: \code{"subjid"}.}
+Default: \code{"subjid"}. A domain keyed on another name is renamed to the
+mapped-domain convention before the metrics read it.}
 
-\item{strArmCol}{\code{character} Treatment arm column in \code{dfSubjects}; used only
-to count randomised participants, never to split a figure.
-Default: \code{"arm"}.}
+\item{strArmCol, strTimeOnStudyCol, strTimeOnTreatmentCol, strLabVisitCol, strLabVisitNumCol, strECGVisitCol, strECGVisitNumCol, strCompleteCol, strReasonCol, chrDeathValues}{\strong{Deprecated and ignored.} Every census metric declares the columns it
+reads in its own definition, so this function no longer takes a column
+name from its caller. Supplying one warns and changes nothing; they are
+kept so that existing calls keep working (D0023.5, approved).}
 
-\item{strTimeOnStudyCol, strTimeOnTreatmentCol}{\code{character} Person-time
-columns in \code{dfSubjects}, in days. Defaults: \code{"timeonstudy"},
-\code{"timeontreatment"}.}
+\item{dfDeath}{\code{data.frame} or \code{NULL} Mapped death domain (\code{Mapped_Death}) —
+\code{gsm.mapping}'s union of the death domain and the study-completion
+domain's discontinuation reason. Without it the death count is absent
+rather than read from a reason column, which is how it was wrong before.}
 
-\item{strLabVisitCol, strLabVisitNumCol}{\code{character} Visit label and visit
-number columns in \code{dfLabs}. Defaults: \code{"visnam"}, \code{"visnum"}.}
+\item{dfRandomization}{\code{data.frame} or \code{NULL} Mapped randomisation domain
+(\code{Mapped_Randomization}). Counting that a participant was randomised
+without reading what they were randomised to is what keeps this figure out
+of the treatment-arm column.}
 
-\item{strECGVisitCol, strECGVisitNumCol}{\code{character} Visit label and visit
-number columns in \code{dfECG}. Defaults: \code{"visnam"}, \code{"visnum"}.}
-
-\item{strCompleteCol, strReasonCol}{\code{character} Completion flag and reason
-columns in \code{dfDisposition}. Defaults: \code{"compyn"}, \code{"compreas"}.}
-
-\item{chrDeathValues}{\code{character} Values of the disposition reason column
-read as death. Default: \code{c("DEATH", "DIED")}.}
+\item{strGroupCol}{\code{character} Study identifier column in \code{dfSubjects},
+which groups the metrics. Default: \code{"studyid"}. It does not appear in what
+this function returns, so a subject domain without one still counts, with
+a warning.}
 }
 \value{
-\code{list} with three data.frames:
+\code{list} with three data.frames, the shape it has always returned:
 \itemize{
 \item \code{Census} — one row per named figure (\code{Label}, \code{Value}, \code{Denominator},
-\code{Group}), the study's denominators and exposure;
-\item \code{Coverage} — one row per domain per visit (\code{Domain}, \code{Visit}, \code{VisitNum},
-\code{Participants}, \code{Expected}), data availability;
-\item \code{Disposition} — one row per disposition state (\code{State}, \code{Participants}).
+\code{Group}), grouped as \code{Census}, \code{Exposure} and \code{Follow-up};
+\item \code{Coverage} — \code{Domain}, \code{Visit}, \code{VisitNum}, \code{Participants}, \code{Expected};
+no rows until the coverage metric lands (#58);
+\item \code{Disposition} — one row per published disposition state (\code{State},
+\code{Participants}), largest first.
 }
 }
 \description{
 The denominators a safety reader needs \emph{before} any event count means
-anything: how many participants there are, how many are on treatment, how
-much person-time has accrued, who has left the study and why, and — the one
-most often missing — how completely the safety data itself has been
-collected.
+anything: how many participants there are, how many were randomised, how
+many were dosed, how much person-time has accrued, and how many of them the
+study's safety domains actually name.
 }
 \details{
-Coverage is not decoration. A low event rate at a visit where 40\% of
-participants have no lab result is not reassurance, and the only way to tell
-those two situations apart is to publish the denominator beside the count.
-\code{Coverage} therefore reports, per visit, how many participants have at least
-one result against how many are expected.
-
 Every figure is \strong{pooled across treatment arms}. A study-team safety view is
 a blinded view, and FDA guidance treats even coded arms (A/B/C) as unblinded
 data, so no arm split is produced here.
 }
+\section{This function counts nothing}{
+
+
+It runs the census metrics in \verb{inst/workflow/2_metrics/} over the domains it
+is given, then reads what they published through the census report's own
+helpers (\code{\link[=Report_CensusFigures]{Report_CensusFigures()}}). Every number it returns is a \code{Numerator}
+a metric published, beside the \code{Denominator} that same metric published.
+
+That is the point of the rebuild rather than a detail of it. Until v1.3.0
+this function did its own arithmetic, and four of the figures it published
+were wrong — most of all the death count, which matched the text of a
+discontinuation reason, never read the death domain, and counted
+participants who were never enrolled. A figure counted in two places can
+disagree with itself; there is one counting lane now, and it is the metric.
+What each metric measures, and what it was measured against, is recorded in
+\verb{inst/qualification/}.
+}
+
+\section{Absent, empty, and zero are three different answers}{
+
+
+A domain that is not supplied, or that a metric could not read, leaves its
+figure \strong{absent} — \code{NA}, with a warning naming the domain. A domain with no
+rows has measured nothing and is also absent. A populated domain that names
+nobody publishes \strong{zero}, which is a measurement. Only the last of the
+three is a number, and none of them is allowed to read as another.
+}
+
+\section{What moved out of this function in v1.3.0}{
+
+
+Three things it used to return are not returned any more, because no metric
+publishes them and computing them here would be the second counting lane
+this rebuild exists to remove:
+\itemize{
+\item \strong{Median days on treatment} — wants an averaging step in the metric
+layer; see \href{https://github.com/jwildfire/gsm.safety/issues/61}{gsm.safety#61}.
+\item \strong{Visit-level data coverage} — the thirteenth census figure, carried to
+\href{https://github.com/jwildfire/gsm.safety/issues/58}{#58}: \code{gsm.mapping}'s
+lab domain carries no visit column under the standard mapping. \code{Coverage}
+is returned with its columns and no rows.
+\item \strong{Disposition states with no metric} — \code{Ongoing}, the
+\verb{Discontinued - <reason>} breakdown built from free text, and
+\verb{Not in the disposition domain}, which was a subtraction. \code{Disposition}
+now holds the states the disposition metrics publish: completed,
+discontinued and died.
+}
+}
+
 \examples{
 dfSubjects <- data.frame(
   subjid = c("S1", "S2", "S3"),
-  arm = c("A", "A", NA),
-  timeonstudy = c(120, 90, 30),
-  timeontreatment = c(110, 80, 0)
+  studyid = "AA-AA-000-0000",
+  firstdosedate = as.Date(c("2020-01-01", "2020-01-02", NA)),
+  timeonstudy = c(120L, 90L, 30L),
+  timeontreatment = c(110L, 80L, 0L)
 )
-SafetyCensus(dfSubjects)$Census
+dfDeath <- data.frame(subjid = "S2", death = TRUE)
+
+suppressWarnings(SafetyCensus(dfSubjects, dfDeath = dfDeath)$Census)
 
 }

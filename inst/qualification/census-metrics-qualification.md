@@ -47,7 +47,7 @@ The anchor for every figure below is the enrolled population: **762**
 participants of the 1000 in `Raw_SUBJ` have `enrollyn == "Y"`, and
 `Mapped_SUBJ` is exactly those 762.
 
-| Metric | Figure | Route A | Route B | `SafetyCensus()` today |
+| Metric | Figure | Route A | Route B | `SafetyCensus()` before v1.3.0 |
 |---|---|---|---|---|
 | `saf0005` | Enrolled participants | 762 | 762 | 762 |
 | `saf0006` | Randomised participants | 577 | 577 | *blank* |
@@ -63,6 +63,15 @@ participants of the 1000 in `Raw_SUBJ` have `enrollyn == "Y"`, and
 
 Every published row carries `Denominator = 762`, `Score = Numerator`, and an
 **empty** flag — these metrics do not flag, and empty is not zero (D0023.3).
+
+> **Updated 2026-08-22, when step four landed**
+> ([#66](https://github.com/jwildfire/gsm.safety/issues/66)). The last column
+> was headed "`SafetyCensus()` today" when this was recorded. It is history
+> now: the arithmetic that produced those figures was removed from the
+> function, so they cannot be re-measured and the suite asserts them as
+> recorded numbers rather than against running code. Nothing in the column
+> moved; only its heading, and only to stop it claiming to describe the
+> function as it stands.
 
 ## The findings
 
@@ -147,9 +156,10 @@ fails and the metric must be measured rather than left passing.
 
 ## What moves on the demo study's safety page
 
-Nothing yet: `SafetyCensus()` is untouched by this release, and step four is
-what rewires it. When it is rewired, these are the figures that change and why
-each was wrong:
+Recorded while `SafetyCensus()` was still untouched; step four
+([#66](https://github.com/jwildfire/gsm.safety/issues/66)) rewired it on
+2026-08-22 and these are the figures that moved, with what each was wrong
+about:
 
 | Figure | From | To | Why it was wrong |
 |---|---|---|---|
@@ -162,6 +172,19 @@ each was wrong:
 Person-years on study (73.2) and on treatment (29.5) are unchanged as
 quantities — 26,754 and 10,761 days over 365.25 — but the metrics publish days,
 and the report divides.
+
+> **What this table does not say, added 2026-08-22 with step four.** Two
+> figures the demo study shows today have no metric behind them and left the
+> payload rather than moving: the median days on treatment, which wants an
+> averaging step in the metric layer, and the per-visit data-coverage table,
+> which is the thirteenth census figure and is carried on
+> [#58](https://github.com/jwildfire/gsm.safety/issues/58). The disposition
+> table lost the states no metric publishes — `Ongoing`, the
+> `Discontinued - <reason>` breakdown read out of free text, and
+> `Not in the disposition domain`, which was a subtraction. And a figure whose
+> domain the caller does not supply is absent rather than wrong: on a study
+> that maps no death domain the death count now reads as not collected instead
+> of reading a discontinuation reason.
 
 ## They land in the reporting model beside the flagging metrics
 

@@ -247,6 +247,102 @@ test_that("the bundled study renders no data-coverage section (#61)", {
 })
 
 
+# ---- SafetyCensus(), on the same study (#66) --------------------------------
+#
+# Step four rewired the function to run the metrics and read them, so its
+# figures and the report's figures are now one set of numbers presented twice.
+# This is where that is checked rather than assumed: the same pipeline, through
+# the caller-facing function, compared with the same record.
+
+# Which metric each label on the payload reads. The labels are a contract
+# (D0023.5) and this is the only place the mapping between them and the metric
+# IDs is stated in the suite.
+CENSUS_PAYLOAD_LABELS <- list(
+  saf0005 = "Enrolled participants",
+  saf0006 = "Randomised to an arm",
+  saf0007 = "Received study drug",
+  saf0004 = "Deaths",
+  saf0008 = "Person-years on study",
+  saf0009 = "Person-years on treatment",
+  saf0010 = "Participants with a lab result",
+  saf0012 = "Participants with a reported AE",
+  saf0013 = "Participants with a disposition record"
+)
+
+BundledSafetyCensus <- function() {
+  lWorkflows <- suppressWarnings(gsm.core::MakeWorkflowList(
+    strNames = c(
+      "SUBJ", "STUDCOMP", "OverallResponse", "Randomization", "Death", "AE", "LB"
+    ),
+    strPackage = "gsm.mapping"
+  ))
+  lMapped <- suppressWarnings(suppressMessages({
+    lSpec <- gsm.mapping::CombineSpecs(lWorkflows)
+    gsm.core::RunWorkflows(lWorkflows, gsm.mapping::Ingest(gsm.core::lSource, lSpec))
+  }))
+
+  suppressWarnings(suppressMessages(SafetyCensus(
+    dfSubjects = lMapped$Mapped_SUBJ,
+    dfLabs = lMapped$Mapped_LB,
+    dfAE = lMapped$Mapped_AE,
+    dfDisposition = lMapped$Mapped_STUDCOMP,
+    dfDeath = lMapped$Mapped_Death,
+    dfRandomization = lMapped$Mapped_Randomization
+  )))
+}
+
+test_that("SafetyCensus publishes the qualified figures, not its own (#66)", {
+  SkipUnlessQualifiedVersion()
+
+  lCensus <- BundledSafetyCensus()
+  nChecked <- 0L
+
+  for (strID in names(CENSUS_PAYLOAD_LABELS)) {
+    strLabel <- CENSUS_PAYLOAD_LABELS[[strID]]
+    nValue <- lCensus$Census$Value[lCensus$Census$Label == strLabel]
+    expect_identical(length(nValue), 1L, info = strLabel)
+
+    nExpected <- if (!is.null(RECORDED_REPORT$PersonYears[[strID]])) {
+      RECORDED_REPORT$PersonYears[[strID]]
+    } else {
+      RECORDED_REPORT$Published[[strID]]
+    }
+    expect_equal(nValue, as.numeric(nExpected), info = strLabel)
+    nChecked <- nChecked + 1L
+  }
+
+  # The ECG figure has no domain on this study, so it is absent on the payload
+  # too - and absent is NA, never a zero.
+  nECG <- lCensus$Census$Value[
+    lCensus$Census$Label == "Participants with an ECG"
+  ]
+  expect_identical(length(nECG), 1L)
+  expect_true(is.na(nECG))
+  nChecked <- nChecked + 1L
+
+  RecordDocumentAgreement("SafetyCensus() on the bundled study", nChecked)
+})
+
+test_that("the payload's disposition states are the disposition metrics (#66)", {
+  SkipUnlessQualifiedVersion()
+
+  lCensus <- BundledSafetyCensus()
+  vState <- stats::setNames(
+    lCensus$Disposition$Participants, lCensus$Disposition$State
+  )
+
+  expect_equal(vState[["Died"]], as.numeric(RECORDED_REPORT$Published$saf0004))
+  expect_equal(
+    vState[["Completed"]], as.numeric(RECORDED_REPORT$Published$saf0014)
+  )
+  expect_equal(
+    vState[["Discontinued"]], as.numeric(RECORDED_REPORT$Published$saf0015)
+  )
+
+  RecordDocumentAgreement("SafetyCensus() disposition on the bundled study", 3L)
+})
+
+
 # ---- The record against the qualification records (#63) ---------------------
 #
 # The records are installed content, so these run under R CMD check - where the

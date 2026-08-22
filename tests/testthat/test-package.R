@@ -2,7 +2,7 @@ test_that("package metadata is available (#31)", {
   expect_equal(utils::packageDescription("gsm.safety")$Package, "gsm.safety")
 })
 
-test_that("gsm.safety exports the eleven safety.viz widgets plus data, report and metric helpers (#31, #41, #42, #45, #49)", {
+test_that("gsm.safety exports the eleven safety.viz widgets plus data, report and metric helpers (#31, #41, #42, #45, #49, #56)", {
   expect_setequal(
     getNamespaceExports("gsm.safety"),
     c(
@@ -23,6 +23,10 @@ test_that("gsm.safety exports the eleven safety.viz widgets plus data, report an
       "Input_HysLaw",
       "Input_QtProlongation",
       "Input_SafetyAE",
+      # The census metrics: a descriptive count and the step that stands where
+      # a flagging metric calls gsm.core::Flag().
+      "Input_Deaths",
+      "Flag_None",
       # The Safety overview's denominators.
       "SafetyCensus"
     )

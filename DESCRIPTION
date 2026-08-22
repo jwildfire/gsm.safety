@@ -27,10 +27,12 @@ Imports:
     stats,
     utils
 Suggests:
+    gsm.mapping,
     qcthat,
     testthat (>= 3.0.0),
     yaml
 Remotes:
     gsm.core=Gilead-BioStats/gsm.core@main,
+    gsm.mapping=Gilead-BioStats/gsm.mapping@main,
     qcthat=Gilead-BioStats/qcthat@main
 Config/testthat/edition: 3

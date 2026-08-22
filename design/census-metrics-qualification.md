@@ -207,7 +207,7 @@ zero. Nothing is published, and the warning says why.
 
 The absent state is checked in its strongest form: for every census metric,
 every column its definition declares is dropped in turn and the metric has to
-stop — 30 combinations across the eleven, plus the four of `saf0004`, all of
+stop — 34 combinations across the eleven, plus the four of `saf0004`, all of
 which stop. A column a definition declares but no step reads would be a promise
 to a reader that nothing keeps; this is what makes that impossible to leave
 behind when a definition is edited later.

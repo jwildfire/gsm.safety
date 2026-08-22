@@ -26,13 +26,13 @@ Imports:
     htmlwidgets,
     jsonlite,
     stats,
-    utils
+    utils,
+    yaml
 Suggests:
     gsm.mapping,
     gsm.reporting,
     qcthat,
-    testthat (>= 3.0.0),
-    yaml
+    testthat (>= 3.0.0)
 Remotes:
     gsm.core=Gilead-BioStats/gsm.core@main,
     gsm.mapping=Gilead-BioStats/gsm.mapping@main,

@@ -37,8 +37,10 @@ RECORDED_CENSUS <- list(
   saf0013 = 76, # participants with a disposition record
   saf0014 = 19, # participants who completed
   saf0015 = 9, # participants who discontinued
-  # What SafetyCensus() reports for the same study today, measured rather than
-  # quoted: these are the figures the release notes say move.
+  # What SafetyCensus() reported before v1.3.0, measured rather than quoted:
+  # these are the figures the release notes say move. They cannot be measured
+  # any more - #66 removed the arithmetic that produced them - so they live
+  # here as recorded history, checked against the record and nothing else.
   CensusDosed = 744,
   CensusDisposition = 100,
   CensusRandomised = NA_real_,
@@ -247,10 +249,14 @@ test_that("saf0011 has no second route on this study, and stops rather than repo
   ))))
 })
 
-test_that("the figures SafetyCensus() reports today are measured, not quoted (#58)", {
-  # The release notes name what moves, so what it moves from is measured here
-  # rather than carried forward from the design — which was written against a
-  # different version of the same study.
+test_that("the figures the record says move have moved (#58, #66)", {
+  # The "before" figures are history now: step four (#66) removed the
+  # arithmetic that produced them, so they cannot be re-measured here. They are
+  # asserted as recorded figures in the document-agreement block below, and the
+  # record marks that column as pre-v1.3.0 rather than "today".
+  #
+  # What can be measured is the other half of every row in the record's table
+  # of what moves: the figure the function reports now.
   skip_if_not_installed("gsm.mapping")
   lB <- RouteB_Census()
   SkipUnlessRecordedCensus(lB)
@@ -260,24 +266,29 @@ test_that("the figures SafetyCensus() reports today are measured, not quoted (#5
     dfSubjects = lA$Mapped$Mapped_SUBJ,
     dfLabs = lA$Mapped$Mapped_LB,
     dfAE = lA$Mapped$Mapped_AE,
-    dfDisposition = lA$Mapped$Mapped_STUDCOMP
+    dfDisposition = lA$Mapped$Mapped_STUDCOMP,
+    dfDeath = lA$Mapped$Mapped_Death,
+    dfRandomization = lA$Mapped$Mapped_Randomization
   )))
   Figure <- function(strLabel) {
     lCensus$Census$Value[lCensus$Census$Label == strLabel]
   }
 
-  expect_identical(Figure("Received study drug"), RECORDED_CENSUS$CensusDosed)
+  expect_identical(Figure("Received study drug"), RECORDED_CENSUS$saf0007)
   expect_identical(
-    Figure("Participants with a disposition record"),
-    RECORDED_CENSUS$CensusDisposition
+    Figure("Participants with a disposition record"), RECORDED_CENSUS$saf0013
   )
-  expect_identical(Figure("Randomised to an arm"), RECORDED_CENSUS$CensusRandomised)
-  # Not one, as the design and the first metric's notes both record: the
-  # function does not anchor its death count to the enrolled population, so it
-  # reports every disposition row whose reason says death.
-  expect_identical(Figure("Deaths"), RECORDED_CENSUS$CensusDeaths)
+  expect_identical(Figure("Randomised to an arm"), RECORDED_CENSUS$saf0006)
+  # The death count is qualified against its own record, so the payload's
+  # figure is compared with it there rather than restated here.
+  # Reported blank where the domain is missing was the fifth defect in the
+  # record's table; absent is NA and never a zero.
+  expect_true(is.na(Figure("Participants with an ECG")))
+  # And the figures that were already right are unmoved.
   expect_identical(Figure("Enrolled participants"), RECORDED_CENSUS$Enrolled)
-  expect_identical(Figure("Participants with a lab result"), as.numeric(lB$saf0010))
+  expect_identical(
+    Figure("Participants with a lab result"), as.numeric(lB$saf0010)
+  )
 })
 
 # ---- The record against the code (#63) --------------------------------------

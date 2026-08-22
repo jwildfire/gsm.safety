@@ -3,26 +3,28 @@
 # The report's job is to present figures it did not compute, so qualifying it
 # is not "does the code do what the code does" — it is whether the numbers a
 # reader sees on the page are the numbers recorded in
-# design/census-metrics-qualification.md, which were themselves measured twice
-# by routes that share no code.
+# inst/qualification/census-metrics-qualification.md, which were themselves
+# measured twice by routes that share no code.
 #
 # Two directions are checked, because either one alone can rot:
 #
 #   1. The page against the record. The whole pipeline runs on the bundled
 #      study - mapping, the twelve metrics, the reporting model, the report -
 #      and every presented figure is compared with the recorded one.
-#   2. The record against the design file. The constants below are compared
-#      with the qualification table in design/census-metrics-qualification.md,
-#      so a figure re-measured in that file and not here shows up as a
-#      failure rather than as a quiet disagreement between two documents.
+#   2. The record against the qualification records. The constants below are
+#      compared with the tables in inst/qualification/, so a figure re-measured
+#      in one of those files and not here shows up as a failure rather than as
+#      a quiet disagreement between two documents.
 #
-# design/ is .Rbuildignore'd, so direction 2 runs under devtools::test() and
-# skips under R CMD check. Direction 1 runs wherever the packages are
-# installed, and is pinned to the gsm.core the figures were measured on: the
-# bundled study moved once already between 1.2.0 and 1.3.1.
+# Until #63 the records lived in design/, which is .Rbuildignore'd, so
+# direction 2 ran under devtools::test() and skipped under R CMD check - the
+# context that gates the merge. The records are installed content now and it
+# runs everywhere. Direction 1 runs wherever the packages are installed, and is
+# pinned to the gsm.core the figures were measured on: the bundled study moved
+# once already between 1.2.0 and 1.3.1.
 
 # Measured 2026-08-21 against gsm.core 1.3.1 and gsm.mapping 1.1.6, and
-# recorded in design/census-metrics-qualification.md.
+# recorded in inst/qualification/census-metrics-qualification.md.
 RECORDED_REPORT <- list(
   gsm.core = "1.3.1",
   StudyID = "AA-AA-000-0000",
@@ -103,7 +105,7 @@ SkipUnlessQualifiedVersion <- function() {
     " and gsm.core ", strInstalled, " is installed. The bundled study moved ",
     "once already between 1.2.0 and 1.3.1. Re-qualify with ",
     "Rscript tools/qualify-census-metrics.R and update ",
-    "design/census-metrics-qualification.md."
+    "inst/qualification/census-metrics-qualification.md."
   ))
 }
 
@@ -244,78 +246,162 @@ test_that("the bundled study renders no data-coverage section (#61)", {
   expect_match(strHTML, "73.2", fixed = TRUE)
 })
 
-# ---- The record against the design file -------------------------------------
 
-QualificationTable <- function() {
-  strPath <- testthat::test_path(
-    "..", "..", "design", "census-metrics-qualification.md"
-  )
-  skip_if_not(
-    file.exists(strPath),
-    "design/ is .Rbuildignore'd and unavailable in this check context"
-  )
-  chrLines <- readLines(strPath, warn = FALSE)
-  chrRows <- grep("^[|] `saf[0-9]{4}` [|]", chrLines, value = TRUE)
-  expect_gt(length(chrRows), 0)
+# ---- The record against the qualification records (#63) ---------------------
+#
+# The records are installed content, so these run under R CMD check - where the
+# merge is gated - and not only under devtools::test(). They are not
+# version-pinned: a record and the constants beside it are one statement made
+# twice, and they have to agree on whatever study is installed.
 
-  lRows <- lapply(chrRows, function(strRow) {
-    chrCells <- trimws(strsplit(strRow, "|", fixed = TRUE)[[1]])
-    chrCells <- chrCells[nzchar(chrCells)]
-    list(
-      ID = gsub("`", "", chrCells[1], fixed = TRUE),
-      RouteA = suppressWarnings(as.numeric(gsub(",", "", chrCells[3], fixed = TRUE))),
-      RouteB = suppressWarnings(as.numeric(gsub(",", "", chrCells[4], fixed = TRUE)))
-    )
-  })
-  stats::setNames(lRows, vapply(lRows, function(l) l$ID, character(1)))
+STR_METRICS_RECORD <- "census-metrics-qualification.md"
+STR_DEATH_RECORD <- "death-count-qualification.md"
+STR_REPORT_RECORD <- "census-report-qualification.md"
+
+CensusMetricsRecordTable <- function() {
+  QualificationTable(
+    QualificationRecord(STR_METRICS_RECORD),
+    "^[|] Metric [|] Figure [|] Route A [|] Route B [|]", STR_METRICS_RECORD
+  )
 }
 
-test_that("the recorded figures are the ones the qualification file records (#61)", {
-  lTable <- QualificationTable()
+test_that("the recorded figures are the ones the qualification record records (#61)", {
+  lTable <- CensusMetricsRecordTable()
+  nChecked <- 0L
 
   for (strID in names(RECORDED_REPORT$Published)) {
-    if (identical(strID, "saf0004")) next # qualified in death-count-qualification.md
-    expect_false(is.null(lTable[[strID]]), info = strID)
-    expect_equal(
-      lTable[[strID]]$RouteA, RECORDED_REPORT$Published[[strID]],
-      info = strID
+    if (identical(strID, "saf0004")) next # qualified in the death record
+    chrCells <- QualificationRow(
+      lTable, paste0("^`", strID, "`$"), STR_METRICS_RECORD, strID
+    )
+    if (length(chrCells) < 4L) next
+    ExpectRecordFigure(
+      STR_METRICS_RECORD, paste(strID, "route A"),
+      QualificationNumber(chrCells[[3]]), RECORDED_REPORT$Published[[strID]]
     )
     # The two routes agreed when it was recorded; if that ever stops being
-    # true in the file, this test says so before the report quotes it.
-    expect_equal(lTable[[strID]]$RouteA, lTable[[strID]]$RouteB, info = strID)
+    # true in the record, this says so before the report quotes it.
+    ExpectRecordFigure(
+      STR_METRICS_RECORD, paste(strID, "route B"),
+      QualificationNumber(chrCells[[4]]), RECORDED_REPORT$Published[[strID]]
+    )
+    nChecked <- nChecked + 2L
   }
 
   # The metric with no second route is recorded as having none.
-  expect_true(is.na(lTable[[RECORDED_REPORT$Absent]]$RouteA))
+  chrCells <- QualificationRow(
+    lTable, paste0("^`", RECORDED_REPORT$Absent, "`$"), STR_METRICS_RECORD,
+    RECORDED_REPORT$Absent
+  )
+  if (length(chrCells) >= 3L) {
+    expect_true(is.na(QualificationNumber(chrCells[[3]])))
+    nChecked <- nChecked + 1L
+  }
+
+  RecordDocumentAgreement(STR_METRICS_RECORD, nChecked)
 })
 
 test_that("the presented person-years are the recorded participant-days divided (#61)", {
-  lTable <- QualificationTable()
+  lTable <- CensusMetricsRecordTable()
   lSettings <- CensusReportSettings()
 
   for (strID in names(RECORDED_REPORT$PersonYears)) {
-    expect_equal(
-      round(lTable[[strID]]$RouteA / lSettings$PersonTime$DaysPerYear, 1),
-      RECORDED_REPORT$PersonYears[[strID]],
-      info = strID
+    chrCells <- QualificationRow(
+      lTable, paste0("^`", strID, "`$"), STR_METRICS_RECORD, strID
+    )
+    if (length(chrCells) < 5L) next
+    nDays <- QualificationNumber(chrCells[[3]])
+    ExpectRecordFigure(
+      STR_METRICS_RECORD, paste(strID, "as person-years"),
+      round(nDays / lSettings$PersonTime$DaysPerYear, 1),
+      RECORDED_REPORT$PersonYears[[strID]]
+    )
+    # The same division is what the record says the function presents today.
+    ExpectRecordFigure(
+      STR_METRICS_RECORD, paste(strID, "as SafetyCensus() presents it today"),
+      QualificationNumber(chrCells[[5]]), RECORDED_REPORT$PersonYears[[strID]]
     )
   }
+
+  RecordDocumentAgreement(
+    STR_METRICS_RECORD, 2L * length(RECORDED_REPORT$PersonYears)
+  )
 })
 
-test_that("the death count is the figure its own qualification file records (#61)", {
-  strPath <- testthat::test_path(
-    "..", "..", "design", "death-count-qualification.md"
+test_that("the death count is the figure its own qualification record records (#61)", {
+  lTable <- QualificationTable(
+    QualificationRecord(STR_DEATH_RECORD),
+    "^[|] GroupID [|] GroupLevel [|] Numerator [|]", STR_DEATH_RECORD
   )
-  skip_if_not(
-    file.exists(strPath),
-    "design/ is .Rbuildignore'd and unavailable in this check context"
+  chrCells <- QualificationRow(
+    lTable, paste0("^", RECORDED_REPORT$StudyID), STR_DEATH_RECORD,
+    "the published row"
   )
-  chrLines <- readLines(strPath, warn = FALSE)
-  chrRow <- grep("^[|] AA-AA-000-0000 [|] Study [|]", chrLines, value = TRUE)
-  expect_length(chrRow, 1L)
+  expect_gte(length(chrCells), 4L)
+  if (length(chrCells) >= 4L) {
+    ExpectRecordFigure(
+      STR_DEATH_RECORD, "the death count",
+      QualificationNumber(chrCells[[3]]), RECORDED_REPORT$Published$saf0004
+    )
+    ExpectRecordFigure(
+      STR_DEATH_RECORD, "the enrolled denominator",
+      QualificationNumber(chrCells[[4]]), RECORDED_REPORT$Enrolled
+    )
+  }
 
-  chrCells <- trimws(strsplit(chrRow, "|", fixed = TRUE)[[1]])
-  chrCells <- chrCells[nzchar(chrCells)]
-  expect_equal(as.numeric(chrCells[3]), RECORDED_REPORT$Published$saf0004)
-  expect_equal(as.numeric(chrCells[4]), RECORDED_REPORT$Enrolled)
+  RecordDocumentAgreement(STR_DEATH_RECORD, 2L)
+})
+
+test_that("the report's own record is the figures the report presents (#63)", {
+  # The report's record had no document-agreement layer either - the file that
+  # checks the other two was not checking itself.
+  lTable <- QualificationTable(
+    QualificationRecord(STR_REPORT_RECORD),
+    "^[|] Metric [|] On the page [|] Qualified figure [|]", STR_REPORT_RECORD
+  )
+  nChecked <- 0L
+
+  for (strID in names(RECORDED_REPORT$Published)) {
+    chrCells <- QualificationRow(
+      lTable, paste0("^`", strID, "`$"), STR_REPORT_RECORD, strID
+    )
+    if (length(chrCells) < 4L) next
+
+    nPresented <- if (!is.null(RECORDED_REPORT$PersonYears[[strID]])) {
+      RECORDED_REPORT$PersonYears[[strID]]
+    } else {
+      RECORDED_REPORT$Published[[strID]]
+    }
+    ExpectRecordFigure(
+      STR_REPORT_RECORD, paste(strID, "on the page"),
+      QualificationNumber(chrCells[[2]]), nPresented
+    )
+    # Every figure on the page is presented beside its denominator.
+    expect_match(
+      chrCells[[2]], paste0("of ", RECORDED_REPORT$Enrolled), fixed = TRUE,
+      info = paste0(STR_REPORT_RECORD, " records the denominator for ", strID)
+    )
+    ExpectRecordFigure(
+      STR_REPORT_RECORD, paste(strID, "as qualified"),
+      QualificationNumber(chrCells[[3]]), RECORDED_REPORT$Published[[strID]]
+    )
+    ExpectRecordFigure(
+      STR_REPORT_RECORD, paste(strID, "as published by the metric"),
+      QualificationNumber(chrCells[[4]]), RECORDED_REPORT$Published[[strID]]
+    )
+    nChecked <- nChecked + 3L
+  }
+
+  # The metric with no domain publishes nothing and the record says so.
+  chrCells <- QualificationRow(
+    lTable, paste0("^`", RECORDED_REPORT$Absent, "`$"), STR_REPORT_RECORD,
+    RECORDED_REPORT$Absent
+  )
+  if (length(chrCells) >= 4L) {
+    expect_true(is.na(QualificationNumber(chrCells[[2]])))
+    expect_true(is.na(QualificationNumber(chrCells[[4]])))
+    nChecked <- nChecked + 2L
+  }
+
+  RecordDocumentAgreement(STR_REPORT_RECORD, nChecked)
 })

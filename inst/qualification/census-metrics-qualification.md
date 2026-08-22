@@ -4,6 +4,14 @@ Recorded 2026-08-21 · [gsm.safety#58](https://github.com/jwildfire/gsm.safety/i
 [obot.roadmap#274](https://github.com/jwildfire/obot.roadmap/issues/274) ·
 [D0023](https://jwildfire.github.io/obot.roadmap/reports/decisions/2026-08-20-safety-census-rebuild/)
 
+Installed with the package: `inst/qualification/census-metrics-qualification.md`
+in the repository, and
+`system.file("qualification", "census-metrics-qualification.md",
+package = "gsm.safety")` once installed
+([#63](https://github.com/jwildfire/gsm.safety/issues/63)). The record travels
+with the thing it qualifies, and every figure below is compared with the code
+by the test suite in every context it runs in — `R CMD check` included.
+
 Passing tests are not the check, and the D0023 design says so directly: a test
 asserting that the code does what the code does would not have caught any of
 the defects this rebuild exists to fix. So every census figure is measured

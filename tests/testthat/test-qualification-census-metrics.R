@@ -18,7 +18,10 @@
 # it with both numbers named rather than asserting a stale one.
 #
 # The recorded result and the reproducer are in
-# design/census-metrics-qualification.md and tools/qualify-census-metrics.R.
+# inst/qualification/census-metrics-qualification.md and
+# tools/qualify-census-metrics.R. The record is installed content, so the
+# checks at the bottom of this file - the record against the code - run under
+# R CMD check as well as under devtools::test() (#63).
 
 # Measured 2026-08-21 against gsm.core 1.3.1 and gsm.mapping 1.1.6.
 RECORDED_CENSUS <- list(
@@ -138,7 +141,7 @@ SkipUnlessRecordedCensus <- function(lB) {
     RECORDED_CENSUS$saf0013, " with a disposition record. Installed gsm.core ",
     strInstalled, " reports ", lB$Enrolled, ", ", lB$saf0006, " and ",
     lB$saf0013, ". Re-run tools/qualify-census-metrics.R and update ",
-    "design/census-metrics-qualification.md and this file."
+    "inst/qualification/census-metrics-qualification.md and this file."
   ))
 }
 
@@ -275,4 +278,146 @@ test_that("the figures SafetyCensus() reports today are measured, not quoted (#5
   expect_identical(Figure("Deaths"), RECORDED_CENSUS$CensusDeaths)
   expect_identical(Figure("Enrolled participants"), RECORDED_CENSUS$Enrolled)
   expect_identical(Figure("Participants with a lab result"), as.numeric(lB$saf0010))
+})
+
+# ---- The record against the code (#63) --------------------------------------
+#
+# Everything above measures the study. What follows measures the document:
+# every figure in inst/qualification/census-metrics-qualification.md against
+# the constants the tests above assert against the pipeline. Until #63 this
+# record had no such layer at all, so a figure re-measured in one place and not
+# the other stayed green indefinitely.
+#
+# These checks are deliberately not version-pinned. The record and the
+# constants are one statement made twice; they have to agree on whatever study
+# is installed, and a re-qualification that updates one and not the other is
+# exactly what this catches.
+
+STR_CENSUS_RECORD <- "census-metrics-qualification.md"
+
+CensusRecordTable <- function() {
+  QualificationTable(
+    QualificationRecord(STR_CENSUS_RECORD),
+    "^[|] Metric [|] Figure [|] Route A [|] Route B [|]", STR_CENSUS_RECORD
+  )
+}
+
+test_that("the record's two routes are the qualified figures (#63)", {
+  lTable <- CensusRecordTable()
+  nChecked <- 0L
+
+  for (strID in CHR_QUALIFIED) {
+    chrCells <- QualificationRow(
+      lTable, paste0("^`", strID, "`$"), STR_CENSUS_RECORD, strID
+    )
+    if (length(chrCells) < 4L) next
+    # Metric | Figure | Route A | Route B | `SafetyCensus()` today
+    ExpectRecordFigure(
+      STR_CENSUS_RECORD, paste(strID, "route A"),
+      QualificationNumber(chrCells[[3]]), RECORDED_CENSUS[[strID]]
+    )
+    # The two routes agreed when the record was written; if that ever stops
+    # being true in the record itself, this says so.
+    ExpectRecordFigure(
+      STR_CENSUS_RECORD, paste(strID, "route B"),
+      QualificationNumber(chrCells[[4]]), RECORDED_CENSUS[[strID]]
+    )
+    nChecked <- nChecked + 2L
+  }
+
+  # The metric with no domain on any study today has no figure on either
+  # route, and the record has to say so rather than carrying a number.
+  chrCells <- QualificationRow(
+    lTable, "^`saf0011`$", STR_CENSUS_RECORD, "saf0011"
+  )
+  if (length(chrCells) >= 4L) {
+    expect_true(is.na(QualificationNumber(chrCells[[3]])))
+    expect_true(is.na(QualificationNumber(chrCells[[4]])))
+    nChecked <- nChecked + 2L
+  }
+
+  # The anchor every figure in the record is counted against.
+  strProse <- QualificationProse(QualificationRecord(STR_CENSUS_RECORD))
+  chrAnchor <- regmatches(strProse, regexec(
+    "anchor for every figure below is the enrolled population: [*]{2}([0-9,]+)",
+    strProse
+  ))[[1]]
+  expect_length(chrAnchor, 2L)
+  if (length(chrAnchor) == 2L) {
+    ExpectRecordFigure(
+      STR_CENSUS_RECORD, "the enrolled anchor",
+      QualificationNumber(chrAnchor[[2]]), RECORDED_CENSUS$Enrolled
+    )
+    nChecked <- nChecked + 1L
+  }
+
+  RecordDocumentAgreement(STR_CENSUS_RECORD, nChecked)
+})
+
+test_that("the record's SafetyCensus() column is what the function reports (#63)", {
+  # Only the cells that state a count are compared here. The two person-time
+  # cells are person-years, and they are checked against the report's own
+  # division in test-qualification-census-report.R, where the workflow's
+  # DaysPerYear setting is already loaded; the two disposition cells say
+  # "inside a table" rather than a figure.
+  lTable <- CensusRecordTable()
+  lToday <- list(
+    saf0005 = RECORDED_CENSUS$Enrolled,
+    saf0006 = RECORDED_CENSUS$CensusRandomised, # NA: the function reports blank
+    saf0007 = RECORDED_CENSUS$CensusDosed,
+    saf0010 = RECORDED_CENSUS$saf0010,
+    saf0012 = RECORDED_CENSUS$saf0012,
+    saf0013 = RECORDED_CENSUS$CensusDisposition
+  )
+
+  for (strID in names(lToday)) {
+    chrCells <- QualificationRow(
+      lTable, paste0("^`", strID, "`$"), STR_CENSUS_RECORD, strID
+    )
+    if (length(chrCells) < 5L) next
+    ExpectRecordFigure(
+      STR_CENSUS_RECORD, paste(strID, "as SafetyCensus() reports it today"),
+      QualificationNumber(chrCells[[5]]), lToday[[strID]]
+    )
+  }
+
+  RecordDocumentAgreement(STR_CENSUS_RECORD, length(lToday))
+})
+
+test_that("the record's table of what moves is what the metrics publish (#63)", {
+  # From is what SafetyCensus() reports today, measured above; To is what the
+  # metric publishes, qualified above. The deaths row is checked in
+  # test-qualification-death-count.R, against that metric's own record.
+  lTable <- QualificationTable(
+    QualificationRecord(STR_CENSUS_RECORD),
+    "^[|] Figure [|] From [|] To [|]", STR_CENSUS_RECORD
+  )
+  lMoves <- list(
+    "^Randomised to an arm" = list(
+      From = RECORDED_CENSUS$CensusRandomised, To = RECORDED_CENSUS$saf0006
+    ),
+    "^Received study drug" = list(
+      From = RECORDED_CENSUS$CensusDosed, To = RECORDED_CENSUS$saf0007
+    ),
+    "^Participants with a disposition record" = list(
+      From = RECORDED_CENSUS$CensusDisposition, To = RECORDED_CENSUS$saf0013
+    )
+  )
+
+  for (strPattern in names(lMoves)) {
+    chrCells <- QualificationRow(
+      lTable, strPattern, STR_CENSUS_RECORD, strPattern
+    )
+    if (length(chrCells) < 3L) next
+    ExpectRecordFigure(
+      STR_CENSUS_RECORD, paste(chrCells[[1]], "before this release"),
+      QualificationNumber(chrCells[[2]]), lMoves[[strPattern]]$From
+    )
+    ExpectRecordFigure(
+      STR_CENSUS_RECORD, paste(chrCells[[1]], "after this release"),
+      QualificationNumber(chrCells[[3]]), lMoves[[strPattern]]$To
+    )
+  }
+
+  RecordDocumentAgreement(STR_CENSUS_RECORD, 2L * length(lMoves))
 })

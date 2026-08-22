@@ -4,6 +4,14 @@ Recorded 2026-08-21 · [gsm.safety#61](https://github.com/jwildfire/gsm.safety/i
 [obot.roadmap#274](https://github.com/jwildfire/obot.roadmap/issues/274) ·
 [D0023](https://jwildfire.github.io/obot.roadmap/reports/decisions/2026-08-20-safety-census-rebuild/)
 
+Installed with the package: `inst/qualification/census-report-qualification.md`
+in the repository, and
+`system.file("qualification", "census-report-qualification.md",
+package = "gsm.safety")` once installed
+([#63](https://github.com/jwildfire/gsm.safety/issues/63)). The record travels
+with the thing it qualifies, and every figure below is compared with the code
+by the test suite in every context it runs in — `R CMD check` included.
+
 The report computes nothing, so qualifying it is not a matter of re-deriving
 its figures — it is a matter of showing that the numbers a reader sees on the
 page are the numbers already qualified in

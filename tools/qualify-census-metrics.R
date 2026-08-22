@@ -6,7 +6,7 @@
 # Measures every figure twice by two routes that share no code, prints the
 # evidence beside what SafetyCensus() reports for the same study today, and
 # exits non-zero if any pair disagrees. The recorded result is
-# design/census-metrics-qualification.md; the same two routes run in the test
+# inst/qualification/census-metrics-qualification.md; the same two routes run in the test
 # suite as tests/testthat/test-qualification-census-metrics.R.
 #
 # Route B  the study's records read directly with base R, no mapping package,

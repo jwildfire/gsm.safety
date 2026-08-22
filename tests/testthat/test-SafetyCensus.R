@@ -226,7 +226,7 @@ test_that("the disposition table is the disposition metrics, and nothing else (#
   )
   # No state is invented. "Ongoing" was a participant whose completion flag was
   # blank, and "Not in the disposition domain" was a subtraction; no metric
-  # publishes either, so neither is here (#67).
+  # publishes either, so neither is here (#66).
   expect_false(any(c("Ongoing", "Not in the disposition domain") %in%
     lOut$Disposition$State))
   expect_false(any(grepl("Discontinued - ", lOut$Disposition$State, fixed = TRUE)))

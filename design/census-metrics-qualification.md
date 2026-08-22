@@ -155,6 +155,17 @@ Person-years on study (73.2) and on treatment (29.5) are unchanged as
 quantities — 26,754 and 10,761 days over 365.25 — but the metrics publish days,
 and the report divides.
 
+## They land in the reporting model beside the flagging metrics
+
+`gsm.reporting::MakeMetric()` (1.1.5) turns all fifteen definitions in
+`inst/workflow/2_metrics/` into one tibble: fifteen rows, the three flagging
+metrics carrying a `Threshold` and the twelve census metrics carrying `NA`.
+That is what makes a descriptive metric invisible to gsm.kri's risk-score
+builder, which skips any metric with no threshold — a census figure cannot move
+a site's score. Checked directly rather than assumed; not asserted in the suite,
+because gsm.safety does not depend on `gsm.reporting` and taking that dependency
+for one assertion is a larger change than it is worth.
+
 ## The snapshot is version-pinned, on purpose
 
 The bundled study is not fixed. gsm.safety tracks `gsm.core`'s `main` branch,

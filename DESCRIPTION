@@ -22,17 +22,20 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Imports:
     gsm.core,
+    htmltools,
     htmlwidgets,
     jsonlite,
     stats,
     utils
 Suggests:
     gsm.mapping,
+    gsm.reporting,
     qcthat,
     testthat (>= 3.0.0),
     yaml
 Remotes:
     gsm.core=Gilead-BioStats/gsm.core@main,
     gsm.mapping=Gilead-BioStats/gsm.mapping@main,
+    gsm.reporting=Gilead-BioStats/gsm.reporting@main,
     qcthat=Gilead-BioStats/qcthat@main
 Config/testthat/edition: 3

@@ -54,5 +54,15 @@ reference:
     contents:
       - SafetyCensus
   - title: Reports
+    desc: >
+      The steps behind the report definitions in inst/workflow/4_modules/.
+      SaveWidgetReport writes a widget module; the Report_Census* helpers and
+      Report_SafetyCensus assemble and render the safety census, reading the
+      figures the census metrics published and computing nothing of their own
+      (obot.roadmap#274).
     contents:
       - SaveWidgetReport
+      - Report_CensusFigures
+      - Report_CensusCoverage
+      - Report_CensusProvenance
+      - Report_SafetyCensus

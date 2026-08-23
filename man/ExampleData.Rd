@@ -4,7 +4,7 @@
 \alias{ExampleData}
 \title{Example safety data}
 \usage{
-ExampleData(strDataset = c("adbds", "adae", "adeg"))
+ExampleData(strDataset = c("adbds", "adae", "adeg", "adbds_abnbl"))
 }
 \arguments{
 \item{strDataset}{\code{character} Name of the example dataset to read. Default:
@@ -15,9 +15,14 @@ A \code{data.frame} with numeric result/range/day columns and character
 columns otherwise.
 }
 \description{
-Reads one of the example datasets vendored with the package. All three are
-derived from pharmaverseadam (CDISC Pilot 01 ADaM) and match the data used
-by the safety.viz demos:
+Reads one of the example datasets vendored with the package, matching the
+data used by the safety.viz demos. \code{adbds}, \code{adae}, and \code{adeg} are derived
+from pharmaverseadam (CDISC Pilot 01 ADaM); \code{adbds} additionally carries the
+synthetic \verb{AKI-*} acute-kidney-injury cohort the safety.viz nep-explorer
+demo appends (the pilot population alone puts every participant in the
+KDIGO no-stage box), and \code{adbds_abnbl} is the purpose-built synthetic
+abnormal-baseline hepatic cohort for \code{\link[=Widget_HepWaterfall]{Widget_HepWaterfall()}} (the pilot
+data cannot form that figure — see the safety.viz demo's data note):
 }
 \details{
 \itemize{
@@ -35,6 +40,9 @@ participants who reported an event.
 \code{SITE}, \code{SITEID}, \code{SEX}, \code{RACE}, \code{AGE}, \code{ARM}, \code{VISIT}, \code{VISITNUM},
 \code{PARAMCD}, \code{TEST}, \code{STRESU}, \code{STRESN}, \code{BASE}, \code{CHG}, \code{ABLFL}), carrying
 QTcF, QTcB, and Heart Rate for \code{\link[=Widget_QtExplorer]{Widget_QtExplorer()}}.
+\item \code{adbds_abnbl}: long-format labs for 80 synthetic abnormal-baseline
+participants (\verb{ABL-*}), same columns as \code{adbds}, for
+\code{\link[=Widget_HepWaterfall]{Widget_HepWaterfall()}}.
 }
 }
 \examples{

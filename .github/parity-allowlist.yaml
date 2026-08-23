@@ -1,0 +1,11 @@
+# Deliberate deferrals from the safety.viz widget-parity rule ("every renderer
+# gets an R widget", @jwildfire 2026-08-15). Every entry MUST cite the filed
+# requirement that will deliver the widget — tools/check-safety-viz-parity.sh
+# fails on an entry without one. Keep tests/testthat/test-package.R's
+# chrDeferred in sync.
+- module: participantProfile
+  requirement: https://github.com/jwildfire/obot.roadmap/issues/165
+  reason: Standalone mount waits on a participantsSelected event and v2 adds an AE data domain — the R surface (initial cohort? compound widget? host-chart variants?) needs design before a binding.
+- module: timeToEvent
+  requirement: https://github.com/jwildfire/obot.roadmap/issues/165
+  reason: The renderer composes its endpoint from two frames — ADAE-shaped event records plus an ADSL-shaped population extract (safety.viz#131 rework) — and the single-`dfResults` widget contract cannot carry two. Shares participant-profile's R-surface design gate.

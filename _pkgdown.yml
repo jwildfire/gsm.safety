@@ -26,9 +26,43 @@ reference:
       - Widget_AeExplorer
       - Widget_HepExplorer
       - Widget_QtExplorer
+      - Widget_HepWaterfall
+      - Widget_NepExplorer
   - title: Data
     contents:
       - ExampleData
+  - title: Metric steps
+    desc: >
+      The steps behind the metric definitions in inst/workflow/2_metrics/.
+      Input_HysLaw, Input_QtProlongation and Input_SafetyAE feed the three
+      participant-level flagging metrics; Input_Deaths, Input_Participants and
+      Input_ParticipantDays feed the descriptive census metrics, which publish
+      a number, carry no threshold, and call Flag_None where a flagging metric
+      calls gsm.core::Flag().
+    contents:
+      - Input_HysLaw
+      - Input_QtProlongation
+      - Input_SafetyAE
+      - Input_Deaths
+      - Input_Participants
+      - Input_ParticipantDays
+      - Flag_None
+  - title: Study census
+    desc: >
+      The safety overview's denominators. Being rebuilt on the metric steps
+      above (obot.roadmap#274); this function is unchanged until step four.
+    contents:
+      - SafetyCensus
   - title: Reports
+    desc: >
+      The steps behind the report definitions in inst/workflow/4_modules/.
+      SaveWidgetReport writes a widget module; the Report_Census* helpers and
+      Report_SafetyCensus assemble and render the safety census, reading the
+      figures the census metrics published and computing nothing of their own
+      (obot.roadmap#274).
     contents:
       - SaveWidgetReport
+      - Report_CensusFigures
+      - Report_CensusCoverage
+      - Report_CensusProvenance
+      - Report_SafetyCensus

@@ -1,0 +1,81 @@
+# gsm.mapping ships no EG mapping and the ecosystem's bundled study carries
+# no ECG records, so on the studies available today this metric has no domain
+# to read and stops rather than publishing a zero - which is the designed
+# behaviour, and the reason this figure alone could not be measured against a
+# real study. See inst/qualification/census-metrics-qualification.md.
+meta:
+  Type: Analysis
+  ID: saf0011
+  # D0023.4 - study level ships first, and the level is a setting from the
+  # first line rather than a later refactor: moving this metric to site level
+  # is GroupLevel: Site plus GroupCol: invid, and nothing else.
+  GroupLevel: Study
+  GroupCol: studyid
+  Abbreviation: ECGS
+  Metric: Participants With an ECG (Study)
+  Numerator: Participant With an ECG
+  Denominator: Enrolled Participant
+  Model: Identity
+  Score: Numerator
+  AnalysisType: identity
+  # The mapped domain this metric counts from, named in the error a reader has
+  # to act on when a declared column is gone.
+  Domain: Mapped_EG
+  # D0023.3 - no census number raises anything. There is deliberately no
+  # Threshold, no Flag and no RiskScoreWeight here, and no gsm.core::Flag step
+  # below: gsm.safety::Flag_None stands in that slot and leaves the flag empty,
+  # the way gsm.kri's srs0001 risk score already does. An empty flag says this
+  # number does not flag; a zero would say measured and found fine. A metric
+  # carrying no threshold contributes no weights, so gsm.kri's risk-score
+  # builder skips it and this figure cannot move a site's score.
+  GenerateRiskSignal: false
+spec:
+  # D0023 - declaring the columns is what a reader can check the metric
+  # against. It is not what stops a missing one reading as zero:
+  # gsm.core::CheckSpec() errors on a missing data.frame but only *warns* on a
+  # missing column, so gsm.safety::Input_Participants() checks its own columns
+  # and stops. Verified against gsm.core 1.3.1 rather than taken from the
+  # design.
+  Mapped_EG:
+    subjid:
+      type: character
+  Mapped_SUBJ:
+    subjid:
+      type: character
+    studyid:
+      type: character
+steps:
+  - output: Analysis_Input
+    name: gsm.safety::Input_Participants
+    params:
+      dfDomain: Mapped_EG
+      dfSubjects: Mapped_SUBJ
+      strDomainName: Domain
+      strGroupCol: GroupCol
+      strGroupLevel: GroupLevel
+  - output: Analysis_Transformed
+    name: gsm.core::Transform_Rate
+    params:
+      dfInput: Analysis_Input
+  - output: Analysis_Analyzed
+    name: gsm.core::Analyze_Identity
+    params:
+      dfTransformed: Analysis_Transformed
+      strValueCol: Score
+  - output: Analysis_Flagged
+    name: gsm.safety::Flag_None
+    params:
+      dfAnalyzed: Analysis_Analyzed
+  - output: Analysis_Summary
+    name: gsm.core::Summarize
+    params:
+      dfFlagged: Analysis_Flagged
+  - output: lAnalysis
+    name: list
+    params:
+      ID: ID
+      Analysis_Input: Analysis_Input
+      Analysis_Transformed: Analysis_Transformed
+      Analysis_Analyzed: Analysis_Analyzed
+      Analysis_Flagged: Analysis_Flagged
+      Analysis_Summary: Analysis_Summary

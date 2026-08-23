@@ -1,6 +1,6 @@
 # gsm.safety
 
-`gsm.safety` provides R bindings for the [safety.viz](https://github.com/jwildfire/safety.viz) JavaScript chart library: nine interactive clinical safety displays as htmlwidgets — one for every renderer the library ships — plus bundled example data and report workflows for Good Statistical Monitoring. It mirrors the `gsm.kri` / `gsm.viz` architecture.
+`gsm.safety` provides R bindings for the [safety.viz](https://github.com/jwildfire/safety.viz) JavaScript chart library: eleven interactive clinical safety displays as htmlwidgets — tracking the renderers the library ships (vendored at safety.viz v1.7.0; see `Config/safetyviz/version` in DESCRIPTION) — plus bundled example data and report workflows for Good Statistical Monitoring. It mirrors the `gsm.kri` / `gsm.viz` architecture.
 
 ## Gallery
 
@@ -58,6 +58,19 @@ Each thumbnail links to a live, interactive example rendered from the bundled de
   <sub><code>Widget_QtExplorer()</code></sub>
 </td>
 </tr>
+<tr>
+<td width="33%" align="center">
+  <a href="https://jwildfire.github.io/gsm.safety/examples/Example_HepWaterfall.html"><img src="man/figures/widgets/hep-waterfall.png" alt="Hepatic ALT Waterfall" width="100%"></a><br>
+  <a href="https://jwildfire.github.io/gsm.safety/examples/Example_HepWaterfall.html"><b>Hepatic ALT Waterfall</b></a><br>
+  <sub><code>Widget_HepWaterfall()</code></sub>
+</td>
+<td width="33%" align="center">
+  <a href="https://jwildfire.github.io/gsm.safety/examples/Example_NepExplorer.html"><img src="man/figures/widgets/nep-explorer.png" alt="Nephrotoxicity Explorer" width="100%"></a><br>
+  <a href="https://jwildfire.github.io/gsm.safety/examples/Example_NepExplorer.html"><b>Nephrotoxicity Explorer</b></a><br>
+  <sub><code>Widget_NepExplorer()</code></sub>
+</td>
+<td width="33%" align="center"></td>
+</tr>
 </table>
 
 ## Widgets
@@ -73,6 +86,8 @@ Each thumbnail links to a live, interactive example rendered from the bundled de
 | `Widget_AeExplorer()` | aeExplorer | `adae` | [`ae_explorer.yaml`](inst/workflow/4_modules/ae_explorer.yaml) |
 | `Widget_HepExplorer()` | hepExplorer | `adbds` | [`hep_explorer.yaml`](inst/workflow/4_modules/hep_explorer.yaml) |
 | `Widget_QtExplorer()` | qtExplorer | `adeg` | [`qt_explorer.yaml`](inst/workflow/4_modules/qt_explorer.yaml) |
+| `Widget_HepWaterfall()` | hepWaterfall | `adbds_abnbl` | [`hep_waterfall.yaml`](inst/workflow/4_modules/hep_waterfall.yaml) |
+| `Widget_NepExplorer()` | nepExplorer | `adbds` | [`nep_explorer.yaml`](inst/workflow/4_modules/nep_explorer.yaml) |
 
 Each widget validates its data and settings against the module's vendored JSON data contract (`inst/schema/`) before rendering, so column-mapping mistakes fail fast in R.
 

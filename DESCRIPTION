@@ -1,6 +1,6 @@
 Package: gsm.safety
 Title: Safety Visualizations for Good Statistical Monitoring Workflows
-Version: 1.1.0
+Version: 1.2.0
 Authors@R: c(
     person("obot", role = c("aut", "cre"), email = "obot@users.noreply.github.com")
   )

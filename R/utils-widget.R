@@ -219,3 +219,87 @@ WidgetSizingPolicy <- function() {
     knitr.defaultWidth = "100%"
   )
 }
+
+# ---------------------------------------------------------------------------
+# W0125 PROBE: multi-dataset payload support (candidate "named frames")
+# ---------------------------------------------------------------------------
+
+#' The dataset names a module's data contract declares
+#' @noRd
+SchemaDatasets <- function(lSchema) {
+  setdiff(unlist(lSchema$required), "settings")
+}
+
+#' Check each dataset's schema-declared required column mappings
+#' @noRd
+CheckDatasetSettings <- function(lSchema, lData, lSettings, strModule) {
+  lProperties <- lSchema$properties$settings$properties
+  for (strDataset in names(lData)) {
+    chrKeys <- unlist(lSchema$properties[[strDataset]]$requiredSettings)
+    for (strKey in chrKeys) {
+      vValue <- lSettings[[strKey]]
+      if (is.null(vValue)) vValue <- lProperties[[strKey]]$default
+      gsm.core::stop_if(
+        cnd = is.null(vValue),
+        message = paste0(
+          "Required setting '", strKey, "' has no value and no default in the '",
+          strModule, "' schema"
+        )
+      )
+      gsm.core::stop_if(
+        cnd = !(vValue %in% names(lData[[strDataset]])),
+        message = paste0(
+          "Column '", vValue, "' (setting '", strKey, "') not found in ",
+          strDataset, " data"
+        )
+      )
+    }
+  }
+  invisible(NULL)
+}
+
+#' Build the htmlwidget payload for a multi-dataset safety.viz module
+#' @noRd
+BuildMultiWidgetPayload <- function(lData, lSettings = list(), strModule, bDebug = FALSE) {
+  gsm.core::stop_if(
+    cnd = !is.list(lData) || !length(lData) || is.null(names(lData)),
+    message = "lData must be a named list of data.frames"
+  )
+  for (strDataset in names(lData)) {
+    gsm.core::stop_if(
+      cnd = !is.data.frame(lData[[strDataset]]),
+      message = paste0("lData$", strDataset, " is not a data.frame")
+    )
+  }
+
+  strSchemaPath <- system.file("schema", paste0(strModule, ".json"), package = "gsm.safety")
+  gsm.core::stop_if(
+    cnd = !nzchar(strSchemaPath),
+    message = paste0("No data contract found for module '", strModule, "'")
+  )
+  lSchema <- jsonlite::fromJSON(strSchemaPath, simplifyVector = FALSE)
+
+  chrDatasets <- SchemaDatasets(lSchema)
+  chrMissing <- setdiff(chrDatasets, names(lData))
+  gsm.core::stop_if(
+    cnd = length(chrMissing) > 0,
+    message = paste0(
+      "The '", strModule, "' data contract requires dataset(s): ",
+      paste(chrMissing, collapse = ", ")
+    )
+  )
+
+  lSettingsSchema <- lSchema$properties$settings
+  CheckRequiredSettings(
+    lProperties = lSettingsSchema$properties,
+    chrRequired = unlist(lSettingsSchema$required),
+    lSettings = lSettings,
+    dfResults = lData[[chrDatasets[1]]],
+    strModule = strModule
+  )
+  CheckDatasetSettings(lSchema, lData[chrDatasets], lSettings, strModule)
+
+  if (length(lSettings) == 0) lSettings <- stats::setNames(list(), character(0))
+
+  list(lData = lData[chrDatasets], lSettings = lSettings, bDebug = bDebug)
+}

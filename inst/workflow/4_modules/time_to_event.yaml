@@ -1,0 +1,40 @@
+meta:
+  Type: Report
+  ID: time_to_event
+  Output: html
+  Name: Time-to-Event Report
+  Description: Interactive safety.viz Kaplan-Meier time-to-event explorer with a live endpoint composer, pointwise 95% band and at-risk table.
+  lSettings:
+    filters:
+      - value_col: ARM
+        label: Treatment Group
+spec:
+  dfEvents:
+    USUBJID:
+      type: character
+    ASTDY:
+      type: numeric
+    AEDECOD:
+      type: character
+  dfPopulation:
+    USUBJID:
+      type: character
+    ARM:
+      type: character
+    EOSDY:
+      type: numeric
+steps:
+  - output: strOutputDir
+    name: getwd
+  - output: lWidget
+    name: gsm.safety::Widget_TimeToEvent
+    params:
+      dfEvents: dfEvents
+      dfPopulation: dfPopulation
+      lSettings: lSettings
+  - output: strReportPath
+    name: gsm.safety::SaveWidgetReport
+    params:
+      widget: lWidget
+      strOutputDir: strOutputDir
+      strOutputFile: ID

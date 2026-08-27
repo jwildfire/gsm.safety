@@ -93,7 +93,7 @@ BuildWidgetPayload <- function(
     gsm.core::stop_if(
       cnd = !is.data.frame(lData[[strDataset]]),
       message = paste0(
-        "lData$", strDataset, " is missing or not a data.frame — the '",
+        "lData$", strDataset, " is missing or not a data.frame; the '",
         strModule, "' contract requires it"
       )
     )

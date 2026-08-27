@@ -1,0 +1,53 @@
+meta:
+  Type: Report
+  ID: participant_profile
+  Output: html
+  Name: Participant Profile Report
+  Description: Interactive safety.viz participant drill-down for a named cohort - demographics header, standardized labs over time, adverse-event tracks on the same axis, and a measure table with sparklines.
+  lSettings:
+    studyday_col: VISITNUM
+    measure_values:
+      ALT: Alanine Aminotransferase
+      AST: Aspartate Aminotransferase
+      TB: Bilirubin
+      ALP: Alkaline Phosphatase
+    details:
+      - value_col: ARM
+        label: Treatment Group
+      - value_col: SEX
+        label: Sex
+      - value_col: RACE
+        label: Race
+spec:
+  dfResults:
+    USUBJID:
+      type: character
+    TEST:
+      type: character
+    STRESN:
+      type: numeric
+    STNRHI:
+      type: numeric
+  dfAE:
+    USUBJID:
+      type: character
+    AEDECOD:
+      type: character
+    ASTDY:
+      type: numeric
+steps:
+  - output: strOutputDir
+    name: getwd
+  - output: lWidget
+    name: gsm.safety::Widget_ParticipantProfile
+    params:
+      dfResults: dfResults
+      chrParticipants: chrParticipants
+      dfAE: dfAE
+      lSettings: lSettings
+  - output: strReportPath
+    name: gsm.safety::SaveWidgetReport
+    params:
+      widget: lWidget
+      strOutputDir: strOutputDir
+      strOutputFile: ID

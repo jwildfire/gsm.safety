@@ -5,11 +5,12 @@ Authors@R: c(
     person("obot", role = c("aut", "cre"), email = "obot@users.noreply.github.com")
   )
 Description: HTML widget bindings for the 'safety.viz' JavaScript chart
-    library, providing eleven interactive clinical safety displays -
+    library, providing thirteen interactive clinical safety displays -
     histogram, shift plot, delta-delta, results over time, outlier
     explorer, adverse event timelines, adverse event explorer, the eDISH
     hepatic safety explorer, the hepatic ALT waterfall, the QT safety
-    explorer, and the KDIGO nephrotoxicity explorer - as htmlwidgets,
+    explorer, the KDIGO nephrotoxicity explorer, the Kaplan-Meier
+    time-to-event display, and the participant profile - as htmlwidgets,
     plus bundled example data and report workflows for Good Statistical
     Monitoring.
 License: Apache License (>= 2)

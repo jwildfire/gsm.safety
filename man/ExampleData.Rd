@@ -4,7 +4,7 @@
 \alias{ExampleData}
 \title{Example safety data}
 \usage{
-ExampleData(strDataset = c("adbds", "adae", "adeg", "adbds_abnbl"))
+ExampleData(strDataset = c("adbds", "adae", "adeg", "adbds_abnbl", "adsl"))
 }
 \arguments{
 \item{strDataset}{\code{character} Name of the example dataset to read. Default:
@@ -43,6 +43,11 @@ QTcF, QTcB, and Heart Rate for \code{\link[=Widget_QtExplorer]{Widget_QtExplorer
 \item \code{adbds_abnbl}: long-format labs for 80 synthetic abnormal-baseline
 participants (\verb{ABL-*}), same columns as \code{adbds}, for
 \code{\link[=Widget_HepWaterfall]{Widget_HepWaterfall()}}.
+\item \code{adsl}: one row per participant (\code{USUBJID}, \code{ARM}, \code{EOSDY}, \code{EOSSTT}) —
+the analysis population, its treatment arm, and the follow-up-end study
+day at which an event-free participant is censored. This is
+\code{\link[=Widget_TimeToEvent]{Widget_TimeToEvent()}}'s denominator: the events frame says who had an
+event and when, and this says who was at risk and for how long.
 }
 }
 \examples{
@@ -54,5 +59,8 @@ head(dfAE)
 
 dfEG <- ExampleData("adeg")
 head(dfEG)
+
+dfSL <- ExampleData("adsl")
+head(dfSL)
 
 }

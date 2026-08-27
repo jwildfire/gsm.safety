@@ -26,6 +26,11 @@
 #' - `adbds_abnbl`: long-format labs for 80 synthetic abnormal-baseline
 #'   participants (`ABL-*`), same columns as `adbds`, for
 #'   [Widget_HepWaterfall()].
+#' - `adsl`: one row per participant (`USUBJID`, `ARM`, `EOSDY`, `EOSSTT`) —
+#'   the analysis population, its treatment arm, and the follow-up-end study
+#'   day at which an event-free participant is censored. This is
+#'   [Widget_TimeToEvent()]'s denominator: the events frame says who had an
+#'   event and when, and this says who was at risk and for how long.
 #'
 #' @param strDataset `character` Name of the example dataset to read. Default:
 #'   `"adbds"`.
@@ -43,8 +48,11 @@
 #' dfEG <- ExampleData("adeg")
 #' head(dfEG)
 #'
+#' dfSL <- ExampleData("adsl")
+#' head(dfSL)
+#'
 #' @export
-ExampleData <- function(strDataset = c("adbds", "adae", "adeg", "adbds_abnbl")) {
+ExampleData <- function(strDataset = c("adbds", "adae", "adeg", "adbds_abnbl", "adsl")) {
   strDataset <- match.arg(strDataset)
 
   strPath <- system.file(
@@ -63,7 +71,8 @@ ExampleData <- function(strDataset = c("adbds", "adae", "adeg", "adbds_abnbl")) 
     adbds = c("VISITNUM", "STRESN", "STNRLO", "STNRHI"),
     adbds_abnbl = c("VISITNUM", "STRESN", "STNRLO", "STNRHI"),
     adae = c("AESEQ", "ASTDY", "AENDY"),
-    adeg = c("AGE", "VISITNUM", "STRESN", "BASE", "CHG")
+    adeg = c("AGE", "VISITNUM", "STRESN", "BASE", "CHG"),
+    adsl = c("EOSDY")
   )
   for (strCol in chrNumericCols) {
     dfData[[strCol]][!nzchar(dfData[[strCol]])] <- NA_character_

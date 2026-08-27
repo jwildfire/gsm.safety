@@ -128,3 +128,96 @@ test_that("SaveWidgetReport keeps an existing .html extension and validates inpu
     )
   )
 })
+
+# --- Multi-dataset contracts (#71) -------------------------------------------
+# time-to-event is the first module whose contract names two datasets rather
+# than one: `events` + `population`, each declaring its own requiredSettings.
+# The single-`dfResults` payload cannot carry two frames, so BuildWidgetPayload
+# reads the dataset names off the schema instead of assuming one.
+
+dfTteEvents <- function() {
+  ExampleData("adae")[, c("USUBJID", "ARM", "AEBODSYS", "AEDECOD", "AESER", "AESEV", "ASTDY")]
+}
+
+dfTtePopulation <- function() {
+  ExampleData("adsl")
+}
+
+test_that("BuildWidgetPayload carries both frames of a two-dataset contract (#71)", {
+  dfEvents <- dfTteEvents()
+  dfPopulation <- dfTtePopulation()
+
+  lPayload <- BuildWidgetPayload(
+    lData = list(events = dfEvents, population = dfPopulation),
+    lSettings = list(),
+    strModule = "time-to-event"
+  )
+
+  expect_named(lPayload, c("lData", "lSettings", "bDebug"))
+  expect_named(lPayload$lData, c("events", "population"))
+  expect_identical(lPayload$lData$events, dfEvents)
+  expect_identical(lPayload$lData$population, dfPopulation)
+  expect_false(lPayload$bDebug)
+})
+
+test_that("BuildWidgetPayload checks each dataset's own requiredSettings (#71)", {
+  dfEvents <- dfTteEvents()
+  dfPopulation <- dfTtePopulation()
+
+  # fu_day_col belongs to the population frame, not the events frame: naming a
+  # column that exists only in the events data must still fail.
+  expect_error(
+    BuildWidgetPayload(
+      lData = list(events = dfEvents, population = dfPopulation),
+      lSettings = list(fu_day_col = "ASTDY"),
+      strModule = "time-to-event"
+    ),
+    "ASTDY.*fu_day_col"
+  )
+
+  # ...and the reverse: event_day_col is checked against the events frame.
+  expect_error(
+    BuildWidgetPayload(
+      lData = list(events = dfEvents, population = dfPopulation),
+      lSettings = list(event_day_col = "EOSDY"),
+      strModule = "time-to-event"
+    ),
+    "EOSDY.*event_day_col"
+  )
+})
+
+test_that("BuildWidgetPayload errors when a two-dataset contract is missing a frame (#71)", {
+  expect_error(
+    BuildWidgetPayload(
+      lData = list(events = dfTteEvents()),
+      strModule = "time-to-event"
+    ),
+    "population"
+  )
+  expect_error(
+    BuildWidgetPayload(
+      lData = list(events = dfTteEvents(), population = "not a data.frame"),
+      strModule = "time-to-event"
+    ),
+    "population"
+  )
+})
+
+test_that("BuildWidgetPayload refuses a single frame for a two-dataset contract (#71)", {
+  expect_error(
+    BuildWidgetPayload(
+      dfResults = dfTteEvents(),
+      strModule = "time-to-event"
+    ),
+    "events.*population|two datasets|lData"
+  )
+})
+
+test_that("BuildWidgetPayload still takes dfResults for a one-dataset contract (#71)", {
+  # The eleven existing widgets must be untouched by the generalization.
+  lPayload <- BuildWidgetPayload(
+    dfResults = ExampleData("adbds"),
+    strModule = "nep-explorer"
+  )
+  expect_named(lPayload, c("dfResults", "lSettings", "bDebug"))
+})

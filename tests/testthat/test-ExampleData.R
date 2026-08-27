@@ -47,3 +47,23 @@ test_that("ExampleData defaults to adbds and rejects unknown datasets (#37)", {
   expect_identical(ExampleData(), ExampleData("adbds"))
   expect_error(ExampleData("nope"))
 })
+
+test_that("ExampleData reads the adsl population extract with sensible types (#71)", {
+  dfSL <- ExampleData("adsl")
+
+  expect_s3_class(dfSL, "data.frame")
+  expect_gt(nrow(dfSL), 0)
+  expect_identical(names(dfSL), c("USUBJID", "ARM", "EOSDY", "EOSSTT"))
+  expect_type(dfSL$USUBJID, "character")
+  expect_type(dfSL$EOSSTT, "character")
+  expect_true(is.numeric(dfSL$EOSDY))
+
+  # One row per participant: this frame is Widget_TimeToEvent()'s denominator,
+  # and a duplicate would double-count someone at risk.
+  expect_identical(anyDuplicated(dfSL$USUBJID), 0L)
+
+  # Every participant with an adverse event must be in the population, or the
+  # module drops their events as belonging to an unknown participant.
+  dfAE <- ExampleData("adae")
+  expect_true(all(dfAE$USUBJID %in% dfSL$USUBJID))
+})

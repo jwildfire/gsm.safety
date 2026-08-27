@@ -28,6 +28,8 @@ reference:
       - Widget_QtExplorer
       - Widget_HepWaterfall
       - Widget_NepExplorer
+      - Widget_TimeToEvent
+      - Widget_ParticipantProfile
   - title: Data
     contents:
       - ExampleData

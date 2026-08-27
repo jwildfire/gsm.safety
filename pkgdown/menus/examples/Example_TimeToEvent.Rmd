@@ -1,0 +1,84 @@
+---
+title: "Time to Event"
+description: "Kaplan-Meier cumulative incidence with the endpoint composed live from multiselect event filters, pointwise 95% bands, censor marks and an at-risk table."
+index: 12
+output:
+  html_document:
+    code_folding: hide
+    includes:
+      before_body: util/example-chrome.html
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+source("util/example-page.R")
+```
+
+```{r, echo = FALSE, results = "asis"}
+cat(ExampleHeader())
+```
+
+Kaplan-Meier curves for an endpoint the reviewer composes rather than one someone derived in advance. The multiselect filters over the event records decide which events qualify — every treatment-emergent event by default, and one click away the serious-only endpoint or a body-system basket. The module then takes each participant's first qualifying event by onset day, censors everyone else at their follow-up-end day, and draws the product-limit estimator with Greenwood log-log pointwise 95% bands, censor marks, and the at-risk and cumulative-event tables beneath the axis. Cumulative incidence (1 − KM, rising) is the default orientation because that is the safety convention; the survival orientation is a control away. The chart below is live — rendered by the safety.viz `timeToEvent` module.
+
+**Two data frames, and why neither can be inferred from the other.** There is no pre-derived time-to-event dataset here, because the endpoint is not fixed: `dfResults` carries the event records and `dfPopulation` carries one row per participant with the day their follow-up ended. The population frame is the denominator. A participant with no qualifying event has not dropped out of the analysis — they are censored at their own follow-up day, which the events alone cannot tell you. Records that cannot be used are counted and exportable rather than dropped silently.
+
+**A note on the demo data.** The bundled `adae` extract carries one all-blank placeholder row per participant with no adverse events, so that the adverse-event renderers' denominator covers the whole safety population. Those rows are not events, and this chart takes its denominator from `adsl` instead, so the example drops them.
+
+## Render this report from a workflow
+
+The same chart ships as a gsm-idiom report workflow. Run it with `gsm.core::RunWorkflow()` to produce a standalone HTML report, or use the matching runner script:
+
+```{r, eval = FALSE, class.source = "fold-show"}
+lWorkflow <- yaml::read_yaml(
+  system.file("workflow", "4_modules", "time_to_event.yaml", package = "gsm.safety")
+)
+
+dfAE <- ExampleData("adae")
+
+gsm.core::RunWorkflow(
+  lWorkflow = lWorkflow,
+  lData = list(
+    dfResults = dfAE[nzchar(dfAE$AEDECOD), ],
+    dfPopulation = ExampleData("adsl")
+  )
+)
+```
+
+```sh
+Rscript inst/examples/time-to-event.R <output-dir>
+```
+
+```{r, echo = FALSE, results = "asis"}
+cat(ExampleWorkflow("time_to_event.yaml"))
+```
+
+## The live chart
+
+```{r}
+library(gsm.safety)
+
+dfAE <- ExampleData("adae")
+dfResults <- dfAE[nzchar(dfAE$AEDECOD), ]
+dfPopulation <- ExampleData("adsl")
+
+Widget_TimeToEvent(
+  dfResults,
+  dfPopulation,
+  lSettings = list(
+    endpoint_label = "Time to first treatment-emergent adverse event",
+    event_filters = list(
+      list(value_col = "AEBODSYS", label = "Body System"),
+      list(value_col = "AEDECOD", label = "Preferred Term"),
+      list(value_col = "AESER", label = "Serious"),
+      list(value_col = "AESEV", label = "Severity")
+    ),
+    filters = list(
+      list(value_col = "ARM", label = "Treatment Group")
+    )
+  )
+)
+```
+
+```{r, echo = FALSE, results = "asis"}
+cat(ExampleFooter())
+```

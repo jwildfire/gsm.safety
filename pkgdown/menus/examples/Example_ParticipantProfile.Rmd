@@ -1,0 +1,87 @@
+---
+title: "Participant Profile"
+description: "The standalone drill-down for a named cohort: demographics header, standardized labs over time, adverse-event tracks on the same axis, and a measure table with sparklines."
+index: 13
+output:
+  html_document:
+    code_folding: hide
+    includes:
+      before_body: util/example-chrome.html
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+source("util/example-page.R")
+```
+
+```{r, echo = FALSE, results = "asis"}
+cat(ExampleHeader())
+```
+
+The drill-down that answers "what happened to this person" in one pass: a header carrying the participant's demographics and R ratio, a labs-over-time spaghetti standardized to multiples of the upper limit of normal or of baseline with per-measure reference cutpoints, adverse-event tracks drawn on that same study-day axis so a rash and a bilirubin rise line up, and a measure table whose sparklines expand into an inset. A cohort of more than one participant is ranked worst-first and stepped through. The profile below is live — rendered by the safety.viz `participantProfile` module.
+
+**This is the standalone surface, and it is not the only one.** The same profile already mounts inside several charts: the eDISH hepatic safety explorer, the histogram and the outlier explorer each put it in a rail beside the chart, driven by whatever the reviewer selects there, through their `profile` setting. Reach for that one when someone is exploring. Reach for this one when the report already knows its cohort — a per-participant appendix, a narrative for a set of flagged participants, a listing that stands on its own page.
+
+**Naming the cohort is not optional.** The module's standalone mount listens for a `participantsSelected` event, and nothing in a static R report dispatches one. Given no cohort it renders its controls and waits, indefinitely. So `chrParticipants` is a widget argument, delivered through the module's public programmatic-selection path — the same path the event listener takes. In a live report that list comes from a flagging metric; here it is three participants of the pilot study.
+
+## Render this report from a workflow
+
+The same profile ships as a gsm-idiom report workflow. Run it with `gsm.core::RunWorkflow()` to produce a standalone HTML report, or use the matching runner script:
+
+```{r, eval = FALSE, class.source = "fold-show"}
+lWorkflow <- yaml::read_yaml(
+  system.file("workflow", "4_modules", "participant_profile.yaml", package = "gsm.safety")
+)
+
+dfAE <- ExampleData("adae")
+
+gsm.core::RunWorkflow(
+  lWorkflow = lWorkflow,
+  lData = list(
+    dfResults = ExampleData("adbds"),
+    dfAE = dfAE[nzchar(dfAE$AEDECOD), ],
+    chrParticipants = c("01-701-1015", "01-701-1023", "01-701-1028")
+  )
+)
+```
+
+```sh
+Rscript inst/examples/participant-profile.R <output-dir>
+```
+
+```{r, echo = FALSE, results = "asis"}
+cat(ExampleWorkflow("participant_profile.yaml"))
+```
+
+## The live profile
+
+```{r}
+library(gsm.safety)
+
+dfResults <- ExampleData("adbds")
+dfAE <- ExampleData("adae")
+
+Widget_ParticipantProfile(
+  dfResults,
+  chrParticipants = c("01-701-1015", "01-701-1023", "01-701-1028"),
+  dfAE = dfAE[nzchar(dfAE$AEDECOD), ],
+  lSettings = list(
+    studyday_col = "VISITNUM",
+    measure_values = list(
+      ALT = "Alanine Aminotransferase",
+      AST = "Aspartate Aminotransferase",
+      TB = "Bilirubin",
+      ALP = "Alkaline Phosphatase"
+    ),
+    details = list(
+      list(value_col = "ARM", label = "Treatment Group"),
+      list(value_col = "SEX", label = "Sex"),
+      list(value_col = "RACE", label = "Race")
+    )
+  )
+)
+```
+
+```{r, echo = FALSE, results = "asis"}
+cat(ExampleFooter())
+```

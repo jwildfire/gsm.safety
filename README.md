@@ -1,6 +1,6 @@
 # gsm.safety
 
-`gsm.safety` provides R bindings for the [safety.viz](https://github.com/jwildfire/safety.viz) JavaScript chart library: eleven interactive clinical safety displays as htmlwidgets — tracking the renderers the library ships (vendored at safety.viz v1.7.0; see `Config/safetyviz/version` in DESCRIPTION) — plus bundled example data and report workflows for Good Statistical Monitoring. It mirrors the `gsm.kri` / `gsm.viz` architecture.
+`gsm.safety` provides R bindings for the [safety.viz](https://github.com/jwildfire/safety.viz) JavaScript chart library: thirteen interactive clinical safety displays as htmlwidgets — tracking the renderers the library ships (vendored at safety.viz v1.7.0; see `Config/safetyviz/version` in DESCRIPTION) — plus bundled example data and report workflows for Good Statistical Monitoring. It mirrors the `gsm.kri` / `gsm.viz` architecture.
 
 ## Gallery
 
@@ -69,6 +69,19 @@ Each thumbnail links to a live, interactive example rendered from the bundled de
   <a href="https://jwildfire.github.io/gsm.safety/examples/Example_NepExplorer.html"><b>Nephrotoxicity Explorer</b></a><br>
   <sub><code>Widget_NepExplorer()</code></sub>
 </td>
+<td width="33%" align="center">
+  <a href="https://jwildfire.github.io/gsm.safety/examples/Example_TimeToEvent.html"><img src="man/figures/widgets/time-to-event.png" alt="Time to Event" width="100%"></a><br>
+  <a href="https://jwildfire.github.io/gsm.safety/examples/Example_TimeToEvent.html"><b>Time to Event</b></a><br>
+  <sub><code>Widget_TimeToEvent()</code></sub>
+</td>
+</tr>
+<tr>
+<td width="33%" align="center">
+  <a href="https://jwildfire.github.io/gsm.safety/examples/Example_ParticipantProfile.html"><img src="man/figures/widgets/participant-profile.png" alt="Participant Profile" width="100%"></a><br>
+  <a href="https://jwildfire.github.io/gsm.safety/examples/Example_ParticipantProfile.html"><b>Participant Profile</b></a><br>
+  <sub><code>Widget_ParticipantProfile()</code></sub>
+</td>
+<td width="33%" align="center"></td>
 <td width="33%" align="center"></td>
 </tr>
 </table>
@@ -88,6 +101,8 @@ Each thumbnail links to a live, interactive example rendered from the bundled de
 | `Widget_QtExplorer()` | qtExplorer | `adeg` | [`qt_explorer.yaml`](inst/workflow/4_modules/qt_explorer.yaml) |
 | `Widget_HepWaterfall()` | hepWaterfall | `adbds_abnbl` | [`hep_waterfall.yaml`](inst/workflow/4_modules/hep_waterfall.yaml) |
 | `Widget_NepExplorer()` | nepExplorer | `adbds` | [`nep_explorer.yaml`](inst/workflow/4_modules/nep_explorer.yaml) |
+| `Widget_TimeToEvent()` | timeToEvent | `adae` + `adsl` | [`time_to_event.yaml`](inst/workflow/4_modules/time_to_event.yaml) |
+| `Widget_ParticipantProfile()` | participantProfile | `adbds` + `adae` | [`participant_profile.yaml`](inst/workflow/4_modules/participant_profile.yaml) |
 
 Each widget validates its data and settings against the module's vendored JSON data contract (`inst/schema/`) before rendering, so column-mapping mistakes fail fast in R.
 

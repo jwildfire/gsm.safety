@@ -2,7 +2,7 @@ test_that("package metadata is available (#31)", {
   expect_equal(utils::packageDescription("gsm.safety")$Package, "gsm.safety")
 })
 
-test_that("gsm.safety exports the eleven safety.viz widgets plus data, report and metric helpers (#31, #41, #42, #45, #49, #56, #58, #61)", {
+test_that("gsm.safety exports the thirteen safety.viz widgets plus data, report and metric helpers (#31, #41, #42, #45, #49, #56, #58, #61, #71)", {
   expect_setequal(
     getNamespaceExports("gsm.safety"),
     c(
@@ -17,6 +17,8 @@ test_that("gsm.safety exports the eleven safety.viz widgets plus data, report an
       "Widget_QtExplorer",
       "Widget_HepWaterfall",
       "Widget_NepExplorer",
+      "Widget_TimeToEvent",
+      "Widget_ParticipantProfile",
       "ExampleData",
       "SaveWidgetReport",
       # The 2_metrics phase: one Input_* step per participant-level metric.
@@ -54,19 +56,13 @@ test_that("every renderer exported by the vendored safety.viz bundle has a widge
   chrModules <- c(
     "histogram", "shiftPlot", "deltaDelta", "resultsOverTime",
     "outlierExplorer", "aeTimelines", "hepExplorer", "aeExplorer", "qtExplorer",
-    "hepWaterfall", "nepExplorer"
+    "hepWaterfall", "nepExplorer", "timeToEvent", "participantProfile"
   )
   # Deferred wraps: every entry MUST cite its filed requirement (the parity
   # rule's single-release clause) and mirror .github/parity-allowlist.yaml.
-  chrDeferred <- c(
-    # Multi-domain payload + selection semantics need design first:
-    # https://github.com/jwildfire/obot.roadmap/issues/165
-    "participantProfile",
-    # Two data frames (ADAE-shaped events + ADSL-shaped population) do not fit
-    # the single-dfResults widget contract; same design gate:
-    # https://github.com/jwildfire/obot.roadmap/issues/165
-    "timeToEvent"
-  )
+  # Empty since #71 wrapped the last two: every renderer the bundle exports is
+  # reachable from R.
+  chrDeferred <- character(0)
   chrBindings <- basename(list.files(
     system.file("htmlwidgets", package = "gsm.safety"),
     pattern = "^Widget_.*[.]js$"
@@ -96,7 +92,68 @@ test_that("every renderer exported by the vendored safety.viz bundle has a widge
       info = paste0(strModule, " is deferred — wrap it or drop it from chrDeferred")
     )
   }
+  # Every deferral must cite a filed requirement, and the two lists must agree:
+  # a module dropped from one file and left in the other is how a wrapped
+  # renderer keeps reporting itself as deferred.
+  strAllowlist <- testthat::test_path("..", "..", ".github", "parity-allowlist.yaml")
+  if (file.exists(strAllowlist)) {
+    lAllowlist <- yaml::read_yaml(strAllowlist)
+    if (is.null(lAllowlist)) {
+      lAllowlist <- list()
+    }
+    expect_setequal(
+      vapply(lAllowlist, function(lEntry) lEntry$module, character(1)),
+      chrDeferred
+    )
+    # "Widget follows later" is only a commitment if it names the requirement.
+    for (lEntry in lAllowlist) {
+      expect_match(
+        lEntry$requirement,
+        "^https://github[.]com/.+/issues/[0-9]+$",
+        info = lEntry$module
+      )
+    }
+  }
   expect_length(chrBindings, length(chrModules))
+})
+
+test_that("every widget binding feeds the module, not just constructs it (#71)", {
+  # A binding that constructs the renderer and never hands it data raises no
+  # console error, still emits a .html-widget element, still ships the bundle,
+  # and still carries every data value in the payload — measured on a
+  # deliberately broken copy. It is indistinguishable from a working widget by
+  # every assertion above, and by every assertion in the widget test files.
+  # What separates them is the feed call, so the feed call is what is asserted.
+  chrBindings <- list.files(
+    system.file("htmlwidgets", package = "gsm.safety"),
+    pattern = "^Widget_.*[.]js$",
+    full.names = TRUE
+  )
+  expect_gt(length(chrBindings), 0)
+
+  for (strPath in chrBindings) {
+    strSource <- paste(readLines(strPath, warn = FALSE), collapse = "\n")
+    strWidget <- sub("[.]js$", "", basename(strPath))
+
+    # The renderer is constructed...
+    expect_match(strSource, "SafetyViz[.][a-zA-Z]+\\(", info = strWidget)
+
+    # ...and fed. Every safety.viz module takes its data through init/setData;
+    # participant-profile takes it as the factory's second argument instead.
+    expect_match(
+      strSource,
+      "instance[.](init|setData)\\(|SafetyViz[.][a-zA-Z]+\\([[:space:]]*el,[[:space:]]*$|SafetyViz[.][a-zA-Z]+\\([[:space:]]*el,[[:space:]]*HTMLWidgets",
+      info = paste0(strWidget, " constructs the module but never feeds it data")
+    )
+
+    # ...from the payload, not from a literal.
+    expect_match(
+      strSource,
+      "HTMLWidgets.dataframeToD3(x.",
+      fixed = TRUE,
+      info = strWidget
+    )
+  }
 })
 
 test_that("every widget ships its htmlwidgets binding, dependency yaml, schema, and report workflow (#31, #38, #49)", {
@@ -111,7 +168,11 @@ test_that("every widget ships its htmlwidgets binding, dependency yaml, schema, 
     Widget_AeExplorer = list(slug = "ae-explorer", workflow = "ae_explorer"),
     Widget_QtExplorer = list(slug = "qt-explorer", workflow = "qt_explorer"),
     Widget_HepWaterfall = list(slug = "hep-waterfall", workflow = "hep_waterfall"),
-    Widget_NepExplorer = list(slug = "nep-explorer", workflow = "nep_explorer")
+    Widget_NepExplorer = list(slug = "nep-explorer", workflow = "nep_explorer"),
+    Widget_TimeToEvent = list(slug = "time-to-event", workflow = "time_to_event"),
+    Widget_ParticipantProfile = list(
+      slug = "participant-profile", workflow = "participant_profile"
+    )
   )
 
   for (strWidget in names(lWidgets)) {

@@ -4,10 +4,18 @@
 \alias{BuildWidgetPayload}
 \title{Build the htmlwidget payload for a safety.viz module}
 \usage{
-BuildWidgetPayload(dfResults, lSettings = list(), strModule, bDebug = FALSE)
+BuildWidgetPayload(
+  dfResults,
+  lSettings = list(),
+  strModule,
+  bDebug = FALSE,
+  lData = NULL
+)
 }
 \arguments{
-\item{dfResults}{\code{data.frame} Long-format results data, one record per row.}
+\item{dfResults}{\code{data.frame} Long-format results data, one record per row.
+The whole input for a single-dataset contract; unused when \code{lData} is
+supplied.}
 
 \item{lSettings}{\code{list} safety.viz settings overrides; merged onto the
 module's \code{DEFAULT_SETTINGS} client-side, so only overrides are needed.}
@@ -17,16 +25,32 @@ module's \code{DEFAULT_SETTINGS} client-side, so only overrides are needed.}
 
 \item{bDebug}{\code{logical} Print debug messages in the browser console?
 Default: \code{FALSE}.}
+
+\item{lData}{\code{list} Named list of \code{data.frame}s for a multi-dataset
+contract, keyed by the contract's dataset names (e.g. \code{events} and
+\code{population}). Default: \code{NULL}, meaning \code{dfResults} is the single dataset.}
 }
 \value{
-\code{list} with \code{dfResults}, \code{lSettings}, and \code{bDebug} — the \code{x} payload
-for \code{\link[htmlwidgets:createWidget]{htmlwidgets::createWidget()}}.
+\code{list} — the \code{x} payload for \code{\link[htmlwidgets:createWidget]{htmlwidgets::createWidget()}}. Carries
+\code{dfResults}, \code{lSettings} and \code{bDebug} for a single-dataset contract, and
+\code{lData}, \code{lSettings} and \code{bDebug} for a multi-dataset one.
 }
 \description{
-Validates \code{dfResults} and \code{lSettings} against the module's vendored JSON
-data contract (\verb{inst/schema/<strModule>.json}): every required settings key
-must resolve (from \code{lSettings} or the schema default), and every
+Validates the supplied data and \code{lSettings} against the module's vendored
+JSON data contract (\verb{inst/schema/<strModule>.json}): every required settings
+key must resolve (from \code{lSettings} or the schema default), and every
 column-mapping setting (\verb{*_col}) referenced by a required key must name a
-column of \code{dfResults}.
+column of the data.
+}
+\details{
+Most contracts name a single dataset (\code{data}), which arrives as \code{dfResults}.
+Some name more than one — \code{time-to-event} composes its endpoint from
+\code{events} plus \code{population} — and those arrive as \code{lData}, a named list keyed
+by the contract's own dataset names. The dataset names are read off the
+schema rather than assumed, so a module that grows a third frame upstream
+needs no change here. Where a dataset declares its own \code{requiredSettings},
+those column mappings are checked against \emph{that} frame: naming the
+population's follow-up column in the events data is an error, not a silent
+empty chart.
 }
 \keyword{internal}

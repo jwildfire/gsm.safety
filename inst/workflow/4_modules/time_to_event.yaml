@@ -1,0 +1,50 @@
+meta:
+  Type: Report
+  ID: time_to_event
+  Output: html
+  Name: Time-to-Event Report
+  Description: Interactive safety.viz Kaplan-Meier display with the endpoint composed live from multiselect event filters, pointwise 95% confidence bands, and an at-risk table.
+  lSettings:
+    endpoint_label: Time to first treatment-emergent adverse event
+    event_filters:
+      - value_col: AEBODSYS
+        label: Body System
+      - value_col: AEDECOD
+        label: Preferred Term
+      - value_col: AESER
+        label: Serious
+      - value_col: AESEV
+        label: Severity
+    filters:
+      - value_col: ARM
+        label: Treatment Group
+spec:
+  dfResults:
+    USUBJID:
+      type: character
+    AEDECOD:
+      type: character
+    ASTDY:
+      type: numeric
+  dfPopulation:
+    USUBJID:
+      type: character
+    ARM:
+      type: character
+    EOSDY:
+      type: numeric
+steps:
+  - output: strOutputDir
+    name: getwd
+  - output: lWidget
+    name: gsm.safety::Widget_TimeToEvent
+    params:
+      dfResults: dfResults
+      dfPopulation: dfPopulation
+      lSettings: lSettings
+  - output: strReportPath
+    name: gsm.safety::SaveWidgetReport
+    params:
+      widget: lWidget
+      strOutputDir: strOutputDir
+      strOutputFile: ID

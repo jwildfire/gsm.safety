@@ -21,6 +21,13 @@
 #' event, which nothing in a static R report dispatches, so a profile with no
 #' cohort is an empty profile.
 #'
+#' That listener has a useful consequence in a multi-chart document. It listens
+#' on `document` by default, and every other safety.viz chart dispatches its
+#' selections there, so a profile placed in the same R Markdown page as (say) a
+#' histogram or an outlier explorer will follow what the reader selects on that
+#' chart, replacing whatever `chrParticipants` opened on. Scope it to one chart
+#' with `lSettings$listen_to`, or leave it alone in a page of its own.
+#'
 #' @param dfResults `data.frame` Long-format lab results, one record per
 #'   participant per measure per visit — the same contract
 #'   [Widget_HepExplorer()] consumes. Column names are supplied by `lSettings`;

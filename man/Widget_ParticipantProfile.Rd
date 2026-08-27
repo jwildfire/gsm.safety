@@ -73,6 +73,13 @@ Give it a cohort with \code{chrParticipants}. Without one it renders its control
 and waits: the module's standalone mount listens for a \code{participantsSelected}
 event, which nothing in a static R report dispatches, so a profile with no
 cohort is an empty profile.
+
+That listener has a useful consequence in a multi-chart document. It listens
+on \code{document} by default, and every other safety.viz chart dispatches its
+selections there, so a profile placed in the same R Markdown page as (say) a
+histogram or an outlier explorer will follow what the reader selects on that
+chart, replacing whatever \code{chrParticipants} opened on. Scope it to one chart
+with \code{lSettings$listen_to}, or leave it alone in a page of its own.
 }
 \examples{
 dfResults <- ExampleData("adbds")

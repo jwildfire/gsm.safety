@@ -1,13 +1,20 @@
 # Example safety data
 
-Reads one of the example datasets vendored with the package. All three
-are derived from pharmaverseadam (CDISC Pilot 01 ADaM) and match the
-data used by the safety.viz demos:
+Reads one of the example datasets vendored with the package, matching
+the data used by the safety.viz demos. `adbds`, `adae`, and `adeg` are
+derived from pharmaverseadam (CDISC Pilot 01 ADaM); `adbds` additionally
+carries the synthetic `AKI-*` acute-kidney-injury cohort the safety.viz
+nep-explorer demo appends (the pilot population alone puts every
+participant in the KDIGO no-stage box), and `adbds_abnbl` is the
+purpose-built synthetic abnormal-baseline hepatic cohort for
+[`Widget_HepWaterfall()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_HepWaterfall.md)
+(the pilot data cannot form that figure — see the safety.viz demo's data
+note):
 
 ## Usage
 
 ``` r
-ExampleData(strDataset = c("adbds", "adae", "adeg"))
+ExampleData(strDataset = c("adbds", "adae", "adeg", "adbds_abnbl", "adsl"))
 ```
 
 ## Arguments
@@ -41,6 +48,17 @@ columns otherwise.
   `VISITNUM`, `PARAMCD`, `TEST`, `STRESU`, `STRESN`, `BASE`, `CHG`,
   `ABLFL`), carrying QTcF, QTcB, and Heart Rate for
   [`Widget_QtExplorer()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_QtExplorer.md).
+
+- `adbds_abnbl`: long-format labs for 80 synthetic abnormal-baseline
+  participants (`ABL-*`), same columns as `adbds`, for
+  [`Widget_HepWaterfall()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_HepWaterfall.md).
+
+- `adsl`: one row per participant (`USUBJID`, `ARM`, `EOSDY`, `EOSSTT`)
+  — the analysis population, its treatment arm, and the follow-up-end
+  study day at which an event-free participant is censored. This is
+  [`Widget_TimeToEvent()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_TimeToEvent.md)'s
+  denominator: the events frame says who had an event and when, and this
+  says who was at risk and for how long.
 
 ## Examples
 
@@ -109,4 +127,14 @@ head(dfEG)
 #> 4    QTCF QTcF   msec  320.6 328.4 -7.8      
 #> 5    QTCF QTcF   msec  395.2 328.4 66.8      
 #> 6    QTCF QTcF   msec  393.9 328.4 65.5      
+
+dfSL <- ExampleData("adsl")
+head(dfSL)
+#>       USUBJID                  ARM EOSDY       EOSSTT
+#> 1 01-701-1015              Placebo   182    COMPLETED
+#> 2 01-701-1023              Placebo    29 DISCONTINUED
+#> 3 01-701-1028 Xanomeline High Dose   180    COMPLETED
+#> 4 01-701-1033  Xanomeline Low Dose    28 DISCONTINUED
+#> 5 01-701-1034 Xanomeline High Dose   183    COMPLETED
+#> 6 01-701-1047              Placebo    46 DISCONTINUED
 ```

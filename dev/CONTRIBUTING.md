@@ -13,7 +13,7 @@ they are useful for an early-stage experimental package.
 ## CI expectations
 
 This repository uses GitHub Actions templates from
-`Gilead-BioStats/gsm.utils`:
+`gilead-public/gsm.utils`:
 
 - `R-CMD-check.yaml` — R CMD check on pull requests.
 - `test-coverage.yaml` — test coverage reporting.

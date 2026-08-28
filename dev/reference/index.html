@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">gsm.safety</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.0.0</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -27,6 +27,10 @@
     <li><a class="dropdown-item" href="../examples/Example_AeExplorer.html">AE Explorer</a></li>
     <li><a class="dropdown-item" href="../examples/Example_HepExplorer.html">Hepatic Safety Explorer</a></li>
     <li><a class="dropdown-item" href="../examples/Example_QtExplorer.html">QT Safety Explorer</a></li>
+    <li><a class="dropdown-item" href="../examples/Example_NepExplorer.html">Nephrotoxicity Explorer</a></li>
+    <li><a class="dropdown-item" href="../examples/Example_HepWaterfall.html">Hepatic ALT Waterfall</a></li>
+    <li><a class="dropdown-item" href="../examples/Example_TimeToEvent.html">Time to Event</a></li>
+    <li><a class="dropdown-item" href="../examples/Example_ParticipantProfile.html">Participant Profile</a></li>
   </ul></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -114,6 +118,34 @@
 
         </dt>
         <dd>QT Safety Explorer Widget</dd>
+
+        <dt>
+
+          <code><a href="Widget_HepWaterfall.html">Widget_HepWaterfall()</a></code>
+
+        </dt>
+        <dd>Hepatic ALT Waterfall Widget</dd>
+
+        <dt>
+
+          <code><a href="Widget_NepExplorer.html">Widget_NepExplorer()</a></code>
+
+        </dt>
+        <dd>Nephrotoxicity Explorer Widget</dd>
+
+        <dt>
+
+          <code><a href="Widget_TimeToEvent.html">Widget_TimeToEvent()</a></code>
+
+        </dt>
+        <dd>Time-to-Event Widget</dd>
+
+        <dt>
+
+          <code><a href="Widget_ParticipantProfile.html">Widget_ParticipantProfile()</a></code>
+
+        </dt>
+        <dd>Participant Profile Widget</dd>
       </dl></div><div class="section level2">
       <h2 id="data">Data<a class="anchor" aria-label="anchor" href="#data"></a></h2>
 
@@ -131,9 +163,83 @@
         </dt>
         <dd>Example safety data</dd>
       </dl></div><div class="section level2">
+      <h2 id="metric-steps">Metric steps<a class="anchor" aria-label="anchor" href="#metric-steps"></a></h2>
+
+      <div class="section-desc"><p>The steps behind the metric definitions in inst/workflow/2_metrics/. Input_HysLaw, Input_QtProlongation and Input_SafetyAE feed the three participant-level flagging metrics; Input_Deaths, Input_Participants and Input_ParticipantDays feed the descriptive census metrics, which publish a number, carry no threshold, and call Flag_None where a flagging metric calls gsm.core::Flag().</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="Input_HysLaw.html">Input_HysLaw()</a></code>
+
+        </dt>
+        <dd>Participant-level Hy's Law candidate tier from liver chemistry</dd>
+
+        <dt>
+
+          <code><a href="Input_QtProlongation.html">Input_QtProlongation()</a></code>
+
+        </dt>
+        <dd>Participant-level QTc prolongation tier from ECG data</dd>
+
+        <dt>
+
+          <code><a href="Input_SafetyAE.html">Input_SafetyAE()</a></code>
+
+        </dt>
+        <dd>Participant-level serious / related / discontinuation AE tier</dd>
+
+        <dt>
+
+          <code><a href="Input_Deaths.html">Input_Deaths()</a></code>
+
+        </dt>
+        <dd>Study-level count of participants who died</dd>
+
+        <dt>
+
+          <code><a href="Input_Participants.html">Input_Participants()</a></code>
+
+        </dt>
+        <dd>Study-level count of the participants a domain names</dd>
+
+        <dt>
+
+          <code><a href="Input_ParticipantDays.html">Input_ParticipantDays()</a></code>
+
+        </dt>
+        <dd>Study-level total of participant-days</dd>
+
+        <dt>
+
+          <code><a href="Flag_None.html">Flag_None()</a></code>
+
+        </dt>
+        <dd>Publish a metric's rows without a flag</dd>
+      </dl></div><div class="section level2">
+      <h2 id="study-census">Study census<a class="anchor" aria-label="anchor" href="#study-census"></a></h2>
+
+      <div class="section-desc"><p>The safety overview’s denominators. Being rebuilt on the metric steps above (obot.roadmap#274); this function is unchanged until step four.</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="SafetyCensus.html">SafetyCensus()</a></code>
+
+        </dt>
+        <dd>Study census, exposure and follow-up for a safety overview</dd>
+      </dl></div><div class="section level2">
       <h2 id="reports">Reports<a class="anchor" aria-label="anchor" href="#reports"></a></h2>
 
-
+      <div class="section-desc"><p>The steps behind the report definitions in inst/workflow/4_modules/. SaveWidgetReport writes a widget module; the Report_Census* helpers and Report_SafetyCensus assemble and render the safety census, reading the figures the census metrics published and computing nothing of their own (obot.roadmap#274).</p></div>
 
       <dl></dl></div><div class="section level2">
 
@@ -146,6 +252,34 @@
 
         </dt>
         <dd>Save a safety widget as a standalone HTML report</dd>
+
+        <dt>
+
+          <code><a href="Report_CensusFigures.html">Report_CensusFigures()</a></code>
+
+        </dt>
+        <dd>The census figures, as the report presents them</dd>
+
+        <dt>
+
+          <code><a href="Report_CensusCoverage.html">Report_CensusCoverage()</a></code>
+
+        </dt>
+        <dd>The data-coverage rows, as the report presents them</dd>
+
+        <dt>
+
+          <code><a href="Report_CensusProvenance.html">Report_CensusProvenance()</a></code>
+
+        </dt>
+        <dd>What each census metric published, verbatim</dd>
+
+        <dt>
+
+          <code><a href="Report_SafetyCensus.html">Report_SafetyCensus()</a></code>
+
+        </dt>
+        <dd>Render the census report</dd>
       </dl></div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

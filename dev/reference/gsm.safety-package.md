@@ -10,6 +10,8 @@ Useful links:
 
 - <https://github.com/jwildfire/gsm.safety>
 
+- <https://jwildfire.github.io/gsm.safety/>
+
 - Report bugs at <https://github.com/jwildfire/gsm.safety/issues>
 
 ## Author

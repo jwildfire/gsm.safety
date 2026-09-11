@@ -173,6 +173,18 @@ Interactive safety.viz charts as htmlwidgets.
 - [`ExampleData()`](https://jwildfire.github.io/gsm.safety/dev/reference/ExampleData.md)
   : Example safety data
 
+## FDA reference criteria
+
+Appendix Tables 56 to 60 of the FDA Standard Safety Tables and Figures
+Integrated Guide (v2.0, April 2025) as package data: the level 1, 2 and
+3 abnormality criteria and the extreme values suggestive of error that
+the Derive\_\* functions apply (obot.roadmap#9).
+
+- [`FDA_AbnormalityLevels`](https://jwildfire.github.io/gsm.safety/dev/reference/FDA_AbnormalityLevels.md)
+  : FDA abnormality level criteria for laboratory results
+- [`FDA_ExtremeValues`](https://jwildfire.github.io/gsm.safety/dev/reference/FDA_ExtremeValues.md)
+  : FDA extreme laboratory and vital sign values suggestive of error
+
 ## Metric steps
 
 The steps behind the metric definitions in inst/workflow/2_metrics/.

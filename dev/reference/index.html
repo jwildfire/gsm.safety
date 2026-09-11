@@ -163,6 +163,29 @@
         </dt>
         <dd>Example safety data</dd>
       </dl></div><div class="section level2">
+      <h2 id="fda-reference-criteria">FDA reference criteria<a class="anchor" aria-label="anchor" href="#fda-reference-criteria"></a></h2>
+
+      <div class="section-desc"><p>Appendix Tables 56 to 60 of the FDA Standard Safety Tables and Figures Integrated Guide (v2.0, April 2025) as package data: the level 1, 2 and 3 abnormality criteria and the extreme values suggestive of error that the Derive_* functions apply (obot.roadmap#9).</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="FDA_AbnormalityLevels.html">FDA_AbnormalityLevels</a></code>
+
+        </dt>
+        <dd>FDA abnormality level criteria for laboratory results</dd>
+
+        <dt>
+
+          <code><a href="FDA_ExtremeValues.html">FDA_ExtremeValues</a></code>
+
+        </dt>
+        <dd>FDA extreme laboratory and vital sign values suggestive of error</dd>
+      </dl></div><div class="section level2">
       <h2 id="metric-steps">Metric steps<a class="anchor" aria-label="anchor" href="#metric-steps"></a></h2>
 
       <div class="section-desc"><p>The steps behind the metric definitions in inst/workflow/2_metrics/. Input_HysLaw, Input_QtProlongation and Input_SafetyAE feed the three participant-level flagging metrics; Input_Deaths, Input_Participants and Input_ParticipantDays feed the descriptive census metrics, which publish a number, carry no threshold, and call Flag_None where a flagging metric calls gsm.core::Flag().</p></div>

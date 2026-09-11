@@ -48,6 +48,19 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.5.0" id="gsmsafety-v150-upcoming">gsm.safety v1.5.0 (Upcoming)<a class="anchor" aria-label="anchor" href="#gsmsafety-v150-upcoming"></a></h2>
+<p>Phase 0 of the FDA Standard Safety Tables and Figures work (<a href="https://github.com/jwildfire/obot.roadmap/issues/9" class="external-link">obot.roadmap#9</a>): the guide’s reference criteria arrive as package data, so every static figure that follows, and every interactive twin that wants to agree with it, reads the FDA’s thresholds from one place instead of retyping them.</p>
+<div class="section level3">
+<h3 id="whats-new-1-5-0">What’s new<a class="anchor" aria-label="anchor" href="#whats-new-1-5-0"></a></h3>
+<ul><li>
+<strong><code>FDA_AbnormalityLevels</code> and <code>FDA_ExtremeValues</code> — Appendix Tables 56 to 60 of the FDA ST&amp;F Integrated Guide v2.0 as tested package data.</strong> The level 1, 2 and 3 abnormality criteria for chemistry and hematology (46 rows) and the extreme values suggestive of laboratory or recording error for chemistry, hematology and vital signs (40 parameters, each in US-conventional and SI units). Every row carries the guide table, section and printed page it came from, the criterion text as printed beside the parsed number, and a note wherever the transcription needed a reading. Spot values are asserted against the PDF page by page in the suite. Nothing in R could supply these thresholds before; now <code>data(FDA_AbnormalityLevels)</code> does. (<a href="https://github.com/jwildfire/gsm.safety/issues/77" class="external-link">#77</a>, hub <a href="https://github.com/jwildfire/obot.roadmap/issues/9" class="external-link">obot.roadmap#9</a>)</li>
+</ul></div>
+<div class="section level3">
+<h3 id="also-in-this-release-1-5-0">Also in this release<a class="anchor" aria-label="anchor" href="#also-in-this-release-1-5-0"></a></h3>
+<ul><li>The package now declares <code>LazyData: true</code> and <code>Depends: R (&gt;= 3.5.0)</code>, and the hand-checked transcription with its build script lives in <code>data-raw/</code>.</li>
+</ul></div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.4.0" id="gsmsafety-v140-upcoming">gsm.safety v1.4.0 (Upcoming)<a class="anchor" aria-label="anchor" href="#gsmsafety-v140-upcoming"></a></h2>
 <p>Every chart safety.viz draws can now be drawn from R. The last two renderers without an R binding — the Kaplan-Meier time-to-event display and the participant profile — ship as widgets in this release, so the deferral list that has carried them since v1.2.0 is empty.</p>
 <p>Both were held back by the same thing, and it was never the JavaScript: each needs a second data frame, and the widget contract carried one. That contract is now general — a widget reads the datasets its data contract names, rather than assuming there is one — so the next renderer that arrives with two frames needs no change to the machinery.</p>
@@ -218,6 +231,13 @@
 </ul><p>1 286 tests pass; <code>R CMD check</code> clean.</p>
 </div>
 </div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.0.0" id="gsmsafety-v100-and-earlier">gsm.safety v1.0.0 and earlier<a class="anchor" aria-label="anchor" href="#gsmsafety-v100-and-earlier"></a></h2>
+<ul><li>
+<a href="https://github.com/jwildfire/gsm.safety/releases/tag/v1.0.0" class="external-link">v1.0.0</a> — 2026-07-23.</li>
+<li>
+<a href="https://github.com/jwildfire/gsm.safety/releases/tag/v0.1.0" class="external-link">gsm.safety v0.1.0</a> — 2026-05-15.</li>
+</ul></div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

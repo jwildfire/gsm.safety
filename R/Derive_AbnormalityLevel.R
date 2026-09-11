@@ -77,6 +77,7 @@ Derive_AbnormalityLevel <- function(
     lParameterValues = DefaultAbnormalityParameters(),
     strOutCol = "AbnormalityLevel") {
   RequireResultColumns(dfResults, c(strTestCol, strValueCol, strULNCol, strUnitCol))
+  RequireOutColToken(strOutCol, "Level")
   if (!is.null(strSexCol)) {
     RequireResultColumns(dfResults, strSexCol)
   }
@@ -89,8 +90,7 @@ Derive_AbnormalityLevel <- function(
   nRows <- nrow(dfResults)
   chrParameter <- ResolveParameters(dfResults[[strTestCol]], lParameterValues)
   nValue <- suppressWarnings(as.numeric(dfResults[[strValueCol]]))
-  nULN <- suppressWarnings(as.numeric(dfResults[[strULNCol]]))
-  nMultiple <- ifelse(is.finite(nULN) & nULN > 0 & is.finite(nValue), nValue / nULN, NA_real_)
+  nMultiple <- ULNMultiple(nValue, dfResults[[strULNCol]])
   chrUnit <- NormaliseUnit(dfResults[[strUnitCol]])
   chrSex <- if (is.null(strSexCol)) rep(NA_character_, nRows) else NormaliseSex(dfResults[[strSexCol]])
 
@@ -106,55 +106,55 @@ Derive_AbnormalityLevel <- function(
   bHasText <- all(chrTextCols %in% names(dfCriteria))
 
   for (i in seq_len(nrow(dfCriteria))) {
-    lRow <- dfCriteria[i, ]
-    bRecord <- !is.na(chrParameter) & chrParameter == lRow$Parameter & is.finite(nValue)
+    dfRow <- dfCriteria[i, ]
+    bRecord <- !is.na(chrParameter) & chrParameter == dfRow$Parameter & is.finite(nValue)
     if (!any(bRecord)) next
 
     # The sex-qualified rows need a sex; the fasting/random glucose rows and
     # the baseline-relative bases need columns this function does not take.
-    strQualifier <- if (is.na(lRow$Qualifier)) NA_character_ else tolower(lRow$Qualifier)
+    strQualifier <- if (is.na(dfRow$Qualifier)) NA_character_ else tolower(dfRow$Qualifier)
     if (!is.na(strQualifier) && strQualifier %in% c("male", "males", "female", "females")) {
       if (is.null(strSexCol)) {
         lSkipped[["needs a sex column (strSexCol) for the sex-qualified rows"]] <-
-          c(lSkipped[["needs a sex column (strSexCol) for the sex-qualified rows"]], lRow$Parameter)
+          c(lSkipped[["needs a sex column (strSexCol) for the sex-qualified rows"]], dfRow$Parameter)
         next
       }
       bRecord <- bRecord & !is.na(chrSex) & chrSex == substr(strQualifier, 1, 1)
       if (!any(bRecord)) next
     } else if (!is.na(strQualifier)) {
-      lSkipped[[paste0("qualifier '", lRow$Qualifier, "' needs a column this function does not take")]] <-
-        c(lSkipped[[paste0("qualifier '", lRow$Qualifier, "' needs a column this function does not take")]], lRow$Parameter)
+      lSkipped[[paste0("qualifier '", dfRow$Qualifier, "' needs a column this function does not take")]] <-
+        c(lSkipped[[paste0("qualifier '", dfRow$Qualifier, "' needs a column this function does not take")]], dfRow$Parameter)
       next
     }
 
-    if (lRow$Basis == "uln_multiple") {
+    if (dfRow$Basis == "uln_multiple") {
       nCompare <- nMultiple
       bRecord <- bRecord & is.finite(nMultiple)
-    } else if (lRow$Basis == "absolute") {
-      bUnit <- !is.na(chrUnit) & chrUnit == NormaliseUnit(lRow$Unit)
+    } else if (dfRow$Basis == "absolute") {
+      bUnit <- UnitMatches(chrUnit, dfRow$Unit, dfRow$Parameter)
       chrOther <- unique(dfResults[[strUnitCol]][bRecord & !bUnit])
       if (length(chrOther) > 0) {
-        strReason <- paste0("unit differs from the criteria's (", lRow$Unit, ")")
-        lSkipped[[strReason]] <- c(lSkipped[[strReason]], paste0(lRow$Parameter, " in ", chrOther))
+        strReason <- paste0("unit differs from the criteria's (", dfRow$Unit, ")")
+        lSkipped[[strReason]] <- c(lSkipped[[strReason]], paste0(dfRow$Parameter, " in ", chrOther))
       }
       bRecord <- bRecord & bUnit
       nCompare <- nValue
     } else {
-      strReason <- paste0("basis '", lRow$Basis, "' needs a baseline column this function does not take")
-      lSkipped[[strReason]] <- c(lSkipped[[strReason]], lRow$Parameter)
+      strReason <- paste0("basis '", dfRow$Basis, "' needs a baseline column this function does not take")
+      lSkipped[[strReason]] <- c(lSkipped[[strReason]], dfRow$Parameter)
       next
     }
     if (!any(bRecord)) next
 
-    nLevels <- c(lRow$Level1, lRow$Level2, lRow$Level3)
+    nLevels <- c(dfRow$Level1, dfRow$Level2, dfRow$Level3)
     nMet <- rep(0L, nRows)
     for (k in which(!is.na(nLevels))) {
-      bHit <- bRecord & switch(lRow$Operator,
+      bHit <- bRecord & switch(dfRow$Operator,
         "<" = nCompare < nLevels[k],
         "<=" = nCompare <= nLevels[k],
         ">" = nCompare > nLevels[k],
         ">=" = nCompare >= nLevels[k],
-        gsm.core::stop_if(TRUE, message = paste0("Unknown Operator '", lRow$Operator, "' in dfCriteria"))
+        gsm.core::stop_if(TRUE, message = paste0("Unknown Operator '", dfRow$Operator, "' in dfCriteria"))
       )
       bHit[is.na(bHit)] <- FALSE
       nMet[bHit] <- k
@@ -163,11 +163,11 @@ Derive_AbnormalityLevel <- function(
     bBetter <- bRecord & (is.na(nLevel) | nMet > nLevel)
     nLevel[bBetter] <- nMet[bBetter]
     bMet <- bBetter & nMet > 0
-    chrDirection[bMet] <- lRow$Direction
+    chrDirection[bMet] <- dfRow$Direction
     chrCriterion[bMet] <- if (bHasText) {
-      as.character(unlist(lRow[chrTextCols]))[nMet[bMet]]
+      as.character(unlist(dfRow[chrTextCols]))[nMet[bMet]]
     } else {
-      paste0(lRow$Operator, nLevels[nMet[bMet]])
+      paste0(dfRow$Operator, nLevels[nMet[bMet]])
     }
   }
 

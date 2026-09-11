@@ -275,3 +275,42 @@ test_that("the Derive_* functions take a parameter map and error on a missing co
   expect_error(Derive_ExtremeValueFlag(df, strUnitCol = "UNIT"), "UNIT")
   expect_error(Derive_AbnormalityLevel(df, strTestCol = "PARAM"), "PARAM")
 })
+
+# ---- Review fixes on the v1.5.0 candidate (#88) --------------------------------------
+
+test_that("the Derive_* output-name arguments must carry the token their sibling columns are named from (#78)", {
+  df <- LabRows("Potassium", 7, strUnit = "mmol/L")
+  expect_error(Derive_AbnormalityLevel(df, strOutCol = "Grade"), "Level")
+  expect_error(Derive_ExtremeValueFlag(df, strOutCol = "Extreme"), "Flag")
+  out <- Derive_AbnormalityLevel(df, strOutCol = "KLevel")
+  expect_identical(names(out)[(ncol(out) - 2):ncol(out)], c("KLevel", "KDirection", "KCriterion"))
+  expect_identical(out$KLevel, 3L)
+  out <- Derive_ExtremeValueFlag(df, strOutCol = "XFlag")
+  expect_identical(names(out)[(ncol(out) - 1):ncol(out)], c("XFlag", "XDirection"))
+})
+
+test_that("mEq/L is read as mmol/L for the monovalent electrolytes only (FDA-RULE-005) (#78)", {
+  # Sodium 191 mEq/L is 191 mmol/L: the SI row's high threshold, not extreme; 192 is.
+  expect_identical(Derive_ExtremeValueFlag(LabRows("Sodium", c(191, 192), strUnit = "mEq/L"))$ExtremeValueFlag, c(FALSE, TRUE))
+  expect_identical(Derive_AbnormalityLevel(LabRows("Sodium", 124, strUnit = "mEq/L"))$AbnormalityLevel, 3L)
+  # Magnesium 7 mEq/L is 3.5 mmol/L, inside the guide's SI range; it must not be
+  # compared against the mmol/L row as if it were 7 mmol/L. The guide prints
+  # magnesium in mg/dL and mmol/L, so mEq/L matches neither and is left NA.
+  expect_message(out <- Derive_ExtremeValueFlag(LabRows("Magnesium", 7, strUnit = "mEq/L")), "unit")
+  expect_true(is.na(out$ExtremeValueFlag))
+  expect_message(out <- Derive_ExtremeValueFlag(LabRows("Calcium", 5.5, strUnit = "mEq/L")), "unit")
+  expect_true(is.na(out$ExtremeValueFlag))
+  expect_message(out <- Derive_AbnormalityLevel(LabRows("Magnesium", 3, strUnit = "mEq/L")), "unit")
+  expect_true(is.na(out$AbnormalityLevel))
+})
+
+test_that("the platelet row grades a per-microlitre count and the CDISC giga-per-litre spelling is read (FDA-RULE-002) (#78)", {
+  # Table 57 prints platelets with the unit x 10^9 cells/uL beside thresholds of
+  # 140,000; the row is filed in cells/uL (the Note records the misprint).
+  expect_identical(
+    Derive_AbnormalityLevel(LabRows("Platelet", c(150000, 130000, 90000), strUnit = "/uL"))$AbnormalityLevel,
+    c(0L, 1L, 3L)
+  )
+  expect_identical(Derive_AbnormalityLevel(LabRows("Leukocytes", 0.9, strUnit = "10*9/L"))$AbnormalityLevel, 3L)
+  expect_identical(Derive_AbnormalityLevel(LabRows("Leukocytes", 0.9, strUnit = "10^9/L"))$AbnormalityLevel, 3L)
+})

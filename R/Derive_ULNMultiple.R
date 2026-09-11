@@ -45,13 +45,6 @@ Derive_ULNMultiple <- function(
     strOutCol = "ULNMultiple") {
   RequireResultColumns(dfResults, c(strValueCol, strULNCol))
 
-  nValue <- suppressWarnings(as.numeric(dfResults[[strValueCol]]))
-  nULN <- suppressWarnings(as.numeric(dfResults[[strULNCol]]))
-  bUsable <- is.finite(nValue) & is.finite(nULN) & nULN > 0
-
-  nMultiple <- rep(NA_real_, nrow(dfResults))
-  nMultiple[bUsable] <- nValue[bUsable] / nULN[bUsable]
-
-  dfResults[[strOutCol]] <- nMultiple
+  dfResults[[strOutCol]] <- ULNMultiple(dfResults[[strValueCol]], dfResults[[strULNCol]])
   dfResults
 }

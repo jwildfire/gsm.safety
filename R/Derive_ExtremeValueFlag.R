@@ -12,7 +12,8 @@
 #' the unit it carries: a result in `mg/dL` against the US thresholds, in
 #' `mmol/L` against the SI ones. A record whose unit matches neither is left
 #' `NA` and named in a message rather than compared on the wrong scale;
-#' spellings of the same unit are folded but nothing is converted. A missing
+#' spellings of the same unit are folded (and mEq/L and mmol/L treated as one
+#' unit for the monovalent electrolytes only) but nothing is converted. A missing
 #' threshold in one direction (an `N/A` in the guide) is no bound in that
 #' direction, and the threshold itself is not extreme.
 #'
@@ -57,6 +58,7 @@ Derive_ExtremeValueFlag <- function(
     lParameterValues = DefaultExtremeParameters(),
     strOutCol = "ExtremeValueFlag") {
   RequireResultColumns(dfResults, c(strTestCol, strValueCol, strUnitCol))
+  RequireOutColToken(strOutCol, "Flag")
   RequireResultColumns(
     dfThresholds, c("Parameter", "UnitSystem", "Unit", "Low", "High"),
     strName = "dfThresholds"
@@ -72,18 +74,18 @@ Derive_ExtremeValueFlag <- function(
   bMatched <- rep(FALSE, nRows)
 
   for (i in seq_len(nrow(dfThresholds))) {
-    lRow <- dfThresholds[i, ]
-    bRecord <- !is.na(chrParameter) & chrParameter == lRow$Parameter & is.finite(nValue) &
-      !is.na(chrUnit) & !is.na(lRow$Unit) & chrUnit == NormaliseUnit(lRow$Unit)
-    if (is.na(lRow$Unit)) {
+    dfRow <- dfThresholds[i, ]
+    bRecord <- !is.na(chrParameter) & chrParameter == dfRow$Parameter & is.finite(nValue) &
+      !is.na(dfRow$Unit) & UnitMatches(chrUnit, dfRow$Unit, dfRow$Parameter)
+    if (is.na(dfRow$Unit)) {
       # A unitless parameter (INR) matches a blank or missing unit.
-      bRecord <- !is.na(chrParameter) & chrParameter == lRow$Parameter & is.finite(nValue) &
+      bRecord <- !is.na(chrParameter) & chrParameter == dfRow$Parameter & is.finite(nValue) &
         (is.na(chrUnit) | chrUnit == "")
     }
     if (!any(bRecord)) next
 
-    bLow <- bRecord & !is.na(lRow$Low) & nValue < lRow$Low
-    bHigh <- bRecord & !is.na(lRow$High) & nValue > lRow$High
+    bLow <- bRecord & !is.na(dfRow$Low) & nValue < dfRow$Low
+    bHigh <- bRecord & !is.na(dfRow$High) & nValue > dfRow$High
     bLow[is.na(bLow)] <- FALSE
     bHigh[is.na(bHigh)] <- FALSE
 

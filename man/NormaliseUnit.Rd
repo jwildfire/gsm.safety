@@ -14,7 +14,9 @@ NormaliseUnit(chrUnit)
 }
 \description{
 Case, spacing and the micro sign are presentation; a handful of spellings
-the guide and the example data use for the same unit are folded together.
-Nothing here converts between units: \code{mg/dL} never matches \code{mmol/L}.
+the guide, CDISC and the example data use for the same unit are folded
+together. Nothing here converts between units: \code{mg/dL} never matches
+\code{mmol/L}, and mEq/L is folded onto mmol/L only per parameter, in
+\code{\link[=UnitMatches]{UnitMatches()}}.
 }
 \keyword{internal}

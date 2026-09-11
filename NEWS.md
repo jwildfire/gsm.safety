@@ -5,6 +5,18 @@ work accumulates under a vX.Y.Z (Upcoming) heading that loses the suffix when
 the release is cut; the GitHub release publishes from the section verbatim.
 -->
 
+# gsm.safety v1.5.0 (Upcoming)
+
+Phase 0 of the FDA Standard Safety Tables and Figures work ([obot.roadmap#9](https://github.com/jwildfire/obot.roadmap/issues/9)): the guide's reference criteria arrive as package data, so every static figure that follows, and every interactive twin that wants to agree with it, reads the FDA's thresholds from one place instead of retyping them.
+
+## What's new
+
+- **`FDA_AbnormalityLevels` and `FDA_ExtremeValues` — Appendix Tables 56 to 60 of the FDA ST&F Integrated Guide v2.0 as tested package data.** The level 1, 2 and 3 abnormality criteria for chemistry and hematology (46 rows) and the extreme values suggestive of laboratory or recording error for chemistry, hematology and vital signs (40 parameters, each in US-conventional and SI units). Every row carries the guide table, section and printed page it came from, the criterion text as printed beside the parsed number, and a note wherever the transcription needed a reading. Spot values are asserted against the PDF page by page in the suite. Nothing in R could supply these thresholds before; now `data(FDA_AbnormalityLevels)` does. ([#77](https://github.com/jwildfire/gsm.safety/issues/77), hub [obot.roadmap#9](https://github.com/jwildfire/obot.roadmap/issues/9))
+
+## Also in this release
+
+- The package now declares `LazyData: true` and `Depends: R (>= 3.5.0)`, and the hand-checked transcription with its build script lives in `data-raw/`.
+
 # gsm.safety v1.4.0 (Upcoming)
 
 Every chart safety.viz draws can now be drawn from R. The last two renderers without an R binding — the Kaplan-Meier time-to-event display and the participant profile — ship as widgets in this release, so the deferral list that has carried them since v1.2.0 is empty.
@@ -148,7 +160,7 @@ gsm.safety could draw the eDISH chart but could not tell you how many participan
 
 1 286 tests pass; `R CMD check` clean.
 
-# Earlier releases
+# gsm.safety v1.0.0 and earlier
 
 - [v1.0.0](https://github.com/jwildfire/gsm.safety/releases/tag/v1.0.0) — 2026-07-23.
 - [gsm.safety v0.1.0](https://github.com/jwildfire/gsm.safety/releases/tag/v0.1.0) — 2026-05-15.

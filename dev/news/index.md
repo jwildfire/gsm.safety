@@ -24,6 +24,19 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   ([\#77](https://github.com/jwildfire/gsm.safety/issues/77), hub
   [obot.roadmap#9](https://github.com/jwildfire/obot.roadmap/issues/9))
 
+- **`design/fda-adam-alignment.md` — the ADaM alignment the design left
+  open, settled.** For each of ADSL, ADAE, ADLB and ADVS the note lists
+  the columns the 22 figures and the phase 0 derivations need, marks
+  each as found in the vendored example data, present in a gsm.mapping
+  `Mapped_*` domain, derivable, or missing, and records a decision for
+  every gap: which columns to vendor from pharmaverseadam (they join on
+  the same CDISC pilot subjects), which to derive once in a shared
+  helper, and which figures are out of scope on the demo data. It ends
+  with the column contract the phase 1 engines code against. 51 columns,
+  none unmarked, nothing blocked.
+  ([\#80](https://github.com/jwildfire/gsm.safety/issues/80), hub
+  [obot.roadmap#9](https://github.com/jwildfire/obot.roadmap/issues/9))
+
 - **[`Derive_ULNMultiple()`](https://jwildfire.github.io/gsm.safety/dev/reference/Derive_ULNMultiple.md),
   [`Derive_AbnormalityLevel()`](https://jwildfire.github.io/gsm.safety/dev/reference/Derive_AbnormalityLevel.md)
   and

@@ -20,6 +20,7 @@
 <url><loc>https://jwildfire.github.io/gsm.safety/dev/news/index.html</loc></url>
 <url><loc>https://jwildfire.github.io/gsm.safety/dev/reference/AlignToParticipants.html</loc></url>
 <url><loc>https://jwildfire.github.io/gsm.safety/dev/reference/BuildWidgetPayload.html</loc></url>
+<url><loc>https://jwildfire.github.io/gsm.safety/dev/reference/CHR_MONOVALENT.html</loc></url>
 <url><loc>https://jwildfire.github.io/gsm.safety/dev/reference/CensusDefinition.html</loc></url>
 <url><loc>https://jwildfire.github.io/gsm.safety/dev/reference/CensusLabel.html</loc></url>
 <url><loc>https://jwildfire.github.io/gsm.safety/dev/reference/CensusMetricIDs.html</loc></url>
@@ -54,10 +55,13 @@
 <url><loc>https://jwildfire.github.io/gsm.safety/dev/reference/Report_CensusProvenance.html</loc></url>
 <url><loc>https://jwildfire.github.io/gsm.safety/dev/reference/Report_SafetyCensus.html</loc></url>
 <url><loc>https://jwildfire.github.io/gsm.safety/dev/reference/RequireCensusInputs.html</loc></url>
+<url><loc>https://jwildfire.github.io/gsm.safety/dev/reference/RequireOutColToken.html</loc></url>
 <url><loc>https://jwildfire.github.io/gsm.safety/dev/reference/RequireResultColumns.html</loc></url>
 <url><loc>https://jwildfire.github.io/gsm.safety/dev/reference/ResolveParameters.html</loc></url>
 <url><loc>https://jwildfire.github.io/gsm.safety/dev/reference/SafetyCensus.html</loc></url>
 <url><loc>https://jwildfire.github.io/gsm.safety/dev/reference/SaveWidgetReport.html</loc></url>
+<url><loc>https://jwildfire.github.io/gsm.safety/dev/reference/ULNMultiple.html</loc></url>
+<url><loc>https://jwildfire.github.io/gsm.safety/dev/reference/UnitMatches.html</loc></url>
 <url><loc>https://jwildfire.github.io/gsm.safety/dev/reference/WidgetSizingPolicy.html</loc></url>
 <url><loc>https://jwildfire.github.io/gsm.safety/dev/reference/Widget_AeExplorer.html</loc></url>
 <url><loc>https://jwildfire.github.io/gsm.safety/dev/reference/Widget_AeTimelines.html</loc></url>

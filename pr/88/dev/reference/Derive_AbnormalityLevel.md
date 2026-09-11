@@ -133,9 +133,8 @@ dfLabs <- Derive_AbnormalityLevel(dfLabs)
 #>   unit differs from the criteria's (g/dL): Albumin in g/L, Protein (total) in g/L
 #>   basis 'baseline_multiple' needs a baseline column this function does not take: Creatinine
 #>   basis 'baseline_change' needs a baseline column this function does not take: Hemoglobin
-#>   unit differs from the criteria's (x 10^9 cells/uL): Platelets in GI/L
+#>   unit differs from the criteria's (cells/uL): Lymphocytes in GI/L, Platelets in GI/L
 #>   needs a sex column (strSexCol) for the sex-qualified rows: Hemoglobin
-#>   unit differs from the criteria's (cells/uL): Lymphocytes in GI/L
 dfGraded <- dfLabs[!is.na(dfLabs$AbnormalityLevel) & dfLabs$AbnormalityLevel > 0, ]
 table(dfGraded$TEST, dfGraded$AbnormalityLevel)
 #>                             

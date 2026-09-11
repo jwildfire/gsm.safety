@@ -111,11 +111,12 @@ baseline-relative bases need a baseline column and are left to the phase
 
 Transcription decisions are recorded in the `Note` column beside the row
 they concern: the hemoglobin level 1 ranges are read as the upper bound
-because the levels are cumulative, and the platelet unit is kept as
-printed. Non-ASCII characters in the guide are written in ASCII (`u` for
-the micro sign, `>=` for the greater-than-or-equal sign). The build
-script and the hand-checked CSV are in the repository's `data-raw/`
-directory.
+because the levels are cumulative, and the platelet row, printed with
+the unit `x 10^9 cells/uL` beside thresholds of 140,000 and below, is
+filed in cells per uL so a per-uL count grades. Non-ASCII characters in
+the guide are written in ASCII (`u` for the micro sign, `>=` for the
+greater-than-or-equal sign). The build script and the hand-checked CSV
+are in the repository's `data-raw/` directory.
 
 ## See also
 

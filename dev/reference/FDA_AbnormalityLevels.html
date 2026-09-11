@@ -145,7 +145,7 @@ version 2.0, April 2025, Appendix 5.1,
 where the guide splits a row by sex or by fasting state. The three levels
 are cumulative — a level 3 result also meets levels 1 and 2 — and every row
 compares with one operator. <code>Basis</code> says what the threshold is compared
-against:</p><table class="table table"><tr><td><code>Basis</code></td><td>The level is</td><td>Example</td></tr><tr><td><code>absolute</code></td><td>a value in <code>Unit</code></td><td>Sodium, low: <code>&lt;132</code> mEq/L</td></tr><tr><td><code>uln_multiple</code></td><td>a multiple of the upper limit of normal</td><td>ALT, high: <code>&gt;3.0 x ULN</code></td></tr><tr><td><code>baseline_multiple</code></td><td>a multiple of the participant's baseline</td><td>Creatinine, increase: <code>&gt;=1.5 x baseline</code></td></tr><tr><td><code>baseline_percent_decrease</code></td><td>a percentage decrease from baseline</td><td>eGFR, decrease: <code>&gt;=25% decrease</code></td></tr><tr><td><code>baseline_change</code></td><td>an absolute change from baseline in <code>Unit</code></td><td>Hemoglobin, decrease: <code>&gt;1.5 dec. from baseline</code></td></tr></table><p><code>Derive_AbnormalityLevel()</code> (gsm.safety#78) applies the <code>absolute</code> and <code>uln_multiple</code> rows;
+against:</p><table class="table table"><tr><td><code>Basis</code></td><td>The level is</td><td>Example</td></tr><tr><td><code>absolute</code></td><td>a value in <code>Unit</code></td><td>Sodium, low: <code>&lt;132</code> mEq/L</td></tr><tr><td><code>uln_multiple</code></td><td>a multiple of the upper limit of normal</td><td>ALT, high: <code>&gt;3.0 x ULN</code></td></tr><tr><td><code>baseline_multiple</code></td><td>a multiple of the participant's baseline</td><td>Creatinine, increase: <code>&gt;=1.5 x baseline</code></td></tr><tr><td><code>baseline_percent_decrease</code></td><td>a percentage decrease from baseline</td><td>eGFR, decrease: <code>&gt;=25% decrease</code></td></tr><tr><td><code>baseline_change</code></td><td>an absolute change from baseline in <code>Unit</code></td><td>Hemoglobin, decrease: <code>&gt;1.5 dec. from baseline</code></td></tr></table><p><code><a href="Derive_AbnormalityLevel.html">Derive_AbnormalityLevel()</a></code> (gsm.safety#78) applies the <code>absolute</code> and <code>uln_multiple</code> rows;
 the baseline-relative bases need a baseline column and are left to the
 phase 1 engines.</p>
 <p>Transcription decisions are recorded in the <code>Note</code> column beside the row
@@ -158,7 +158,7 @@ hand-checked CSV are in the repository's <code>data-raw/</code> directory.</p>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
     <div class="dont-index"><p><a href="FDA_ExtremeValues.html">FDA_ExtremeValues</a> for the companion extreme-value thresholds,
-<code>Derive_AbnormalityLevel()</code> (gsm.safety#78) for the grading rule applied to lab data.</p></div>
+<code><a href="Derive_AbnormalityLevel.html">Derive_AbnormalityLevel()</a></code> (gsm.safety#78) for the grading rule applied to lab data.</p></div>
     </div>
 
     <div class="section level2">

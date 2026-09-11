@@ -48,6 +48,21 @@ the Derive\_\* functions apply (obot.roadmap#9).
 - [`FDA_ExtremeValues`](https://jwildfire.github.io/gsm.safety/dev/reference/FDA_ExtremeValues.md)
   : FDA extreme laboratory and vital sign values suggestive of error
 
+## FDA derivations
+
+The guide’s normative rules applied once, in R, over long-format results
+in the shape of ExampleData(“adbds”): each Derive\_\* function returns
+the input frame with its derived columns added, never an aggregate, so a
+static figure and its interactive twin read the same derived values
+(obot.roadmap#9, requirements/fda-stf.md FDA-RULE-001 to -005).
+
+- [`Derive_ULNMultiple()`](https://jwildfire.github.io/gsm.safety/dev/reference/Derive_ULNMultiple.md)
+  : Express a result as a multiple of its upper limit of normal
+- [`Derive_AbnormalityLevel()`](https://jwildfire.github.io/gsm.safety/dev/reference/Derive_AbnormalityLevel.md)
+  : Grade a result against the FDA abnormality level criteria
+- [`Derive_ExtremeValueFlag()`](https://jwildfire.github.io/gsm.safety/dev/reference/Derive_ExtremeValueFlag.md)
+  : Flag results beyond the FDA extreme-value thresholds
+
 ## Metric steps
 
 The steps behind the metric definitions in inst/workflow/2_metrics/.

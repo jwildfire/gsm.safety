@@ -186,6 +186,36 @@
         </dt>
         <dd>FDA extreme laboratory and vital sign values suggestive of error</dd>
       </dl></div><div class="section level2">
+      <h2 id="fda-derivations">FDA derivations<a class="anchor" aria-label="anchor" href="#fda-derivations"></a></h2>
+
+      <div class="section-desc"><p>The guide’s normative rules applied once, in R, over long-format results in the shape of ExampleData(“adbds”): each Derive_* function returns the input frame with its derived columns added, never an aggregate, so a static figure and its interactive twin read the same derived values (obot.roadmap#9, requirements/fda-stf.md FDA-RULE-001 to -005).</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="Derive_ULNMultiple.html">Derive_ULNMultiple()</a></code>
+
+        </dt>
+        <dd>Express a result as a multiple of its upper limit of normal</dd>
+
+        <dt>
+
+          <code><a href="Derive_AbnormalityLevel.html">Derive_AbnormalityLevel()</a></code>
+
+        </dt>
+        <dd>Grade a result against the FDA abnormality level criteria</dd>
+
+        <dt>
+
+          <code><a href="Derive_ExtremeValueFlag.html">Derive_ExtremeValueFlag()</a></code>
+
+        </dt>
+        <dd>Flag results beyond the FDA extreme-value thresholds</dd>
+      </dl></div><div class="section level2">
       <h2 id="metric-steps">Metric steps<a class="anchor" aria-label="anchor" href="#metric-steps"></a></h2>
 
       <div class="section-desc"><p>The steps behind the metric definitions in inst/workflow/2_metrics/. Input_HysLaw, Input_QtProlongation and Input_SafetyAE feed the three participant-level flagging metrics; Input_Deaths, Input_Participants and Input_ParticipantDays feed the descriptive census metrics, which publish a number, carry no threshold, and call Flag_None where a flagging metric calls gsm.core::Flag().</p></div>

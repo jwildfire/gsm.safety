@@ -104,9 +104,10 @@ compared against:
 | `baseline_percent_decrease` | a percentage decrease from baseline | eGFR, decrease: `>=25% decrease` |
 | `baseline_change` | an absolute change from baseline in `Unit` | Hemoglobin, decrease: `>1.5 dec. from baseline` |
 
-`Derive_AbnormalityLevel()` (gsm.safety#78) applies the `absolute` and
-`uln_multiple` rows; the baseline-relative bases need a baseline column
-and are left to the phase 1 engines.
+[`Derive_AbnormalityLevel()`](https://jwildfire.github.io/gsm.safety/dev/reference/Derive_AbnormalityLevel.md)
+(gsm.safety#78) applies the `absolute` and `uln_multiple` rows; the
+baseline-relative bases need a baseline column and are left to the phase
+1 engines.
 
 Transcription decisions are recorded in the `Note` column beside the row
 they concern: the hemoglobin level 1 ranges are read as the upper bound
@@ -119,7 +120,8 @@ directory.
 ## See also
 
 [FDA_ExtremeValues](https://jwildfire.github.io/gsm.safety/dev/reference/FDA_ExtremeValues.md)
-for the companion extreme-value thresholds, `Derive_AbnormalityLevel()`
+for the companion extreme-value thresholds,
+[`Derive_AbnormalityLevel()`](https://jwildfire.github.io/gsm.safety/dev/reference/Derive_AbnormalityLevel.md)
 (gsm.safety#78) for the grading rule applied to lab data.
 
 ## Examples

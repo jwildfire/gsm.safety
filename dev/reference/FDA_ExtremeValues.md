@@ -87,12 +87,13 @@ version 2.0, April 2025, Appendix 5.2,
 
 The guide prints each parameter once with a US-conventional and an SI
 column pair. This dataset is long: every parameter appears twice, once
-per `UnitSystem`, so `Derive_ExtremeValueFlag()` (gsm.safety#78) can
-join on the unit the data actually carries. Table 60 prints one unit
-set, so its rows are repeated under both systems, except temperature,
-which the guide gives in both Fahrenheit (filed as US) and Celsius
-(filed as SI). A missing `Low` or `High` is an `N/A` in the guide: no
-threshold in that direction.
+per `UnitSystem`, so
+[`Derive_ExtremeValueFlag()`](https://jwildfire.github.io/gsm.safety/dev/reference/Derive_ExtremeValueFlag.md)
+(gsm.safety#78) can join on the unit the data actually carries. Table 60
+prints one unit set, so its rows are repeated under both systems, except
+temperature, which the guide gives in both Fahrenheit (filed as US) and
+Celsius (filed as SI). A missing `Low` or `High` is an `N/A` in the
+guide: no threshold in that direction.
 
 Transcription decisions are in the `Note` column beside the row they
 concern. Non-ASCII characters in the guide are written in ASCII (`u` for
@@ -102,7 +103,8 @@ repository's `data-raw/` directory.
 ## See also
 
 [FDA_AbnormalityLevels](https://jwildfire.github.io/gsm.safety/dev/reference/FDA_AbnormalityLevels.md)
-for the abnormality level criteria, `Derive_ExtremeValueFlag()`
+for the abnormality level criteria,
+[`Derive_ExtremeValueFlag()`](https://jwildfire.github.io/gsm.safety/dev/reference/Derive_ExtremeValueFlag.md)
 (gsm.safety#78) for the exclusion rule applied to lab data.
 
 ## Examples

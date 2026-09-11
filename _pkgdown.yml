@@ -42,6 +42,17 @@ reference:
     contents:
       - FDA_AbnormalityLevels
       - FDA_ExtremeValues
+  - title: FDA derivations
+    desc: >
+      The guide's normative rules applied once, in R, over long-format results
+      in the shape of ExampleData("adbds"): each Derive_* function returns the
+      input frame with its derived columns added, never an aggregate, so a
+      static figure and its interactive twin read the same derived values
+      (obot.roadmap#9, requirements/fda-stf.md FDA-RULE-001 to -005).
+    contents:
+      - Derive_ULNMultiple
+      - Derive_AbnormalityLevel
+      - Derive_ExtremeValueFlag
   - title: Metric steps
     desc: >
       The steps behind the metric definitions in inst/workflow/2_metrics/.

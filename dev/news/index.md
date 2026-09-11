@@ -24,6 +24,34 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   ([\#77](https://github.com/jwildfire/gsm.safety/issues/77), hub
   [obot.roadmap#9](https://github.com/jwildfire/obot.roadmap/issues/9))
 
+- **`requirements/fda-stf.md` — the FDA ST&F requirement matrix.** One
+  keyed row for each of the guide’s 22 figures (`FDA-FIG-001` to
+  `FDA-FIG-022`) and one for each cross-cutting rule the phase 0
+  derivations and the later static engines implement (`FDA-RULE-001` to
+  `FDA-RULE-016`), in the safety.viz matrix shape, so a static rendering
+  in this package and its interactive twin in safety.viz cite one
+  requirement ID and their evidence meets on the same row. Every row
+  names the guide version and section, its chart engine, its ADaM
+  domains and its safety.viz twin; `requirements/README.md` says how
+  rows are keyed and how a test cites one, and a test holds the file to
+  that shape.
+  ([\#79](https://github.com/jwildfire/gsm.safety/issues/79), hub
+  [obot.roadmap#9](https://github.com/jwildfire/obot.roadmap/issues/9))
+
+- **`requirements/fda-stf.md` — the FDA ST&F requirement matrix.** One
+  keyed row for each of the guide’s 22 figures (`FDA-FIG-001` to
+  `FDA-FIG-022`) and one for each cross-cutting rule the phase 0
+  derivations and the later static engines implement (`FDA-RULE-001` to
+  `FDA-RULE-016`), in the safety.viz matrix shape, so a static rendering
+  in this package and its interactive twin in safety.viz cite one
+  requirement ID and their evidence meets on the same row. Every row
+  names the guide version and section, its chart engine, its ADaM
+  domains and its safety.viz twin; `requirements/README.md` says how
+  rows are keyed and how a test cites one, and a test holds the file to
+  that shape.
+  ([\#79](https://github.com/jwildfire/gsm.safety/issues/79), hub
+  [obot.roadmap#9](https://github.com/jwildfire/obot.roadmap/issues/9))
+
 ### Also in this release
 
 - The package now declares `LazyData: true` and `Depends: R (>= 3.5.0)`,

@@ -56,7 +56,8 @@ The guide prints every threshold in US-conventional and SI units, and
 the unit it carries: a result in \code{mg/dL} against the US thresholds, in
 \code{mmol/L} against the SI ones. A record whose unit matches neither is left
 \code{NA} and named in a message rather than compared on the wrong scale;
-spellings of the same unit are folded but nothing is converted. A missing
+spellings of the same unit are folded (and mEq/L and mmol/L treated as one
+unit for the monovalent electrolytes only) but nothing is converted. A missing
 threshold in one direction (an \code{N/A} in the guide) is no bound in that
 direction, and the threshold itself is not extreme.
 

@@ -36,7 +36,7 @@ Table,Panel,Parameter,Direction,Qualifier,Unit,Basis,Operator,Level1,Level2,Leve
 57,Complete blood count,WBC,high,,x 10^9 cells/L,absolute,>,10.8,13.0,15.0,>10.8,>13.0,>15.0,121,
 57,Complete blood count,Hemoglobin,decrease,,g/dL,baseline_change,>,,1.5,2,N/A,>1.5 dec. from baseline,>2 dec. from baseline,121,
 57,Complete blood count,Hemoglobin,increase,,g/dL,baseline_change,>,,2,3,N/A,>2 inc. from baseline,>3 inc. from baseline,121,
-57,Complete blood count,Platelets,low,,x 10^9 cells/uL,absolute,<,140000,125000,100000,"<140,000","<125,000","<100,000",121,Unit transcribed as printed; the thresholds read as platelets per uL (140 x 10^9/L and so on)
+57,Complete blood count,Platelets,low,,cells/uL,absolute,<,140000,125000,100000,"<140,000","<125,000","<100,000",121,Printed unit is x 10^9 cells/uL; the thresholds read as platelets per uL (140 x 10^9/L and so on) and the unit is filed as cells/uL so a per-uL count grades
 57,Complete blood count,Hemoglobin,low,male,g/dL,absolute,<,13.5,12.5,10.5,12.5-13.5,<12.5,<10.5,121,Level 1 is printed as the range 12.5-13.5; read as <13.5 because the levels are cumulative
 57,Complete blood count,Hemoglobin,low,female,g/dL,absolute,<,12.0,11,9.5,11.0-12.0,<11,<9.5,121,Level 1 is printed as the range 11.0-12.0; read as <12.0 because the levels are cumulative
 57,WBC differential,Lymphocytes,low,,cells/uL,absolute,<,1000,750,500,<1000,<750,<500,121,

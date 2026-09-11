@@ -8,5 +8,6 @@
 ^LICENSE$
 ^tools$
 ^CLAUDE\.md$
+^requirements$
 ^\.claude$
 ^data-raw$

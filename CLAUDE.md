@@ -22,4 +22,5 @@ in a cloud environment). Work runs one requirement per session (`/requirement-se
 - Widgets validate data and settings through `BuildWidgetPayload()` against the module's vendored contract in `inst/schema/`; settings are overrides merged client-side, so pass only what differs from the defaults.
 - Metric cut-points live in the workflow `meta` block under `inst/workflow/2_metrics/`, never in R.
 - `NEWS.md` is always current on `dev`: unreleased work goes under the `vX.Y.Z (Upcoming)` heading as it lands, one user-facing bullet per feature linking its hub requirement and PR.
+- A session waiting on @jwildfire (a blocked question, a release candidate awaiting his review) checks back every 12 hours, not hourly: one scheduled check-in at a time, re-armed silently when nothing changed, and the nightly comment on the requirement is the only routine write. PR events still wake the session immediately.
 - One branch per task, `<task-number>-<slug>`, off `dev`; the PR body carries `Closes #<task>` and the definition-of-done evidence. Release candidates are `gsm.safety vX.Y.Z-RCn` from `dev` into `main`, drafted until ultrareview is clean, and never merged by an agent.

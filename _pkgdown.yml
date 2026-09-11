@@ -33,6 +33,15 @@ reference:
   - title: Data
     contents:
       - ExampleData
+  - title: FDA reference criteria
+    desc: >
+      Appendix Tables 56 to 60 of the FDA Standard Safety Tables and Figures
+      Integrated Guide (v2.0, April 2025) as package data: the level 1, 2 and 3
+      abnormality criteria and the extreme values suggestive of error that the
+      Derive_* functions apply (obot.roadmap#9).
+    contents:
+      - FDA_AbnormalityLevels
+      - FDA_ExtremeValues
   - title: Metric steps
     desc: >
       The steps behind the metric definitions in inst/workflow/2_metrics/.

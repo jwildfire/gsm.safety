@@ -1,0 +1,47 @@
+Table,Panel,Parameter,Direction,Qualifier,Unit,Basis,Operator,Level1,Level2,Level3,Level1Text,Level2Text,Level3Text,GuidePage,Note
+56,General Chemistry,Sodium,low,,mEq/L,absolute,<,132,130,125,<132,<130,<125,119,
+56,General Chemistry,Sodium,high,,mEq/L,absolute,>,150,155,160,>150,>155,>160,119,
+56,General Chemistry,Potassium,low,,mEq/L,absolute,<,3.6,3.4,3.0,<3.6,<3.4,<3.0,119,
+56,General Chemistry,Potassium,high,,mEq/L,absolute,>,5.5,6,6.5,>5.5,>6,>6.5,119,
+56,General Chemistry,Chloride,low,,mEq/L,absolute,<,95,88,80,<95,<88,<80,119,
+56,General Chemistry,Chloride,high,,mEq/L,absolute,>,108,112,115,>108,>112,>115,119,
+56,General Chemistry,Bicarbonate,low,,mEq/L,absolute,<,20,18,15,<20,<18,<15,119,
+56,General Chemistry,Bicarbonate,high,,mEq/L,absolute,>,,,30,N/A,N/A,>30,119,
+56,General Chemistry,Blood urea nitrogen,high,,mg/dL,absolute,>,23,27,31,>23,>27,>31,119,
+56,General Chemistry,Glucose,low,,mg/dL,absolute,<,70,54,,<70,<54,N/A,119,
+56,General Chemistry,Glucose,high,Fasting,mg/dL,absolute,>=,100,126,,>=100,>=126,N/A,119,
+56,General Chemistry,Glucose,high,Random,mg/dL,absolute,>=,,200,,N/A,>=200,N/A,119,
+56,General Chemistry,Calcium,low,,mg/dL,absolute,<,8.4,8.0,7.5,<8.4,<8.0,<7.5,119,
+56,General Chemistry,Calcium,high,,mg/dL,absolute,>,10.5,11.0,12.0,>10.5,>11.0,>12.0,119,
+56,General Chemistry,Magnesium,low,,mg/dL,absolute,<,1.5,1.2,0.9,<1.5,<1.2,<0.9,119,
+56,General Chemistry,Magnesium,high,,mg/dL,absolute,>,2.3,4.0,7.0,>2.3,>4.0,>7.0,119,
+56,General Chemistry,Phosphate,low,,mg/dL,absolute,<,2.5,2.0,1.4,<2.5,<2.0,<1.4,119,
+56,General Chemistry,Protein (total),low,,g/dL,absolute,<,6.0,5.4,5.0,<6.0,<5.4,<5.0,119,
+56,General Chemistry,Albumin,low,,g/dL,absolute,<,3.1,2.5,2.0,<3.1,<2.5,<2.0,119,
+56,General Chemistry,CPK,high,,U/L,uln_multiple,>,3,5,10,>3 x ULN,>5 x ULN,>10 x ULN,119,
+56,General Chemistry,Amylase,high,,U/L,uln_multiple,>,1.1,1.5,3.0,>1.1 x ULN,>1.5 x ULN,>3.0 x ULN,119,
+56,General Chemistry,Lipase,high,,U/L,uln_multiple,>,1.1,1.5,3.0,>1.1 x ULN,>1.5 x ULN,>3.0 x ULN,119,
+56,Kidney Function,Creatinine,increase,,mg/dL,baseline_multiple,>=,1.5,2.0,3.0,>=1.5 x baseline,>=2.0 x baseline,>=3.0 x baseline,120,
+56,Kidney Function,eGFR,decrease,,ml/min/1.73m2,baseline_percent_decrease,>=,25,50,75,>=25% decrease,>=50% decrease,>=75% decrease,120,
+56,Liver Biochemistry,Alkaline phosphatase,high,,U/L,uln_multiple,>,1.5,2.0,3.0,>1.5 x ULN,>2.0 x ULN,>3.0 x ULN,120,Footnote 1: for evaluation of drug-induced liver injury refer to guide section 2.4.4
+56,Liver Biochemistry,Alanine Aminotransferase,high,,U/L,uln_multiple,>,3.0,5.0,10.0,>3.0 x ULN,>5.0 x ULN,>10.0 x ULN,120,Footnote 1: for evaluation of drug-induced liver injury refer to guide section 2.4.4
+56,Liver Biochemistry,Aspartate Aminotransferase,high,,U/L,uln_multiple,>,3.0,5.0,10.0,>3.0 x ULN,>5.0 x ULN,>10.0 x ULN,120,Footnote 1: for evaluation of drug-induced liver injury refer to guide section 2.4.4
+56,Liver Biochemistry,Total Bilirubin,high,,mg/dL,uln_multiple,>,1.5,2.0,3.0,>1.5 x ULN,>2.0 x ULN,>3.0 x ULN,120,Footnote 1: for evaluation of drug-induced liver injury refer to guide section 2.4.4
+56,Lipids,Cholesterol (total),high,,mg/dL,absolute,>,200,240,300,>200,>240,>300,120,
+56,Lipids,HDL,low,males,mg/dL,absolute,<,40,30,20,<40,<30,<20,120,
+56,Lipids,HDL,low,females,mg/dL,absolute,<,50,40,20,<50,<40,<20,120,
+56,Lipids,LDL,high,,mg/dL,absolute,>,130,160,190,>130,>160,>190,120,
+56,Lipids,Triglycerides,high,,mg/dL,absolute,>,150,300,500,>150,>300,>500,120,
+57,Complete blood count,WBC,low,,x 10^9 cells/L,absolute,<,3.5,3.0,1.0,<3.5,<3.0,<1.0,121,
+57,Complete blood count,WBC,high,,x 10^9 cells/L,absolute,>,10.8,13.0,15.0,>10.8,>13.0,>15.0,121,
+57,Complete blood count,Hemoglobin,decrease,,g/dL,baseline_change,>,,1.5,2,N/A,>1.5 dec. from baseline,>2 dec. from baseline,121,
+57,Complete blood count,Hemoglobin,increase,,g/dL,baseline_change,>,,2,3,N/A,>2 inc. from baseline,>3 inc. from baseline,121,
+57,Complete blood count,Platelets,low,,x 10^9 cells/uL,absolute,<,140000,125000,100000,"<140,000","<125,000","<100,000",121,Unit transcribed as printed; the thresholds read as platelets per uL (140 x 10^9/L and so on)
+57,Complete blood count,Hemoglobin,low,male,g/dL,absolute,<,13.5,12.5,10.5,12.5-13.5,<12.5,<10.5,121,Level 1 is printed as the range 12.5-13.5; read as <13.5 because the levels are cumulative
+57,Complete blood count,Hemoglobin,low,female,g/dL,absolute,<,12.0,11,9.5,11.0-12.0,<11,<9.5,121,Level 1 is printed as the range 11.0-12.0; read as <12.0 because the levels are cumulative
+57,WBC differential,Lymphocytes,low,,cells/uL,absolute,<,1000,750,500,<1000,<750,<500,121,
+57,WBC differential,Lymphocytes,high,,cells/uL,absolute,>,4000,10000,20000,>4000,>10000,>20000,121,
+57,WBC differential,Neutrophils,low,,cells/uL,absolute,<,2000,1000,500,<2000,<1000,<500,121,
+57,WBC differential,Eosinophils,high,,cells/uL,absolute,>,650,1500,5000,>650,>1500,>5000,121,
+57,Coagulation studies,PT,increase,,sec,uln_multiple,>,1.1,1.3,1.5,>1.1 x ULN,>1.3 x ULN,>1.5 x ULN,121,
+57,Coagulation studies,PTT,increase,,sec,uln_multiple,>,1.0,1.21,1.41,>1.0 x ULN,>1.21 x ULN,>1.41 x ULN,121,

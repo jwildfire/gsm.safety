@@ -133,7 +133,8 @@ not be matched or the result is missing) and the direction (<code>"low"</code>,
 the unit it carries: a result in <code>mg/dL</code> against the US thresholds, in
 <code>mmol/L</code> against the SI ones. A record whose unit matches neither is left
 <code>NA</code> and named in a message rather than compared on the wrong scale;
-spellings of the same unit are folded but nothing is converted. A missing
+spellings of the same unit are folded (and mEq/L and mmol/L treated as one
+unit for the monovalent electrolytes only) but nothing is converted. A missing
 threshold in one direction (an <code>N/A</code> in the guide) is no bound in that
 direction, and the threshold itself is not extreme.</p>
 <p>The flag is added, never applied: nothing is dropped or aggregated, and the

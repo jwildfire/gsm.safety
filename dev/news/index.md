@@ -2,6 +2,12 @@
 
 ## gsm.safety v1.5.0 (Upcoming)
 
+**See it move:** [annotated
+demo](https://jwildfire.github.io/obot.roadmap/reports/gsm-safety-v1.5.0-demo/)
+— the appendix tables as data, the three derivations on the example
+data, the matrix and the alignment, with try-it steps against the
+candidate.
+
 Phase 0 of the FDA Standard Safety Tables and Figures work
 ([obot.roadmap#9](https://github.com/jwildfire/obot.roadmap/issues/9)):
 the guide’s reference criteria arrive as package data, so every static

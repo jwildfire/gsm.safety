@@ -2,7 +2,7 @@ test_that("package metadata is available (#31)", {
   expect_equal(utils::packageDescription("gsm.safety")$Package, "gsm.safety")
 })
 
-test_that("gsm.safety exports the thirteen safety.viz widgets plus data, report and metric helpers (#31, #41, #42, #45, #49, #56, #58, #61, #71)", {
+test_that("gsm.safety exports the thirteen safety.viz widgets plus data, report and metric helpers (#31, #41, #42, #45, #49, #56, #58, #61, #71, #78)", {
   expect_setequal(
     getNamespaceExports("gsm.safety"),
     c(
@@ -25,6 +25,11 @@ test_that("gsm.safety exports the thirteen safety.viz widgets plus data, report 
       "Input_HysLaw",
       "Input_QtProlongation",
       "Input_SafetyAE",
+      # The FDA ST&F derivations: the guide's normative rules applied once, in
+      # R, returning the input frame plus derived columns (obot.roadmap#9).
+      "Derive_ULNMultiple",
+      "Derive_AbnormalityLevel",
+      "Derive_ExtremeValueFlag",
       # The census metrics: descriptive counts and the step that stands where
       # a flagging metric calls gsm.core::Flag().
       "Input_Deaths",

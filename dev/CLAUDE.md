@@ -51,6 +51,11 @@ runs one requirement per session
 - `NEWS.md` is always current on `dev`: unreleased work goes under the
   `vX.Y.Z (Upcoming)` heading as it lands, one user-facing bullet per
   feature linking its hub requirement and PR.
+- A session waiting on @jwildfire (a blocked question, a release
+  candidate awaiting his review) checks back every 12 hours, not hourly:
+  one scheduled check-in at a time, re-armed silently when nothing
+  changed, and the nightly comment on the requirement is the only
+  routine write. PR events still wake the session immediately.
 - One branch per task, `<task-number>-<slug>`, off `dev`; the PR body
   carries `Closes #<task>` and the definition-of-done evidence. Release
   candidates are `gsm.safety vX.Y.Z-RCn` from `dev` into `main`, drafted

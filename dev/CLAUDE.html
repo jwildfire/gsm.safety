@@ -77,6 +77,7 @@
 <li>Metric cut-points live in the workflow <code>meta</code> block under <code>inst/workflow/2_metrics/</code>, never in R.</li>
 <li>
 <code>NEWS.md</code> is always current on <code>dev</code>: unreleased work goes under the <code>vX.Y.Z (Upcoming)</code> heading as it lands, one user-facing bullet per feature linking its hub requirement and PR.</li>
+<li>A session waiting on @jwildfire (a blocked question, a release candidate awaiting his review) checks back every 12 hours, not hourly: one scheduled check-in at a time, re-armed silently when nothing changed, and the nightly comment on the requirement is the only routine write. PR events still wake the session immediately.</li>
 <li>One branch per task, <code>&lt;task-number&gt;-&lt;slug&gt;</code>, off <code>dev</code>; the PR body carries <code>Closes #&lt;task&gt;</code> and the definition-of-done evidence. Release candidates are <code>gsm.safety vX.Y.Z-RCn</code> from <code>dev</code> into <code>main</code>, drafted until ultrareview is clean, and never merged by an agent.</li>
 </ul></div>
 

@@ -52,6 +52,36 @@ test_that("BuildWidgetPayload errors when a settings override names a missing co
   )
 })
 
+test_that("BuildWidgetPayload validates the normal_col_high setting the hepatic contracts require (#99)", {
+  # The column check used to match only keys ending in `_col`, so the two
+  # limit-of-normal mappings slipped through to the browser unvalidated.
+  dfLabs <- ExampleData("adbds")
+  expect_error(
+    BuildWidgetPayload(
+      dfResults = dfLabs,
+      lSettings = list(normal_col_high = "NOT_A_COLUMN"),
+      strModule = "hep-explorer"
+    ),
+    "NOT_A_COLUMN.*normal_col_high"
+  )
+  expect_error(
+    BuildWidgetPayload(
+      dfResults = dfLabs,
+      lSettings = list(normal_col_high = "NOT_A_COLUMN"),
+      strModule = "hep-waterfall"
+    ),
+    "NOT_A_COLUMN.*normal_col_high"
+  )
+  # Only required keys are checked, as before, and a real column still passes.
+  expect_no_error(
+    BuildWidgetPayload(
+      dfResults = dfLabs,
+      lSettings = list(normal_col_high = "STNRHI"),
+      strModule = "hep-explorer"
+    )
+  )
+})
+
 test_that("BuildWidgetPayload checks nested object settings like ae-timelines color (#31)", {
   dfAE <- ExampleData("adae")
 

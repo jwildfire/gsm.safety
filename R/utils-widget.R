@@ -212,7 +212,7 @@ CheckRequiredSettings <- function(
     )
 
     if (
-      grepl("_col$", strKey) &&
+      grepl("_col(_|$)", strKey) &&
         is.character(vValue) &&
         length(vValue) == 1
     ) {

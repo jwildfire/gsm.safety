@@ -42,6 +42,7 @@ denominator of every other figure.}
 (\code{Mapped_STUDCOMP}).}
 
 \item{strIDCol}{\code{character} Participant ID column, shared by every domain.
+A supplied domain that does not carry it is refused, naming the domain.
 Default: \code{"subjid"}. A domain keyed on another name is renamed to the
 mapped-domain convention before the metrics read it.}
 

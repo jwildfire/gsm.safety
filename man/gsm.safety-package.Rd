@@ -22,5 +22,10 @@ Useful links:
 \author{
 \strong{Maintainer}: obot \email{obot@users.noreply.github.com}
 
+Authors:
+\itemize{
+  \item obot \email{obot@users.noreply.github.com}
+}
+
 }
 \keyword{internal}

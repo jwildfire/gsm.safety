@@ -159,3 +159,18 @@ test_that("participant_profile workflow renders an HTML report from ExampleData 
   expect_match(strHTML, "SafetyViz.participantProfile(", fixed = TRUE)
   expect_match(strHTML, "01-701-1015", fixed = TRUE)
 })
+
+test_that("Widget_ParticipantProfile refuses an AE column setting that is not a single string (#107)", {
+  dfResults <- ExampleData("adbds")
+  expect_error(
+    Widget_ParticipantProfile(dfResults, dfAE = dfProfileAE(), lSettings = list(ae = list(id_col = c("USUBJID", "SUBJID")))),
+    "ae[$]id_col.*single column name.*length 2"
+  )
+  expect_error(
+    Widget_ParticipantProfile(dfResults, dfAE = dfProfileAE(), lSettings = list(ae = list(stdy_col = 1))),
+    "ae[$]stdy_col.*single column name.*numeric"
+  )
+  # A single string naming a column still passes.
+  lWidget <- Widget_ParticipantProfile(dfResults, dfAE = dfProfileAE(), lSettings = list(ae = list(id_col = "USUBJID")))
+  expect_s3_class(lWidget, "htmlwidget")
+})

@@ -215,6 +215,14 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   code review of the v1.5.0 candidate.
   ([\#126](https://github.com/jwildfire/gsm.safety/issues/126),
   [\#131](https://github.com/jwildfire/gsm.safety/pull/131))
+- The participant profile and time-to-event examples, pages and test
+  fixtures drop the placeholder adverse-event rows whether the term is
+  blank or missing; `nzchar(NA)` is `TRUE`, so the filter names the
+  missing case too. Not reachable with the shipped example data, which
+  has no missing terms. Found by the code review of the v1.5.0
+  candidate.
+  ([\#139](https://github.com/jwildfire/gsm.safety/issues/139),
+  [\#140](https://github.com/jwildfire/gsm.safety/pull/140))
 
 ## gsm.safety v1.4.0 (Upcoming)
 

@@ -105,5 +105,7 @@ test_that("the parity workflow's pull-request job runs with a read-only token (#
   lFollowUp <- lWorkflow$jobs[["file-issue"]]
   expect_identical(lFollowUp$permissions$issues, "write")
   expect_match(lFollowUp[["if"]], "schedule", fixed = TRUE)
+  expect_match(lFollowUp[["if"]], "workflow_dispatch", fixed = TRUE)
+  expect_match(lFollowUp[["if"]], "needs.parity.result == 'failure'", fixed = TRUE)
   expect_false(any(grepl("checkout", unlist(lapply(lFollowUp$steps, `[[`, "uses")))))
 })

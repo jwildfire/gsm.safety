@@ -148,8 +148,9 @@ CheckAeColumns <- function(dfAE, lAeSettings = NULL) {
   if (is.null(lAeSettings)) {
     lAeSettings <- list()
   }
+  # A data.frame is a list too, and not a mapping either.
   gsm.core::stop_if(
-    cnd = !is.list(lAeSettings),
+    cnd = !is.list(lAeSettings) || is.data.frame(lAeSettings),
     message = paste0(
       "Setting 'ae' must be a list of column mappings, not ", class(lAeSettings)[1]
     )

@@ -148,11 +148,26 @@ CheckAeColumns <- function(dfAE, lAeSettings = NULL) {
   if (is.null(lAeSettings)) {
     lAeSettings <- list()
   }
+  gsm.core::stop_if(
+    cnd = !is.list(lAeSettings),
+    message = paste0(
+      "Setting 'ae' must be a list of column mappings, not ", class(lAeSettings)[1]
+    )
+  )
   # Mirrors AE_DEFAULT_SETTINGS in safety.viz's participant-profile/ae.js: the
   # two columns without which an event cannot be placed on the timeline.
   lRequired <- list(id_col = "USUBJID", stdy_col = "ASTDY")
 
   for (strKey in names(lRequired)) {
+    # A key supplied as NULL is not an omitted key: htmlwidgets sends it as null
+    # and the renderer merges that over its default and indexes events with it.
+    gsm.core::stop_if(
+      cnd = strKey %in% names(lAeSettings) && is.null(lAeSettings[[strKey]]),
+      message = paste0(
+        "Setting 'ae$", strKey, "' is NULL; omit it to use the default '",
+        lRequired[[strKey]], "'"
+      )
+    )
     strColumn <- lAeSettings[[strKey]]
     if (is.null(strColumn)) {
       strColumn <- lRequired[[strKey]]

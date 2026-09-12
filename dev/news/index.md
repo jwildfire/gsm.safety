@@ -142,6 +142,13 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   `null`. Found by the code review of the v1.5.0 candidate.
   ([\#109](https://github.com/jwildfire/gsm.safety/issues/109),
   [\#113](https://github.com/jwildfire/gsm.safety/pull/113))
+- [`SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/SafetyCensus.md)
+  refuses a supplied domain that does not carry the participant ID
+  column named by `strIDCol`, naming the domain, instead of counting it
+  under an unrelated `subjid` column or publishing `NA`. Found by the
+  code review of the v1.5.0 candidate.
+  ([\#117](https://github.com/jwildfire/gsm.safety/issues/117),
+  [\#118](https://github.com/jwildfire/gsm.safety/pull/118))
 - The package site wears the jwildfire.github.io theme, as the obot hub
   does since 2026-09-12: paper ground, graphite ink, plum links,
   Instrument Serif headings, Instrument Sans body, IBM Plex Mono code,

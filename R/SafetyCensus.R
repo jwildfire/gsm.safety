@@ -301,8 +301,13 @@ SafetyCensus <- function(
     )
   }
 
-  dfSubjects <- .RenameColumn(lDomains$Mapped_SUBJ, strGroupCol, "studyid")
-  if (!("studyid" %in% names(dfSubjects))) {
+  # The check is on the column the caller named, not on 'studyid': when the
+  # named column is absent, an unrelated 'studyid' the frame happens to carry
+  # must not group the census in its place.
+  dfSubjects <- lDomains$Mapped_SUBJ
+  if (strGroupCol %in% names(dfSubjects)) {
+    dfSubjects <- .RenameColumn(dfSubjects, strGroupCol, "studyid")
+  } else {
     # Not an error. The study identifier groups the metrics and is dropped
     # before anything is returned, so refusing to count without one would
     # break a caller over a value this function does not publish.

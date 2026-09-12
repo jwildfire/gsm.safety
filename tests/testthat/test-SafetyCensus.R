@@ -320,6 +320,33 @@ test_that("a subject domain with no study identifier still counts, and says so (
   expect_identical(CensusValue(lOut, "Enrolled participants"), 4)
 })
 
+test_that("SafetyCensus does not group by an existing studyid when the caller's strGroupCol is absent (#126)", {
+  # The caller named 'study' and the frame carries only 'studyid'. Honouring
+  # the request means the unnamed-study path, said out loud, not the column
+  # they did not name.
+  expect_true("studyid" %in% names(CENSUS_SUBJECTS))
+  expect_warning(
+    expect_warning(
+      lOut <- suppressMessages(SafetyCensus(dfSubjects = CENSUS_SUBJECTS, strGroupCol = "study")),
+      "carries no 'study' column"
+    ),
+    "No domain was supplied"
+  )
+  expect_identical(CensusValue(lOut, "Enrolled participants"), 4)
+
+  # The default still reads 'studyid' without a word about it.
+  chrWarnings <- character()
+  withCallingHandlers(
+    lDefault <- suppressMessages(SafetyCensus(dfSubjects = CENSUS_SUBJECTS)),
+    warning = function(w) {
+      chrWarnings <<- c(chrWarnings, conditionMessage(w))
+      invokeRestart("muffleWarning")
+    }
+  )
+  expect_false(any(grepl("carries no", chrWarnings)))
+  expect_identical(CensusValue(lDefault, "Enrolled participants"), 4)
+})
+
 test_that("SafetyCensus rejects a subject domain it cannot key on (#45, #66)", {
   expect_error(SafetyCensus(CENSUS_SUBJECTS[, -1]), "subjid")
   expect_error(SafetyCensus("not a data frame"), "data.frame")

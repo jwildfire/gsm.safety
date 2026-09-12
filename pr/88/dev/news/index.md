@@ -223,6 +223,14 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   candidate.
   ([\#139](https://github.com/jwildfire/gsm.safety/issues/139),
   [\#140](https://github.com/jwildfire/gsm.safety/pull/140))
+- [`Report_SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/Report_SafetyCensus.md)
+  and
+  [`SaveWidgetReport()`](https://jwildfire.github.io/gsm.safety/dev/reference/SaveWidgetReport.md)
+  refuse an empty `strOutputFile` with the message they already use for
+  a missing one, instead of writing the page as a hidden `.html` file
+  with no name. Found by the code review of the v1.5.0 candidate.
+  ([\#143](https://github.com/jwildfire/gsm.safety/issues/143),
+  [\#145](https://github.com/jwildfire/gsm.safety/pull/145))
 
 ## gsm.safety v1.4.0 (Upcoming)
 

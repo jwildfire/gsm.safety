@@ -113,6 +113,12 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   property the renderer cannot find. Found by the code review of the
   v1.5.0 candidate.
   ([\#103](https://github.com/jwildfire/gsm.safety/issues/103))
+- [`Widget_ParticipantProfile()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_ParticipantProfile.md)
+  refuses an adverse-event column setting that is not a single character
+  string, naming the setting and the shape received, in step with the
+  main frame’s mappings. Found by the code review of the v1.5.0
+  candidate.
+  ([\#107](https://github.com/jwildfire/gsm.safety/issues/107))
 - [`Report_SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/Report_SafetyCensus.md)
   and
   [`SaveWidgetReport()`](https://jwildfire.github.io/gsm.safety/dev/reference/SaveWidgetReport.md)
@@ -120,7 +126,17 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   string, naming the argument, so a number, a vector or `NA` fails
   before anything is written instead of part-way through. Found by the
   code review of the v1.5.0 candidate.
-  ([\#106](https://github.com/jwildfire/gsm.safety/issues/106))
+  ([\#106](https://github.com/jwildfire/gsm.safety/issues/106),
+  [\#111](https://github.com/jwildfire/gsm.safety/pull/111),
+  [\#115](https://github.com/jwildfire/gsm.safety/issues/115),
+  [\#116](https://github.com/jwildfire/gsm.safety/pull/116))
+- [`BuildWidgetPayload()`](https://jwildfire.github.io/gsm.safety/dev/reference/BuildWidgetPayload.md)
+  refuses a required setting supplied as `NULL`, naming it and pointing
+  to the schema default, so `list(value_col = NULL)` no longer passes
+  the checks against the default and then reaches the browser as JSON
+  `null`. Found by the code review of the v1.5.0 candidate.
+  ([\#109](https://github.com/jwildfire/gsm.safety/issues/109),
+  [\#113](https://github.com/jwildfire/gsm.safety/pull/113))
 - The package site wears the jwildfire.github.io theme, as the obot hub
   does since 2026-09-12: paper ground, graphite ink, plum links,
   Instrument Serif headings, Instrument Sans body, IBM Plex Mono code,

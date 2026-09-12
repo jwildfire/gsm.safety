@@ -158,6 +158,13 @@ CheckAeColumns <- function(dfAE, lAeSettings = NULL) {
       strColumn <- lRequired[[strKey]]
     }
     gsm.core::stop_if(
+      cnd = !is.character(strColumn) || length(strColumn) != 1 || is.na(strColumn),
+      message = paste0(
+        "Setting 'ae$", strKey, "' must be a single column name (a character string), not ",
+        if (is.character(strColumn)) paste0("a character vector of length ", length(strColumn)) else class(strColumn)[1]
+      )
+    )
+    gsm.core::stop_if(
       cnd = !(strColumn %in% names(dfAE)),
       message = paste0(
         "Column '", strColumn, "' (setting 'ae$", strKey,

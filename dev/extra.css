@@ -35,6 +35,10 @@
   /* Ink for meta text (the version, footer, nav) that Bootstrap has no variable for. */
   --band-ink: var(--bs-body-color);
   --band-soft: var(--bs-secondary-color);
+
+  /* Meta text (the version, a Source line) reads in the secondary grey: the faint
+     #98a0aa Bootstrap keeps as its tertiary colour is under 3:1 on this paper. */
+  --meta-ink: var(--bs-secondary-color);
 }
 
 /* Base ----------------------------------------------------------------------- */
@@ -100,7 +104,7 @@ nav.navbar::before { top: 0; }
 nav.navbar .nav-text {
   font-family: var(--bs-font-monospace);
   font-size: 0.78rem;
-  color: var(--bs-tertiary-color) !important;  /* over .text-muted */
+  color: var(--meta-ink) !important;  /* over .text-muted */
 }
 nav.navbar .nav-link {
   font-family: var(--bs-font-monospace);
@@ -159,7 +163,7 @@ footer p { margin-bottom: 0.4rem; }
 .page-header .dont-index {
   font-family: var(--bs-font-monospace);
   font-size: 0.78rem;
-  color: var(--bs-tertiary-color);
+  color: var(--meta-ink);
 }
 blockquote {
   border-left: 4px solid var(--bs-primary);

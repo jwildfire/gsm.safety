@@ -46,3 +46,21 @@ test_that("every v1.5.0 review-fix NEWS bullet links its issue and its pull requ
     expect_match(strBullet, paste0("/pull/", chrPair[2], "\\)"), fixed = FALSE)
   }
 })
+
+test_that("every v1.5.0 feature NEWS bullet links its issue, its pull request and the hub requirement (#127)", {
+  chrBullets <- chrReleaseBullets("1.5.0", "What's new")
+  chrCited <- grep("gsm.safety/issues/[0-9]+", chrBullets, value = TRUE)
+  expect_length(chrCited, 4)
+
+  for (strBullet in chrCited) {
+    expect_match(strBullet, "gsm.safety/pull/[0-9]+", info = substr(strBullet, 1, 60))
+    expect_match(strBullet, "obot.roadmap/issues/9\\)", info = substr(strBullet, 1, 60))
+  }
+
+  lPairs <- list(c("77", "83"), c("79", "84"), c("80", "85"), c("78", "86"))
+  for (chrPair in lPairs) {
+    strBullet <- grep(paste0("/issues/", chrPair[1], "\\)"), chrBullets, value = TRUE)
+    expect_length(strBullet, 1)
+    expect_match(strBullet, paste0("/pull/", chrPair[2], "\\)"), fixed = FALSE)
+  }
+})

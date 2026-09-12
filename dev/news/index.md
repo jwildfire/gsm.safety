@@ -150,13 +150,21 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   ([\#117](https://github.com/jwildfire/gsm.safety/issues/117),
   [\#118](https://github.com/jwildfire/gsm.safety/pull/118))
 - [`Widget_ParticipantProfile()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_ParticipantProfile.md)
-  refuses an `ae` setting that is not a list, and an AE column supplied
-  as `NULL`, naming the setting and pointing to the default, instead of
-  failing with a subscript error or sending `null` to the browser and
-  drawing an empty timeline. Found by the code review of the v1.5.0
-  candidate.
+  refuses an `ae` setting that is not a plain list (a data.frame
+  included), and an AE column supplied as `NULL`, naming the setting and
+  pointing to the default, instead of failing with a subscript error or
+  sending `null` to the browser and drawing an empty timeline. Found by
+  the code review of the v1.5.0 candidate.
   ([\#119](https://github.com/jwildfire/gsm.safety/issues/119),
-  [\#122](https://github.com/jwildfire/gsm.safety/pull/122))
+  [\#122](https://github.com/jwildfire/gsm.safety/pull/122),
+  [\#124](https://github.com/jwildfire/gsm.safety/pull/124))
+- [`Report_SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/Report_SafetyCensus.md)
+  refuses a missing or empty `strOutputDir` with the same message it
+  uses for a vector, instead of failing later from base R or writing the
+  page relative to an empty directory. Found by the code review of the
+  v1.5.0 candidate.
+  ([\#120](https://github.com/jwildfire/gsm.safety/issues/120),
+  [\#123](https://github.com/jwildfire/gsm.safety/pull/123))
 - The package site wears the jwildfire.github.io theme, as the obot hub
   does since 2026-09-12: paper ground, graphite ink, plum links,
   Instrument Serif headings, Instrument Sans body, IBM Plex Mono code,

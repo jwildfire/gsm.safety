@@ -439,3 +439,38 @@ test_that("SafetyCensus runs the census metrics the report reads (#66)", {
   expect_identical(sort(chrRun), sort(unique(chrDeclared)))
   expect_identical(anyDuplicated(chrRun), 0L)
 })
+
+test_that("SafetyCensus keeps the group column the caller named when the ID is normalised onto it (#144)", {
+  # A group column called 'subjid' beside an ID called 'usubjid': the ID
+  # normalisation used to drop it, and every study-level metric stopped on a
+  # missing 'subjid'.
+  dfKeyed <- data.frame(
+    usubjid = c("a", "b", "c"),
+    subjid = c("S1", "S1", "S1"),
+    stringsAsFactors = FALSE
+  )
+  chrWarnings <- character()
+  withCallingHandlers(
+    lKeyed <- suppressMessages(SafetyCensus(dfSubjects = dfKeyed, strIDCol = "usubjid", strGroupCol = "subjid")),
+    warning = function(w) {
+      chrWarnings <<- c(chrWarnings, conditionMessage(w))
+      invokeRestart("muffleWarning")
+    }
+  )
+  # Other metrics still stop for columns this small frame does not carry;
+  # none may stop on the participant ID the normalisation used to remove.
+  expect_false(any(grepl("'subjid' not found", chrWarnings)))
+  expect_identical(CensusValue(lKeyed, "Enrolled participants"), 3)
+
+  # The same column named for both is refused up front: the census counts
+  # participants within one study, so one column cannot be both.
+  dfSame <- data.frame(subjid = c("a", "b", "c"), stringsAsFactors = FALSE)
+  expect_error(
+    SafetyCensus(dfSubjects = dfSame, strIDCol = "subjid", strGroupCol = "subjid"),
+    "same column"
+  )
+
+  # The default 'studyid' path is unchanged.
+  lDefault <- suppressWarnings(suppressMessages(SafetyCensus(dfSubjects = CENSUS_SUBJECTS)))
+  expect_identical(CensusValue(lDefault, "Enrolled participants"), 4)
+})

@@ -287,10 +287,24 @@ SafetyCensus <- function(
 #'
 #' @keywords internal
 .CensusDomains <- function(lDomains, strIDCol, strGroupCol) {
+  # The study identifier groups the census and the participant ID is counted
+  # within it; one column cannot be both. Naming the same column for each
+  # used to strip 'subjid' from the subject domain and stop every metric.
+  gsm.core::stop_if(
+    cnd = identical(strIDCol, strGroupCol),
+    message = paste0(
+      "strIDCol and strGroupCol name the same column ('", strIDCol,
+      "'); the study identifier cannot be the participant ID"
+    )
+  )
   # Read before the ID columns are normalised to 'subjid' below: a caller
   # naming strGroupCol = "subjid" on a frame keyed by another ID column would
   # otherwise be grouped by the participant ID the loop generates.
   bHasGroupCol <- strGroupCol %in% names(lDomains$Mapped_SUBJ)
+  # And its values: .RenameColumn() drops an existing 'subjid' before renaming
+  # the ID onto it, so a group column called 'subjid' (or the ID column named
+  # as the group) would be gone by the time it is read.
+  vGroup <- if (bHasGroupCol) lDomains$Mapped_SUBJ[[strGroupCol]] else NULL
 
   for (strDomain in names(lDomains)) {
     if (is.null(lDomains[[strDomain]])) {
@@ -311,7 +325,14 @@ SafetyCensus <- function(
   # must not group the census in its place.
   dfSubjects <- lDomains$Mapped_SUBJ
   if (bHasGroupCol) {
-    dfSubjects <- .RenameColumn(dfSubjects, strGroupCol, "studyid")
+    if (strGroupCol %in% names(dfSubjects) && !identical(strGroupCol, "subjid")) {
+      dfSubjects <- .RenameColumn(dfSubjects, strGroupCol, "studyid")
+    } else {
+      # The ID normalisation consumed the named column, which was called
+      # 'subjid'. The values read before the loop become the study identifier
+      # and the participant ID stays.
+      dfSubjects[["studyid"]] <- vGroup
+    }
   } else {
     # Not an error. The study identifier groups the metrics and is dropped
     # before anything is returned, so refusing to count without one would

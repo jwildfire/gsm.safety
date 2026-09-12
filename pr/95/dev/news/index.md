@@ -93,8 +93,7 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   `pkgdown/extra.css` carrying the bands; the standalone example pages
   take the same palette through their shared chrome in
   `pkgdown/menus/examples/util/`.
-  ([\#94](https://github.com/jwildfire/gsm.safety/pull/94),
-  [\#95](https://github.com/jwildfire/gsm.safety/pull/95))
+  ([\#94](https://github.com/jwildfire/gsm.safety/pull/94))
 
 ## gsm.safety v1.4.0 (Upcoming)
 

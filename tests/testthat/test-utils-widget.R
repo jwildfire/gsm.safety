@@ -279,3 +279,19 @@ test_that("BuildWidgetPayload refuses a required column setting that is not a si
   lPayload <- BuildWidgetPayload(dfResults = dfLabs, strModule = "histogram", lSettings = list(value_col = "STRESN"))
   expect_identical(lPayload$lSettings$value_col, "STRESN")
 })
+
+test_that("BuildWidgetPayload refuses a required setting supplied as NULL (#109)", {
+  dfLabs <- ExampleData("adbds")
+  expect_error(
+    BuildWidgetPayload(dfResults = dfLabs, strModule = "histogram", lSettings = list(value_col = NULL)),
+    "value_col.*NULL.*omit"
+  )
+  # A nested required mapping is held to the same rule.
+  expect_error(
+    BuildWidgetPayload(dfResults = ExampleData("adae"), strModule = "ae-timelines", lSettings = list(color = list(value_col = NULL))),
+    "color\\$value_col.*NULL"
+  )
+  # An omitted key still takes the schema default and is not sent at all.
+  lPayload <- BuildWidgetPayload(dfResults = dfLabs, strModule = "histogram", lSettings = list(id_col = "USUBJID"))
+  expect_false("value_col" %in% names(lPayload$lSettings))
+})

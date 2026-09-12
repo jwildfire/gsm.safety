@@ -153,6 +153,13 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   code review of the v1.5.0 candidate.
   ([\#117](https://github.com/jwildfire/gsm.safety/issues/117),
   [\#118](https://github.com/jwildfire/gsm.safety/pull/118))
+- The `FDA-RULE-002` row of `requirements/fda-stf.md` says what
+  [`Derive_AbnormalityLevel()`](https://jwildfire.github.io/gsm.safety/dev/reference/Derive_AbnormalityLevel.md)
+  does: a graded result meeting no level is `0`, and only a record the
+  criteria cannot be applied to has no grade (`NA`); the row had called
+  both “no grade”. Found by the code review of the v1.5.0 candidate.
+  ([\#128](https://github.com/jwildfire/gsm.safety/issues/128),
+  [\#132](https://github.com/jwildfire/gsm.safety/pull/132))
 - [`Widget_ParticipantProfile()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_ParticipantProfile.md)
   refuses an `ae` setting that is not a plain list (a data.frame
   included), and an AE column supplied as `NULL`, naming the setting and
@@ -176,6 +183,12 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   the code review of the v1.5.0 candidate.
   ([\#125](https://github.com/jwildfire/gsm.safety/issues/125),
   [\#130](https://github.com/jwildfire/gsm.safety/pull/130))
+- The census report helpers refuse `lSettings` supplied as a data.frame,
+  which [`is.list()`](https://rdrr.io/r/base/list.html) accepts, instead
+  of reading every setting as absent and building the page as if none
+  had been given. Found by the code review of the v1.5.0 candidate.
+  ([\#133](https://github.com/jwildfire/gsm.safety/issues/133),
+  [\#134](https://github.com/jwildfire/gsm.safety/pull/134))
 - The package site wears the jwildfire.github.io theme, as the obot hub
   does since 2026-09-12: paper ground, graphite ink, plum links,
   Instrument Serif headings, Instrument Sans body, IBM Plex Mono code,
@@ -186,6 +199,13 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   `pkgdown/menus/examples/util/`.
   ([\#94](https://github.com/jwildfire/gsm.safety/pull/94),
   [\#95](https://github.com/jwildfire/gsm.safety/pull/95))
+- [`SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/SafetyCensus.md)
+  takes the unnamed-study path, and says so, when the `strGroupCol` the
+  caller named is absent from the subject domain, instead of silently
+  grouping by a `studyid` column the caller did not name. Found by the
+  code review of the v1.5.0 candidate.
+  ([\#126](https://github.com/jwildfire/gsm.safety/issues/126),
+  [\#131](https://github.com/jwildfire/gsm.safety/pull/131))
 
 ## gsm.safety v1.4.0 (Upcoming)
 

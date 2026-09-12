@@ -435,3 +435,22 @@ test_that("Report_SafetyCensus refuses an output file name that is not a single 
   strPath <- Report_SafetyCensus(dfFigures, dfResults = dfResults, strOutputDir = strOutputDir, strOutputFile = "census")
   expect_identical(basename(strPath), "census.html")
 })
+
+test_that("Report_SafetyCensus refuses a missing or empty output directory (#120)", {
+  dfResults <- CENSUS_REPORT_RESULTS()
+  dfFigures <- Report_CensusFigures(dfResults, CENSUS_REPORT_METRICS(), CENSUS_REPORT_SETTINGS())
+
+  # NA_character_ and "" used to pass the length-1 character check and fail
+  # later from base R, or write the page relative to nowhere.
+  for (strBad in list(NA_character_, "", c("a", "b"))) {
+    expect_error(
+      Report_SafetyCensus(dfFigures, dfResults = dfResults, strOutputDir = strBad),
+      "strOutputDir"
+    )
+  }
+  # A real directory still takes the page.
+  strOutputDir <- tempfile("census-report-")
+  dir.create(strOutputDir)
+  strPath <- Report_SafetyCensus(dfFigures, dfResults = dfResults, strOutputDir = strOutputDir)
+  expect_true(file.exists(strPath))
+})

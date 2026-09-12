@@ -71,7 +71,7 @@ population frame cannot be inferred from the events.
 # whole safety population. Those rows are not events, and this chart takes
 # its denominator from the population frame instead, so drop them.
 dfAE <- ExampleData("adae")
-dfResults <- dfAE[nzchar(dfAE$AEDECOD), ]
+dfResults <- dfAE[!is.na(dfAE$AEDECOD) & nzchar(dfAE$AEDECOD), ]
 dfPopulation <- ExampleData("adsl")
 
 # Both frames use the default column names, so the chart initializes with

@@ -33,7 +33,7 @@ lWorkflow <- yaml::read_yaml(
 
 dfResults <- gsm.safety::ExampleData("adbds")
 dfAE <- gsm.safety::ExampleData("adae")
-dfAE <- dfAE[nzchar(dfAE$AEDECOD), ]
+dfAE <- dfAE[!is.na(dfAE$AEDECOD) & nzchar(dfAE$AEDECOD), ]
 
 # The profile renders a cohort someone chose; in a live report that list comes
 # from a flagging metric. Here it is three participants of the pilot study.

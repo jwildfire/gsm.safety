@@ -36,7 +36,7 @@ lWorkflow <- yaml::read_yaml(
 # safety population. Those rows are not events, and this chart takes its
 # denominator from the population frame instead.
 dfAE <- gsm.safety::ExampleData("adae")
-dfResults <- dfAE[nzchar(dfAE$AEDECOD), ]
+dfResults <- dfAE[!is.na(dfAE$AEDECOD) & nzchar(dfAE$AEDECOD), ]
 dfPopulation <- gsm.safety::ExampleData("adsl")
 
 strWd <- setwd(strOutputDir)

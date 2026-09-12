@@ -189,6 +189,15 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   had been given. Found by the code review of the v1.5.0 candidate.
   ([\#133](https://github.com/jwildfire/gsm.safety/issues/133),
   [\#134](https://github.com/jwildfire/gsm.safety/pull/134))
+- [`SaveWidgetReport()`](https://jwildfire.github.io/gsm.safety/dev/reference/SaveWidgetReport.md)
+  refuses a missing or empty `strOutputDir` with the message it already
+  uses for a vector, instead of writing the page relative to the
+  filesystem root; the same guard
+  [`Report_SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/Report_SafetyCensus.md)
+  gained in [\#123](https://github.com/jwildfire/gsm.safety/issues/123).
+  Found by the code review of the v1.5.0 candidate.
+  ([\#135](https://github.com/jwildfire/gsm.safety/issues/135),
+  [\#136](https://github.com/jwildfire/gsm.safety/pull/136))
 - The package site wears the jwildfire.github.io theme, as the obot hub
   does since 2026-09-12: paper ground, graphite ink, plum links,
   Instrument Serif headings, Instrument Sans body, IBM Plex Mono code,

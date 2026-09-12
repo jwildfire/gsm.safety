@@ -58,7 +58,8 @@ Report_SafetyCensus <- function(
     "dfFigures"
   )
   gsm.core::stop_if(
-    cnd = !(is.character(strOutputDir) && length(strOutputDir) == 1),
+    cnd = !(is.character(strOutputDir) && length(strOutputDir) == 1 &&
+      !is.na(strOutputDir) && nzchar(strOutputDir)),
     message = "strOutputDir is not a length-1 character"
   )
   gsm.core::stop_if(

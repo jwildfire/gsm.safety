@@ -428,7 +428,10 @@ test_that("Report_SafetyCensus refuses an output file name that is not a single 
     Report_SafetyCensus(dfFigures, dfResults = dfResults, strOutputDir = strOutputDir, strOutputFile = NA_character_),
     "strOutputFile"
   )
-  # NULL still derives the name, and a plain stem still gains its extension.
+  # NULL still derives the name from the study and snapshot, and a plain stem
+  # still gains its extension.
+  strDerived <- Report_SafetyCensus(dfFigures, dfResults = dfResults, strOutputDir = strOutputDir)
+  expect_identical(basename(strDerived), "safety_census_ZZZZ9999999_20260821.html")
   strPath <- Report_SafetyCensus(dfFigures, dfResults = dfResults, strOutputDir = strOutputDir, strOutputFile = "census")
   expect_identical(basename(strPath), "census.html")
 })

@@ -22,12 +22,12 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   (46 rows) and the extreme values suggestive of laboratory or recording
   error for chemistry, hematology and vital signs (40 parameters, each
   in US-conventional and SI units). Every row carries the guide table,
-  section and printed page it came from, the criterion text as printed
-  beside the parsed number, and a note wherever the transcription needed
-  a reading. Spot values are asserted against the PDF page by page in
-  the suite. Nothing in R could supply these thresholds before; now
-  `data(FDA_AbnormalityLevels)` does.
-  ([\#77](https://github.com/jwildfire/gsm.safety/issues/77),
+  section and printed page it came from and a note wherever the
+  transcription needed a reading; the abnormality-level rows also carry
+  each criterion as printed beside the parsed number. Spot values are
+  asserted against the PDF page by page in the suite. Nothing in R could
+  supply these thresholds before; now `data(FDA_AbnormalityLevels)`
+  does. ([\#77](https://github.com/jwildfire/gsm.safety/issues/77),
   [\#83](https://github.com/jwildfire/gsm.safety/pull/83), hub
   [obot.roadmap#9](https://github.com/jwildfire/obot.roadmap/issues/9))
 
@@ -107,10 +107,10 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
 - The `Derive_*` functions refuse to overwrite an input column that
   shares an output name, naming the column, so
   `Derive_ULNMultiple(df, strOutCol = "STRESN")` errors instead of
-  replacing the source result, and an input frame already carrying
-  `AbnormalityDirection` keeps it. The documented contract, the input
-  frame plus appended columns, is now enforced. Found by the code review
-  of the v1.5.0 candidate.
+  replacing the source result, and a frame that already carries a
+  generated sibling such as `AbnormalityDirection` is refused the same
+  way. The documented contract, the input frame plus appended columns,
+  is now enforced. Found by the code review of the v1.5.0 candidate.
   ([\#102](https://github.com/jwildfire/gsm.safety/issues/102),
   [\#105](https://github.com/jwildfire/gsm.safety/pull/105))
 - [`BuildWidgetPayload()`](https://jwildfire.github.io/gsm.safety/dev/reference/BuildWidgetPayload.md)
@@ -183,6 +183,21 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   the code review of the v1.5.0 candidate.
   ([\#125](https://github.com/jwildfire/gsm.safety/issues/125),
   [\#130](https://github.com/jwildfire/gsm.safety/pull/130))
+- The census report helpers refuse `lSettings` supplied as a data.frame,
+  which [`is.list()`](https://rdrr.io/r/base/list.html) accepts, instead
+  of reading every setting as absent and building the page as if none
+  had been given. Found by the code review of the v1.5.0 candidate.
+  ([\#133](https://github.com/jwildfire/gsm.safety/issues/133),
+  [\#134](https://github.com/jwildfire/gsm.safety/pull/134))
+- [`SaveWidgetReport()`](https://jwildfire.github.io/gsm.safety/dev/reference/SaveWidgetReport.md)
+  refuses a missing or empty `strOutputDir` with the message it already
+  uses for a vector, instead of writing the page relative to the
+  filesystem root; the same guard
+  [`Report_SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/Report_SafetyCensus.md)
+  gained in [\#123](https://github.com/jwildfire/gsm.safety/issues/123).
+  Found by the code review of the v1.5.0 candidate.
+  ([\#135](https://github.com/jwildfire/gsm.safety/issues/135),
+  [\#136](https://github.com/jwildfire/gsm.safety/pull/136))
 - The package site wears the jwildfire.github.io theme, as the obot hub
   does since 2026-09-12: paper ground, graphite ink, plum links,
   Instrument Serif headings, Instrument Sans body, IBM Plex Mono code,
@@ -200,6 +215,14 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   code review of the v1.5.0 candidate.
   ([\#126](https://github.com/jwildfire/gsm.safety/issues/126),
   [\#131](https://github.com/jwildfire/gsm.safety/pull/131))
+- The participant profile and time-to-event examples, pages and test
+  fixtures drop the placeholder adverse-event rows whether the term is
+  blank or missing; `nzchar(NA)` is `TRUE`, so the filter names the
+  missing case too. Not reachable with the shipped example data, which
+  has no missing terms. Found by the code review of the v1.5.0
+  candidate.
+  ([\#139](https://github.com/jwildfire/gsm.safety/issues/139),
+  [\#140](https://github.com/jwildfire/gsm.safety/pull/140))
 
 ## gsm.safety v1.4.0 (Upcoming)
 

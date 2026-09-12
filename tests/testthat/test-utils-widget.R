@@ -251,3 +251,31 @@ test_that("BuildWidgetPayload still takes dfResults for a one-dataset contract (
   )
   expect_named(lPayload, c("dfResults", "lSettings", "bDebug"))
 })
+
+test_that("BuildWidgetPayload refuses a required column setting that is not a single string (#103)", {
+  dfLabs <- ExampleData("adbds")
+  expect_error(
+    BuildWidgetPayload(dfResults = dfLabs, strModule = "histogram", lSettings = list(value_col = 5)),
+    "value_col.*single column name.*numeric"
+  )
+  expect_error(
+    BuildWidgetPayload(dfResults = dfLabs, strModule = "histogram", lSettings = list(measure_col = c("TEST", "PARAM"))),
+    "measure_col.*single column name.*length 2"
+  )
+  expect_error(
+    BuildWidgetPayload(dfResults = dfLabs, strModule = "hep-explorer", lSettings = list(id_col = TRUE)),
+    "id_col.*single column name.*logical"
+  )
+  expect_error(
+    BuildWidgetPayload(dfResults = dfLabs, strModule = "hep-explorer", lSettings = list(normal_col_high = list("STNRHI"))),
+    "normal_col_high.*single column name.*list"
+  )
+  # A nested required mapping is held to the same shape.
+  expect_error(
+    BuildWidgetPayload(dfResults = ExampleData("adae"), strModule = "ae-timelines", lSettings = list(color = list(value_col = 1))),
+    "color\\$value_col.*single column name"
+  )
+  # A single string that names a column still passes.
+  lPayload <- BuildWidgetPayload(dfResults = dfLabs, strModule = "histogram", lSettings = list(value_col = "STRESN"))
+  expect_identical(lPayload$lSettings$value_col, "STRESN")
+})

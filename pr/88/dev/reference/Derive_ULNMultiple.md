@@ -37,7 +37,9 @@ Derive_ULNMultiple(
 
 - strOutCol:
 
-  `character` Name of the column to add. Default: `"ULNMultiple"`.
+  `character` Name of the column to add. Default: `"ULNMultiple"`. Must
+  not already be a column of `dfResults`: the function appends, it never
+  overwrites.
 
 ## Value
 

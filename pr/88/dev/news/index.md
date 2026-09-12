@@ -98,6 +98,14 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   in R instead of the chart drawing without its limits. Found by the
   code review of the v1.5.0 candidate.
   ([\#99](https://github.com/jwildfire/gsm.safety/issues/99))
+- The `Derive_*` functions refuse to overwrite an input column that
+  shares an output name, naming the column, so
+  `Derive_ULNMultiple(df, strOutCol = "STRESN")` errors instead of
+  replacing the source result, and an input frame already carrying
+  `AbnormalityDirection` keeps it. The documented contract, the input
+  frame plus appended columns, is now enforced. Found by the code review
+  of the v1.5.0 candidate.
+  ([\#102](https://github.com/jwildfire/gsm.safety/issues/102))
 - [`BuildWidgetPayload()`](https://jwildfire.github.io/gsm.safety/dev/reference/BuildWidgetPayload.md)
   refuses a required column setting that is not a single character
   string, naming the setting, so `list(value_col = 5)` or a vector of
@@ -105,6 +113,26 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   property the renderer cannot find. Found by the code review of the
   v1.5.0 candidate.
   ([\#103](https://github.com/jwildfire/gsm.safety/issues/103))
+- [`Widget_ParticipantProfile()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_ParticipantProfile.md)
+  refuses an adverse-event column setting that is not a single character
+  string, naming the setting and the shape received, in step with the
+  main frame’s mappings. Found by the code review of the v1.5.0
+  candidate.
+  ([\#107](https://github.com/jwildfire/gsm.safety/issues/107))
+- [`Report_SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/Report_SafetyCensus.md)
+  checks an explicit `strOutputFile` the way
+  [`SaveWidgetReport()`](https://jwildfire.github.io/gsm.safety/dev/reference/SaveWidgetReport.md)
+  does, so a number, a vector or a missing value is refused with the
+  argument named instead of failing part-way through writing the page.
+  Found by the code review of the v1.5.0 candidate.
+  ([\#106](https://github.com/jwildfire/gsm.safety/issues/106))
+- [`BuildWidgetPayload()`](https://jwildfire.github.io/gsm.safety/dev/reference/BuildWidgetPayload.md)
+  refuses a required setting supplied as `NULL`, naming it and pointing
+  to the schema default, so `list(value_col = NULL)` no longer passes
+  the checks against the default and then reaches the browser as JSON
+  `null`. Found by the code review of the v1.5.0 candidate.
+  ([\#109](https://github.com/jwildfire/gsm.safety/issues/109),
+  [\#113](https://github.com/jwildfire/gsm.safety/pull/113))
 - The package site wears the jwildfire.github.io theme, as the obot hub
   does since 2026-09-12: paper ground, graphite ink, plum links,
   Instrument Serif headings, Instrument Sans body, IBM Plex Mono code,

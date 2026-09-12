@@ -57,7 +57,8 @@ Derive_ExtremeValueFlag(
 
   `character` Name of the flag column. Default: `"ExtremeValueFlag"`;
   the direction is added as `<strOutCol>` with `Flag` replaced by
-  `Direction`.
+  `Direction`. Neither may already be a column of `dfResults`: the
+  function appends, it never overwrites.
 
 ## Value
 

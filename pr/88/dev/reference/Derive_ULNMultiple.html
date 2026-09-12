@@ -103,7 +103,8 @@ per test per visit, in the shape of <code>ExampleData("adbds")</code>.</p></dd>
 
 <dt id="arg-stroutcol">strOutCol<a class="anchor" aria-label="anchor" href="#arg-stroutcol"></a></dt>
 <dd><p><code>character</code> Name of the column to add. Default:
-<code>"ULNMultiple"</code>.</p></dd>
+<code>"ULNMultiple"</code>. Must not already be a column of <code>dfResults</code>: the
+function appends, it never overwrites.</p></dd>
 
 </dl></div>
     <div class="section level2">

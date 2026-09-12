@@ -116,7 +116,8 @@ the test name(s) the data use for it. Default: the names
 <dt id="arg-stroutcol">strOutCol<a class="anchor" aria-label="anchor" href="#arg-stroutcol"></a></dt>
 <dd><p><code>character</code> Name of the flag column. Default:
 <code>"ExtremeValueFlag"</code>; the direction is added as <code>&lt;strOutCol&gt;</code> with
-<code>Flag</code> replaced by <code>Direction</code>.</p></dd>
+<code>Flag</code> replaced by <code>Direction</code>. Neither may already be a column of
+<code>dfResults</code>: the function appends, it never overwrites.</p></dd>
 
 </dl></div>
     <div class="section level2">

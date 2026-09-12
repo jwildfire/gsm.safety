@@ -71,7 +71,9 @@ Derive_AbnormalityLevel(
 
   `character` Name of the grade column. Default: `"AbnormalityLevel"`;
   the direction and the criterion met are added as `<strOutCol>` with
-  `Level` replaced by `Direction` and `Criterion`.
+  `Level` replaced by `Direction` and `Criterion`. None of the three may
+  already be a column of `dfResults`: the function appends, it never
+  overwrites.
 
 ## Value
 

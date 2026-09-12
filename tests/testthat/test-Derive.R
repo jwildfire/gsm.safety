@@ -347,6 +347,9 @@ test_that("the Derive_* functions refuse to overwrite an input column that share
   )
   expect_identical(out[names(df)], df)
 
-  # The refusal is a message, not a silent overwrite.
+  # A name that is not one string, or is missing, is refused before anything is assigned.
   expect_error(Derive_ULNMultiple(df, strOutCol = 5), "single column name")
+  expect_error(Derive_ULNMultiple(df, strOutCol = NA_character_), "single column name")
+  expect_error(Derive_AbnormalityLevel(df, strOutCol = NA_character_), "Level")
+  expect_error(Derive_ExtremeValueFlag(df, strOutCol = NA_character_), "Flag")
 })

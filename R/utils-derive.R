@@ -151,7 +151,8 @@ ULNMultiple <- function(nValue, nULN) {
 #' @keywords internal
 RequireOutColToken <- function(strOutCol, strToken) {
   gsm.core::stop_if(
-    cnd = !is.character(strOutCol) || length(strOutCol) != 1 || !grepl(strToken, strOutCol, fixed = TRUE),
+    cnd = !is.character(strOutCol) || length(strOutCol) != 1 || is.na(strOutCol) ||
+      !grepl(strToken, strOutCol, fixed = TRUE),
     message = paste0("strOutCol must be a single name containing '", strToken, "' (its sibling columns are named from it)")
   )
   invisible(strOutCol)

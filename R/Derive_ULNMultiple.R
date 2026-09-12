@@ -46,7 +46,7 @@ Derive_ULNMultiple <- function(
     strOutCol = "ULNMultiple") {
   RequireResultColumns(dfResults, c(strValueCol, strULNCol))
   gsm.core::stop_if(
-    cnd = !is.character(strOutCol) || length(strOutCol) != 1 || !nzchar(strOutCol),
+    cnd = !is.character(strOutCol) || length(strOutCol) != 1 || is.na(strOutCol) || !nzchar(strOutCol),
     message = "strOutCol must be a single column name"
   )
   RequireNewColumns(dfResults, strOutCol)

@@ -211,11 +211,17 @@ CheckRequiredSettings <- function(
       )
     )
 
-    if (
-      grepl("_col(_|$)", strKey) &&
-        is.character(vValue) &&
-        length(vValue) == 1
-    ) {
+    if (grepl("_col(_|$)", strKey)) {
+      # Every required column mapping in the vendored contracts is one
+      # string; any other shape reaches the browser as a property that does
+      # not exist, so it is refused here with the setting named.
+      gsm.core::stop_if(
+        cnd = !is.character(vValue) || length(vValue) != 1,
+        message = paste0(
+          "Setting '", strSetting, "' must be a single column name (a character string), not ",
+          if (is.character(vValue)) paste0("a character vector of length ", length(vValue)) else class(vValue)[1]
+        )
+      )
       gsm.core::stop_if(
         cnd = !(vValue %in% names(dfResults)),
         message = paste0(

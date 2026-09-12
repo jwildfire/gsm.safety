@@ -255,6 +255,26 @@ test_that("Derive_ExtremeValueFlag honours the unit column and says what it coul
   expect_identical(Derive_ExtremeValueFlag(dfT)$ExtremeValueFlag, c(TRUE, FALSE, TRUE, FALSE))
 })
 
+test_that("Derive_ExtremeValueFlag applies the unitless INR row to a blank or missing unit (FDA-RULE-004, FDA-RULE-005) (#138)", {
+  # INR (Table 59, page 123): the guide prints N/A for both units; extreme above 20.
+  df <- data.frame(
+    TEST = "INR",
+    STRESN = c(19, 20, 21, 25, 19, 21),
+    STRESU = c(NA, NA, NA, NA, "", ""),
+    stringsAsFactors = FALSE
+  )
+  out <- Derive_ExtremeValueFlag(df, lParameterValues = list(INR = "INR"))
+  expect_identical(out$ExtremeValueFlag, c(FALSE, FALSE, TRUE, TRUE, FALSE, TRUE))
+  expect_identical(out$ExtremeValueDirection, c(NA, NA, "high", "high", NA, "high"))
+  # A unit the row does not print is not matched, and the message says which.
+  dfUnit <- data.frame(TEST = "INR", STRESN = 21, STRESU = "ratio", stringsAsFactors = FALSE)
+  expect_message(
+    outUnit <- Derive_ExtremeValueFlag(dfUnit, lParameterValues = list(INR = "INR")),
+    "INR in ratio"
+  )
+  expect_identical(outUnit$ExtremeValueFlag, NA)
+})
+
 test_that("Derive_ExtremeValueFlag runs on the example data and flags nothing in the pilot labs (FDA-RULE-004) (#78)", {
   dfLabs <- ExampleData("adbds")
   out <- suppressMessages(Derive_ExtremeValueFlag(dfLabs))

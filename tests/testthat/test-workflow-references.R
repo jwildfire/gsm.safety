@@ -87,3 +87,25 @@ test_that("every cross-repository reusable workflow names gilead-public (#55)", 
     )
   )
 })
+
+test_that("the parity workflow's pull-request job runs with a read-only token (#98)", {
+  # The parity check runs repository code on every pull request. A token that
+  # can write issues in that job lets a same-repository PR edit the script and
+  # file or close issues; only the scheduled follow-up job needs to write.
+  strFile <- file.path(
+    testthat::test_path("..", "..", ".github", "workflows"), "safety-viz-parity.yaml"
+  )
+  skip_if_not(file.exists(strFile), ".github/workflows not available in this check context")
+  lWorkflow <- yaml::read_yaml(strFile)
+
+  HasWrite <- function(lPermissions) any(unlist(lPermissions) == "write")
+  expect_false(HasWrite(lWorkflow$permissions))
+  expect_false(HasWrite(lWorkflow$jobs$parity$permissions))
+
+  lFollowUp <- lWorkflow$jobs[["file-issue"]]
+  expect_identical(lFollowUp$permissions$issues, "write")
+  expect_match(lFollowUp[["if"]], "schedule", fixed = TRUE)
+  expect_match(lFollowUp[["if"]], "workflow_dispatch", fixed = TRUE)
+  expect_match(lFollowUp[["if"]], "needs.parity.result == 'failure'", fixed = TRUE)
+  expect_false(any(grepl("checkout", unlist(lapply(lFollowUp$steps, `[[`, "uses")))))
+})

@@ -58,7 +58,8 @@ SafetyCensus(
 
 - strIDCol:
 
-  `character` Participant ID column, shared by every domain. Default:
+  `character` Participant ID column, shared by every domain. A supplied
+  domain that does not carry it is refused, naming the domain. Default:
   `"subjid"`. A domain keyed on another name is renamed to the
   mapped-domain convention before the metrics read it.
 

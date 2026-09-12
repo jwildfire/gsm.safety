@@ -125,13 +125,16 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   ([\#107](https://github.com/jwildfire/gsm.safety/issues/107),
   [\#112](https://github.com/jwildfire/gsm.safety/pull/112))
 - [`Report_SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/Report_SafetyCensus.md)
-  checks an explicit `strOutputFile` the way
+  and
   [`SaveWidgetReport()`](https://jwildfire.github.io/gsm.safety/dev/reference/SaveWidgetReport.md)
-  does, so a number, a vector or a missing value is refused with the
-  argument named instead of failing part-way through writing the page.
-  Found by the code review of the v1.5.0 candidate.
+  refuse an output file name that is not a single non-missing character
+  string, naming the argument, so a number, a vector or `NA` fails
+  before anything is written instead of part-way through. Found by the
+  code review of the v1.5.0 candidate.
   ([\#106](https://github.com/jwildfire/gsm.safety/issues/106),
-  [\#111](https://github.com/jwildfire/gsm.safety/pull/111))
+  [\#111](https://github.com/jwildfire/gsm.safety/pull/111),
+  [\#115](https://github.com/jwildfire/gsm.safety/issues/115),
+  [\#116](https://github.com/jwildfire/gsm.safety/pull/116))
 - [`BuildWidgetPayload()`](https://jwildfire.github.io/gsm.safety/dev/reference/BuildWidgetPayload.md)
   refuses a required setting supplied as `NULL`, naming it and pointing
   to the schema default, so `list(value_col = NULL)` no longer passes
@@ -139,6 +142,28 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   `null`. Found by the code review of the v1.5.0 candidate.
   ([\#109](https://github.com/jwildfire/gsm.safety/issues/109),
   [\#113](https://github.com/jwildfire/gsm.safety/pull/113))
+- [`SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/SafetyCensus.md)
+  refuses a supplied domain that does not carry the participant ID
+  column named by `strIDCol`, naming the domain, instead of counting it
+  under an unrelated `subjid` column or publishing `NA`. Found by the
+  code review of the v1.5.0 candidate.
+  ([\#117](https://github.com/jwildfire/gsm.safety/issues/117),
+  [\#118](https://github.com/jwildfire/gsm.safety/pull/118))
+- [`Widget_ParticipantProfile()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_ParticipantProfile.md)
+  refuses an `ae` setting that is not a list, and an AE column supplied
+  as `NULL`, naming the setting and pointing to the default, instead of
+  failing with a subscript error or sending `null` to the browser and
+  drawing an empty timeline. Found by the code review of the v1.5.0
+  candidate.
+  ([\#119](https://github.com/jwildfire/gsm.safety/issues/119),
+  [\#122](https://github.com/jwildfire/gsm.safety/pull/122))
+- [`Report_SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/Report_SafetyCensus.md)
+  refuses a missing or empty `strOutputDir` with the same message it
+  uses for a vector, instead of failing later from base R or writing the
+  page relative to an empty directory. Found by the code review of the
+  v1.5.0 candidate.
+  ([\#120](https://github.com/jwildfire/gsm.safety/issues/120),
+  [\#123](https://github.com/jwildfire/gsm.safety/pull/123))
 - The package site wears the jwildfire.github.io theme, as the obot hub
   does since 2026-09-12: paper ground, graphite ink, plum links,
   Instrument Serif headings, Instrument Sans body, IBM Plex Mono code,

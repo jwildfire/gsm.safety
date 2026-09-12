@@ -190,9 +190,9 @@ Derive_AbnormalityLevel <- function(
 #' @return `character` `"m"`, `"f"` or `NA`.
 #' @keywords internal
 NormaliseSex <- function(chrSex) {
-  x <- substr(tolower(trimws(as.character(chrSex))), 1, 1)
-  x[!(x %in% c("m", "f"))] <- NA_character_
-  x
+  chrFirst <- substr(tolower(trimws(as.character(chrSex))), 1, 1)
+  chrFirst[!(chrFirst %in% c("m", "f"))] <- NA_character_
+  chrFirst
 }
 
 #' The default map from Table 56 and 57 parameters to `ExampleData("adbds")` test names

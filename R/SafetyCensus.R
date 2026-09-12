@@ -61,6 +61,7 @@
 #' @param dfDisposition `data.frame` or `NULL` Mapped study-completion domain
 #'   (`Mapped_STUDCOMP`).
 #' @param strIDCol `character` Participant ID column, shared by every domain.
+#'   A supplied domain that does not carry it is refused, naming the domain.
 #'   Default: `"subjid"`. A domain keyed on another name is renamed to the
 #'   mapped-domain convention before the metrics read it.
 #' @param strArmCol,strTimeOnStudyCol,strTimeOnTreatmentCol,strLabVisitCol,strLabVisitNumCol,strECGVisitCol,strECGVisitNumCol,strCompleteCol,strReasonCol,chrDeathValues
@@ -291,6 +292,10 @@ SafetyCensus <- function(
       next
     }
     .RequireFrame(lDomains[[strDomain]], strDomain)
+    # The ID column is the one key every domain shares. .RenameColumn() leaves
+    # a frame alone when the column is absent, which would let a domain be
+    # counted under whatever unrelated 'subjid' it happens to carry.
+    .RequireColumns(lDomains[[strDomain]], strIDCol, strDomain)
     lDomains[[strDomain]] <- .RenameColumn(
       lDomains[[strDomain]], strIDCol, "subjid"
     )

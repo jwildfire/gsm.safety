@@ -325,6 +325,30 @@ test_that("SafetyCensus rejects a subject domain it cannot key on (#45, #66)", {
   expect_error(SafetyCensus("not a data frame"), "data.frame")
 })
 
+test_that("SafetyCensus refuses a supplied domain that lacks the participant ID column (#117)", {
+  # strIDCol is the one key every domain shares. A domain without it must not
+  # be counted under an unrelated 'subjid' it happens to carry, nor drop to NA.
+  dfSubjects <- CENSUS_SUBJECTS
+  names(dfSubjects)[names(dfSubjects) == "subjid"] <- "usubjid"
+  dfWrongKey <- data.frame(subjid = c("S1", "S2"), death = TRUE, stringsAsFactors = FALSE)
+  dfNoMatch <- data.frame(subjid = c("X1", "X2"), death = TRUE, stringsAsFactors = FALSE)
+  dfNoKey <- data.frame(site = c("A", "B"), death = TRUE, stringsAsFactors = FALSE)
+
+  for (dfDeath in list(dfWrongKey, dfNoMatch, dfNoKey)) {
+    expect_error(
+      suppressWarnings(SafetyCensus(dfSubjects = dfSubjects, dfDeath = dfDeath, strIDCol = "usubjid")),
+      "'usubjid' not found in Mapped_Death"
+    )
+  }
+
+  # The same domain keyed on the shared column is still counted.
+  dfDeath <- data.frame(usubjid = c("S1", "S2"), death = TRUE, stringsAsFactors = FALSE)
+  lOut <- suppressWarnings(suppressMessages(
+    SafetyCensus(dfSubjects = dfSubjects, dfDeath = dfDeath, strIDCol = "usubjid")
+  ))
+  expect_identical(CensusValue(lOut, "Deaths"), 2)
+})
+
 # ---- the function computes nothing -------------------------------------------
 
 test_that("no arithmetic survives in SafetyCensus or its helpers (#66)", {

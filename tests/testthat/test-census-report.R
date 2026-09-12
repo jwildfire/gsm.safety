@@ -409,3 +409,26 @@ test_that("the census report workflow runs end to end and writes its page (#61)"
   strHTML <- paste(readLines(strReportPath, warn = FALSE), collapse = "\n")
   expect_match(strHTML, "Safety Census", fixed = TRUE)
 })
+
+test_that("Report_SafetyCensus refuses an output file name that is not a single string (#106)", {
+  dfResults <- CENSUS_REPORT_RESULTS()
+  dfFigures <- Report_CensusFigures(dfResults, CENSUS_REPORT_METRICS(), CENSUS_REPORT_SETTINGS())
+  strOutputDir <- tempfile("census-report-")
+  dir.create(strOutputDir)
+
+  expect_error(
+    Report_SafetyCensus(dfFigures, dfResults = dfResults, strOutputDir = strOutputDir, strOutputFile = 1),
+    "strOutputFile"
+  )
+  expect_error(
+    Report_SafetyCensus(dfFigures, dfResults = dfResults, strOutputDir = strOutputDir, strOutputFile = c("a", "b")),
+    "strOutputFile"
+  )
+  expect_error(
+    Report_SafetyCensus(dfFigures, dfResults = dfResults, strOutputDir = strOutputDir, strOutputFile = NA_character_),
+    "strOutputFile"
+  )
+  # NULL still derives the name, and a plain stem still gains its extension.
+  strPath <- Report_SafetyCensus(dfFigures, dfResults = dfResults, strOutputDir = strOutputDir, strOutputFile = "census")
+  expect_identical(basename(strPath), "census.html")
+})

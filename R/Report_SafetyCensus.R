@@ -61,6 +61,11 @@ Report_SafetyCensus <- function(
     cnd = !(is.character(strOutputDir) && length(strOutputDir) == 1),
     message = "strOutputDir is not a length-1 character"
   )
+  gsm.core::stop_if(
+    cnd = !is.null(strOutputFile) &&
+      !(is.character(strOutputFile) && length(strOutputFile) == 1 && !is.na(strOutputFile)),
+    message = "strOutputFile is not a length-1 character"
+  )
 
   strStudyID <- .CensusStudyID(dfResults)
   strSnapshot <- .CensusSnapshotDate(dfResults)

@@ -284,8 +284,11 @@ SaveWidgetReport <- function(
     cnd = !inherits(widget, "htmlwidget"),
     message = "widget is not an htmlwidget"
   )
+  # NA and "" pass the type and length test and reach normalizePath(), which
+  # returns "" for an empty directory and puts the page at the filesystem root.
   gsm.core::stop_if(
-    cnd = !(is.character(strOutputDir) && length(strOutputDir) == 1),
+    cnd = !(is.character(strOutputDir) && length(strOutputDir) == 1 &&
+      !is.na(strOutputDir) && nzchar(strOutputDir)),
     message = "strOutputDir is not a length-1 character"
   )
   gsm.core::stop_if(

@@ -321,3 +321,18 @@ test_that("BuildWidgetPayload refuses a required object setting that is not a li
   lPayload <- BuildWidgetPayload(dfResults = dfAE, strModule = "ae-timelines", lSettings = list(color = list(value_col = "AESEV")))
   expect_identical(lPayload$lSettings$color$value_col, "AESEV")
 })
+
+test_that("SaveWidgetReport refuses a missing or empty output directory (#135)", {
+  lWidget <- Widget_Histogram(ExampleData("adbds"))
+  # NA and "" used to pass the type and length test; "" then reached
+  # normalizePath() and the page landed at the filesystem root.
+  for (strDir in list(NA_character_, "", c("a", "b"))) {
+    expect_error(
+      SaveWidgetReport(lWidget, strOutputDir = strDir, strOutputFile = "x.html"),
+      "strOutputDir is not a length-1 character"
+    )
+  }
+  strDir <- tempfile()
+  on.exit(unlink(strDir, recursive = TRUE), add = TRUE)
+  expect_true(file.exists(SaveWidgetReport(lWidget, strOutputDir = strDir, strOutputFile = "x.html")))
+})

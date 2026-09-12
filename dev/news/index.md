@@ -149,6 +149,14 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   code review of the v1.5.0 candidate.
   ([\#117](https://github.com/jwildfire/gsm.safety/issues/117),
   [\#118](https://github.com/jwildfire/gsm.safety/pull/118))
+- [`Widget_ParticipantProfile()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_ParticipantProfile.md)
+  refuses an `ae` setting that is not a list, and an AE column supplied
+  as `NULL`, naming the setting and pointing to the default, instead of
+  failing with a subscript error or sending `null` to the browser and
+  drawing an empty timeline. Found by the code review of the v1.5.0
+  candidate.
+  ([\#119](https://github.com/jwildfire/gsm.safety/issues/119),
+  [\#122](https://github.com/jwildfire/gsm.safety/pull/122))
 - The package site wears the jwildfire.github.io theme, as the obot hub
   does since 2026-09-12: paper ground, graphite ink, plum links,
   Instrument Serif headings, Instrument Sans body, IBM Plex Mono code,

@@ -91,6 +91,13 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   warning, instead of the metric publishing `Inf`. Found by the code
   review of the v1.5.0 candidate.
   ([\#96](https://github.com/jwildfire/gsm.safety/issues/96))
+- [`BuildWidgetPayload()`](https://jwildfire.github.io/gsm.safety/dev/reference/BuildWidgetPayload.md)
+  now validates the `normal_col_high` setting the hepatic explorer,
+  hepatic waterfall and participant profile require, like every other
+  column mapping, so a limit-of-normal column that does not exist fails
+  in R instead of the chart drawing without its limits. Found by the
+  code review of the v1.5.0 candidate.
+  ([\#99](https://github.com/jwildfire/gsm.safety/issues/99))
 - The package site wears the jwildfire.github.io theme, as the obot hub
   does since 2026-09-12: paper ground, graphite ink, plum links,
   Instrument Serif headings, Instrument Sans body, IBM Plex Mono code,

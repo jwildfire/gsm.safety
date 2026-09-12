@@ -98,6 +98,14 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   in R instead of the chart drawing without its limits. Found by the
   code review of the v1.5.0 candidate.
   ([\#99](https://github.com/jwildfire/gsm.safety/issues/99))
+- The `Derive_*` functions refuse to overwrite an input column that
+  shares an output name, naming the column, so
+  `Derive_ULNMultiple(df, strOutCol = "STRESN")` errors instead of
+  replacing the source result, and an input frame already carrying
+  `AbnormalityDirection` keeps it. The documented contract, the input
+  frame plus appended columns, is now enforced. Found by the code review
+  of the v1.5.0 candidate.
+  ([\#102](https://github.com/jwildfire/gsm.safety/issues/102))
 - [`BuildWidgetPayload()`](https://jwildfire.github.io/gsm.safety/dev/reference/BuildWidgetPayload.md)
   refuses a required column setting that is not a single character
   string, naming the setting, so `list(value_col = 5)` or a vector of

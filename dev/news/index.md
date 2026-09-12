@@ -27,7 +27,8 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   a reading. Spot values are asserted against the PDF page by page in
   the suite. Nothing in R could supply these thresholds before; now
   `data(FDA_AbnormalityLevels)` does.
-  ([\#77](https://github.com/jwildfire/gsm.safety/issues/77), hub
+  ([\#77](https://github.com/jwildfire/gsm.safety/issues/77),
+  [\#83](https://github.com/jwildfire/gsm.safety/pull/83), hub
   [obot.roadmap#9](https://github.com/jwildfire/obot.roadmap/issues/9))
 
 - **`design/fda-adam-alignment.md` — the ADaM alignment the design left
@@ -40,7 +41,8 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   helper, and which figures are out of scope on the demo data. It ends
   with the column contract the phase 1 engines code against. 51 columns,
   none unmarked, nothing blocked.
-  ([\#80](https://github.com/jwildfire/gsm.safety/issues/80), hub
+  ([\#80](https://github.com/jwildfire/gsm.safety/issues/80),
+  [\#85](https://github.com/jwildfire/gsm.safety/pull/85), hub
   [obot.roadmap#9](https://github.com/jwildfire/obot.roadmap/issues/9))
 
 - **[`Derive_ULNMultiple()`](https://jwildfire.github.io/gsm.safety/dev/reference/Derive_ULNMultiple.md),
@@ -63,7 +65,8 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   multiples reproduce the peaks
   [`Input_HysLaw()`](https://jwildfire.github.io/gsm.safety/dev/reference/Input_HysLaw.md)
   computes for the same participants.
-  ([\#78](https://github.com/jwildfire/gsm.safety/issues/78), hub
+  ([\#78](https://github.com/jwildfire/gsm.safety/issues/78),
+  [\#86](https://github.com/jwildfire/gsm.safety/pull/86), hub
   [obot.roadmap#9](https://github.com/jwildfire/obot.roadmap/issues/9))
 
 - **`requirements/fda-stf.md` — the FDA ST&F requirement matrix.** One
@@ -77,7 +80,8 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   domains and its safety.viz twin; `requirements/README.md` says how
   rows are keyed and how a test cites one, and a test holds the file to
   that shape.
-  ([\#79](https://github.com/jwildfire/gsm.safety/issues/79), hub
+  ([\#79](https://github.com/jwildfire/gsm.safety/issues/79),
+  [\#84](https://github.com/jwildfire/gsm.safety/pull/84), hub
   [obot.roadmap#9](https://github.com/jwildfire/obot.roadmap/issues/9))
 
 ### Also in this release
@@ -165,6 +169,13 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   v1.5.0 candidate.
   ([\#120](https://github.com/jwildfire/gsm.safety/issues/120),
   [\#123](https://github.com/jwildfire/gsm.safety/pull/123))
+- [`BuildWidgetPayload()`](https://jwildfire.github.io/gsm.safety/dev/reference/BuildWidgetPayload.md)
+  refuses a required group of settings, such as `color` for the AE
+  timelines, supplied as anything but a list, naming the setting,
+  instead of failing inside the check with a subscript error. Found by
+  the code review of the v1.5.0 candidate.
+  ([\#125](https://github.com/jwildfire/gsm.safety/issues/125),
+  [\#130](https://github.com/jwildfire/gsm.safety/pull/130))
 - The package site wears the jwildfire.github.io theme, as the obot hub
   does since 2026-09-12: paper ground, graphite ink, plum links,
   Instrument Serif headings, Instrument Sans body, IBM Plex Mono code,

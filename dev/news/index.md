@@ -22,12 +22,12 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   (46 rows) and the extreme values suggestive of laboratory or recording
   error for chemistry, hematology and vital signs (40 parameters, each
   in US-conventional and SI units). Every row carries the guide table,
-  section and printed page it came from, the criterion text as printed
-  beside the parsed number, and a note wherever the transcription needed
-  a reading. Spot values are asserted against the PDF page by page in
-  the suite. Nothing in R could supply these thresholds before; now
-  `data(FDA_AbnormalityLevels)` does.
-  ([\#77](https://github.com/jwildfire/gsm.safety/issues/77),
+  section and printed page it came from and a note wherever the
+  transcription needed a reading; the abnormality-level rows also carry
+  each criterion as printed beside the parsed number. Spot values are
+  asserted against the PDF page by page in the suite. Nothing in R could
+  supply these thresholds before; now `data(FDA_AbnormalityLevels)`
+  does. ([\#77](https://github.com/jwildfire/gsm.safety/issues/77),
   [\#83](https://github.com/jwildfire/gsm.safety/pull/83), hub
   [obot.roadmap#9](https://github.com/jwildfire/obot.roadmap/issues/9))
 
@@ -107,10 +107,10 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
 - The `Derive_*` functions refuse to overwrite an input column that
   shares an output name, naming the column, so
   `Derive_ULNMultiple(df, strOutCol = "STRESN")` errors instead of
-  replacing the source result, and an input frame already carrying
-  `AbnormalityDirection` keeps it. The documented contract, the input
-  frame plus appended columns, is now enforced. Found by the code review
-  of the v1.5.0 candidate.
+  replacing the source result, and a frame that already carries a
+  generated sibling such as `AbnormalityDirection` is refused the same
+  way. The documented contract, the input frame plus appended columns,
+  is now enforced. Found by the code review of the v1.5.0 candidate.
   ([\#102](https://github.com/jwildfire/gsm.safety/issues/102),
   [\#105](https://github.com/jwildfire/gsm.safety/pull/105))
 - [`BuildWidgetPayload()`](https://jwildfire.github.io/gsm.safety/dev/reference/BuildWidgetPayload.md)
@@ -198,6 +198,15 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   Found by the code review of the v1.5.0 candidate.
   ([\#135](https://github.com/jwildfire/gsm.safety/issues/135),
   [\#136](https://github.com/jwildfire/gsm.safety/pull/136))
+- [`SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/SafetyCensus.md)
+  keeps the group column the caller named when the participant ID is
+  normalised onto its name, so
+  `strIDCol = "usubjid", strGroupCol = "subjid"` groups by the values
+  given instead of stopping every study-level metric on a missing
+  `subjid`, and naming the same column for both is refused up front.
+  Found by the code review of the v1.5.0 candidate.
+  ([\#144](https://github.com/jwildfire/gsm.safety/issues/144),
+  [\#146](https://github.com/jwildfire/gsm.safety/pull/146))
 - The package site wears the jwildfire.github.io theme, as the obot hub
   does since 2026-09-12: paper ground, graphite ink, plum links,
   Instrument Serif headings, Instrument Sans body, IBM Plex Mono code,
@@ -223,6 +232,14 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   candidate.
   ([\#139](https://github.com/jwildfire/gsm.safety/issues/139),
   [\#140](https://github.com/jwildfire/gsm.safety/pull/140))
+- [`Report_SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/Report_SafetyCensus.md)
+  and
+  [`SaveWidgetReport()`](https://jwildfire.github.io/gsm.safety/dev/reference/SaveWidgetReport.md)
+  refuse an empty `strOutputFile` with the message they already use for
+  a missing one, instead of writing the page as a hidden `.html` file
+  with no name. Found by the code review of the v1.5.0 candidate.
+  ([\#143](https://github.com/jwildfire/gsm.safety/issues/143),
+  [\#145](https://github.com/jwildfire/gsm.safety/pull/145))
 
 ## gsm.safety v1.4.0 (Upcoming)
 

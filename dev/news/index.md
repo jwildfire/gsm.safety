@@ -90,14 +90,16 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   participant leaves both sides of the figure and is named in the
   warning, instead of the metric publishing `Inf`. Found by the code
   review of the v1.5.0 candidate.
-  ([\#96](https://github.com/jwildfire/gsm.safety/issues/96))
+  ([\#96](https://github.com/jwildfire/gsm.safety/issues/96),
+  [\#97](https://github.com/jwildfire/gsm.safety/pull/97))
 - [`BuildWidgetPayload()`](https://jwildfire.github.io/gsm.safety/dev/reference/BuildWidgetPayload.md)
   now validates the `normal_col_high` setting the hepatic explorer,
   hepatic waterfall and participant profile require, like every other
   column mapping, so a limit-of-normal column that does not exist fails
   in R instead of the chart drawing without its limits. Found by the
   code review of the v1.5.0 candidate.
-  ([\#99](https://github.com/jwildfire/gsm.safety/issues/99))
+  ([\#99](https://github.com/jwildfire/gsm.safety/issues/99),
+  [\#101](https://github.com/jwildfire/gsm.safety/pull/101))
 - The `Derive_*` functions refuse to overwrite an input column that
   shares an output name, naming the column, so
   `Derive_ULNMultiple(df, strOutCol = "STRESN")` errors instead of
@@ -105,21 +107,41 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   `AbnormalityDirection` keeps it. The documented contract, the input
   frame plus appended columns, is now enforced. Found by the code review
   of the v1.5.0 candidate.
-  ([\#102](https://github.com/jwildfire/gsm.safety/issues/102))
+  ([\#102](https://github.com/jwildfire/gsm.safety/issues/102),
+  [\#105](https://github.com/jwildfire/gsm.safety/pull/105))
 - [`BuildWidgetPayload()`](https://jwildfire.github.io/gsm.safety/dev/reference/BuildWidgetPayload.md)
   refuses a required column setting that is not a single character
   string, naming the setting, so `list(value_col = 5)` or a vector of
   two column names fails in R instead of reaching the browser as a
   property the renderer cannot find. Found by the code review of the
   v1.5.0 candidate.
-  ([\#103](https://github.com/jwildfire/gsm.safety/issues/103))
+  ([\#103](https://github.com/jwildfire/gsm.safety/issues/103),
+  [\#104](https://github.com/jwildfire/gsm.safety/pull/104))
+- [`Widget_ParticipantProfile()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_ParticipantProfile.md)
+  refuses an adverse-event column setting that is not a single character
+  string, naming the setting and the shape received, in step with the
+  main frame’s mappings. Found by the code review of the v1.5.0
+  candidate.
+  ([\#107](https://github.com/jwildfire/gsm.safety/issues/107),
+  [\#112](https://github.com/jwildfire/gsm.safety/pull/112))
 - [`Report_SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/Report_SafetyCensus.md)
-  checks an explicit `strOutputFile` the way
+  and
   [`SaveWidgetReport()`](https://jwildfire.github.io/gsm.safety/dev/reference/SaveWidgetReport.md)
-  does, so a number, a vector or a missing value is refused with the
-  argument named instead of failing part-way through writing the page.
-  Found by the code review of the v1.5.0 candidate.
-  ([\#106](https://github.com/jwildfire/gsm.safety/issues/106))
+  refuse an output file name that is not a single non-missing character
+  string, naming the argument, so a number, a vector or `NA` fails
+  before anything is written instead of part-way through. Found by the
+  code review of the v1.5.0 candidate.
+  ([\#106](https://github.com/jwildfire/gsm.safety/issues/106),
+  [\#111](https://github.com/jwildfire/gsm.safety/pull/111),
+  [\#115](https://github.com/jwildfire/gsm.safety/issues/115),
+  [\#116](https://github.com/jwildfire/gsm.safety/pull/116))
+- [`BuildWidgetPayload()`](https://jwildfire.github.io/gsm.safety/dev/reference/BuildWidgetPayload.md)
+  refuses a required setting supplied as `NULL`, naming it and pointing
+  to the schema default, so `list(value_col = NULL)` no longer passes
+  the checks against the default and then reaches the browser as JSON
+  `null`. Found by the code review of the v1.5.0 candidate.
+  ([\#109](https://github.com/jwildfire/gsm.safety/issues/109),
+  [\#113](https://github.com/jwildfire/gsm.safety/pull/113))
 - The package site wears the jwildfire.github.io theme, as the obot hub
   does since 2026-09-12: paper ground, graphite ink, plum links,
   Instrument Serif headings, Instrument Sans body, IBM Plex Mono code,

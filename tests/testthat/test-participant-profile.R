@@ -174,3 +174,26 @@ test_that("Widget_ParticipantProfile refuses an AE column setting that is not a 
   lWidget <- Widget_ParticipantProfile(dfResults, dfAE = dfProfileAE(), lSettings = list(ae = list(id_col = "USUBJID")))
   expect_s3_class(lWidget, "htmlwidget")
 })
+
+test_that("Widget_ParticipantProfile refuses an ae setting that is not a list or names a NULL column (#119)", {
+  dfResults <- ExampleData("adbds")
+  # A non-list ae used to fail inside the column lookup with a subscript error.
+  expect_error(
+    Widget_ParticipantProfile(dfResults, dfAE = dfProfileAE(), lSettings = list(ae = 1)),
+    "Setting 'ae' must be a list.*numeric"
+  )
+  # A named NULL used to pass validation against the default and reach the
+  # browser as null, emptying the timeline.
+  expect_error(
+    Widget_ParticipantProfile(dfResults, dfAE = dfProfileAE(), lSettings = list(ae = list(id_col = NULL))),
+    "ae[$]id_col.*NULL.*USUBJID"
+  )
+  expect_error(
+    Widget_ParticipantProfile(dfResults, dfAE = dfProfileAE(), lSettings = list(ae = list(stdy_col = NULL))),
+    "ae[$]stdy_col.*NULL.*ASTDY"
+  )
+  # An omitted key still takes the default and sends nothing for it.
+  lWidget <- Widget_ParticipantProfile(dfResults, dfAE = dfProfileAE(), lSettings = list(ae = list(stdy_col = "ASTDY")))
+  expect_s3_class(lWidget, "htmlwidget")
+  expect_false("id_col" %in% names(lWidget$x$lSettings$ae))
+})

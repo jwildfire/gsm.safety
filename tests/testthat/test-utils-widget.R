@@ -304,3 +304,20 @@ test_that("BuildWidgetPayload refuses a required setting supplied as NULL (#109)
   lPayload <- BuildWidgetPayload(dfResults = dfLabs, strModule = "histogram", lSettings = list(id_col = "USUBJID"))
   expect_false("value_col" %in% names(lPayload$lSettings))
 })
+
+test_that("BuildWidgetPayload refuses a required object setting that is not a list (#125)", {
+  dfAE <- ExampleData("adae")
+  # An atomic value used to be indexed by name inside the nested check and
+  # failed with a subscript error that named nothing.
+  expect_error(
+    BuildWidgetPayload(dfResults = dfAE, strModule = "ae-timelines", lSettings = list(color = "bad")),
+    "Setting 'color' must be a list.*character"
+  )
+  expect_error(
+    BuildWidgetPayload(dfResults = dfAE, strModule = "ae-timelines", lSettings = list(color = data.frame(value_col = "AESEV"))),
+    "Setting 'color' must be a list.*data.frame"
+  )
+  # A correctly nested list still builds the payload.
+  lPayload <- BuildWidgetPayload(dfResults = dfAE, strModule = "ae-timelines", lSettings = list(color = list(value_col = "AESEV")))
+  expect_identical(lPayload$lSettings$color$value_col, "AESEV")
+})

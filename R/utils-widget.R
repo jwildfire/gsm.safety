@@ -197,6 +197,15 @@ CheckRequiredSettings <- function(
       if (is.null(lNested)) {
         lNested <- list()
       }
+      # The nested settings are indexed by name below, so anything but a list
+      # would fail there with a subscript error naming nothing. A data.frame
+      # is a list too, and not a mapping either.
+      gsm.core::stop_if(
+        cnd = !is.list(lNested) || is.data.frame(lNested),
+        message = paste0(
+          "Setting '", strSetting, "' must be a list of settings, not ", class(lNested)[1]
+        )
+      )
       CheckRequiredSettings(
         lProperties = lProperty$properties,
         chrRequired = unlist(lProperty$required),

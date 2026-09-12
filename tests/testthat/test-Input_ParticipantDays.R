@@ -69,6 +69,25 @@ test_that("a negative person-time is not quietly summed (#58)", {
   expect_identical(sum(dfInput$Denominator), 3)
 })
 
+test_that("an infinite person-time is refused like a negative one, not summed (#96)", {
+  # as.numeric("Inf") is Inf, and a numeric Inf passes is.na() and the negative
+  # check, so before this fix an infinite day count reached the sum and the
+  # metric published Inf. A numeric NaN counts as missing; Inf and -Inf, numeric
+  # or as text, are not durations.
+  dfBad <- SUBJ_DAYS
+  dfBad$timeonstudy <- c(10, Inf, NaN, 40)
+  expect_warning(dfInput <- Input_ParticipantDays(dfBad, "timeonstudy"), "infinite")
+  expect_identical(Total(dfInput), 50)
+  expect_identical(sum(dfInput$Denominator), 2)
+  expect_true(all(is.finite(dfInput$Numerator)))
+
+  dfText <- SUBJ_DAYS
+  dfText$timeonstudy <- c("10", "Inf", "-Inf", "40")
+  expect_warning(dfInput <- Input_ParticipantDays(dfText, "timeonstudy"), "S2")
+  expect_identical(Total(dfInput), 50)
+  expect_identical(nrow(dfInput), 2L)
+})
+
 test_that("an absent domain or column errors rather than reporting zero days (#58)", {
   expect_error(Input_ParticipantDays(NULL, "timeonstudy"), "not a data.frame")
   expect_error(Input_ParticipantDays(SUBJ_DAYS, "timeontrt"), "timeontrt")

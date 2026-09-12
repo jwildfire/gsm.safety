@@ -21,7 +21,7 @@
 #' and inflate the denominator at once. They leave both, and a warning names
 #' them. A *recorded* zero is different — it is a measurement, and stays.
 #'
-#' Negative person-time is treated the same way. It is not a duration, so it is
+#' Negative or infinite person-time is treated the same way. It is not a duration, so it is
 #' not summed, and the warning says how many participants it happened to.
 #'
 #' @param dfSubjects `data.frame` Mapped subject-level domain, the enrolled
@@ -70,8 +70,8 @@ Input_ParticipantDays <- function(
 
   # --- Person-time that is not a duration leaves both sides together. --------
   bMissing <- is.na(nDays)
-  bNegative <- !bMissing & nDays < 0
-  if (any(bMissing | bNegative)) {
+  bInvalid <- !bMissing & (nDays < 0 | !is.finite(nDays))
+  if (any(bMissing | bInvalid)) {
     chrWhy <- c(
       if (any(bMissing)) {
         paste0(
@@ -79,10 +79,10 @@ Input_ParticipantDays <- function(
           .NameParticipants(dfSubjects[[strIDCol]][bMissing]), ")"
         )
       },
-      if (any(bNegative)) {
+      if (any(bInvalid)) {
         paste0(
-          sum(bNegative), " with a negative value (",
-          .NameParticipants(dfSubjects[[strIDCol]][bNegative]), ")"
+          sum(bInvalid), " with a negative or infinite value (",
+          .NameParticipants(dfSubjects[[strIDCol]][bInvalid]), ")"
         )
       }
     )
@@ -90,14 +90,14 @@ Input_ParticipantDays <- function(
       level = "warn",
       message = paste0(
         "Person-time in '", strDayCol, "' is not a duration for ",
-        sum(bMissing | bNegative), " of ", length(nDays), " participants: ",
+        sum(bMissing | bInvalid), " of ", length(nDays), " participants: ",
         paste(chrWhy, collapse = "; "),
         ". They leave the total and the denominator together, because ",
         "missing days are not zero days."
       )
     )
-    dfSubjects <- dfSubjects[!(bMissing | bNegative), , drop = FALSE]
-    nDays <- nDays[!(bMissing | bNegative)]
+    dfSubjects <- dfSubjects[!(bMissing | bInvalid), , drop = FALSE]
+    nDays <- nDays[!(bMissing | bInvalid)]
   }
 
   # --- Nobody left. Nothing measured, so nothing published. ------------------

@@ -24,6 +24,7 @@ Phase 0 of the FDA Standard Safety Tables and Figures work ([obot.roadmap#9](htt
 ## Also in this release
 
 - The package now declares `LazyData: true` and `Depends: R (>= 3.5.0)`, and the hand-checked transcription with its build script lives in `data-raw/`.
+- The package site wears the jwildfire.github.io theme, as the obot hub does since 2026-09-12: paper ground, graphite ink, plum links, Instrument Serif headings, Instrument Sans body, IBM Plex Mono code, and the honeycomb strip along the navbar and footer. The palette and fonts are bslib variables in `_pkgdown.yml`; `pkgdown/extra.css` carries the bands. ([#94](https://github.com/jwildfire/gsm.safety/pull/94))
 
 # gsm.safety v1.4.0 (Upcoming)
 

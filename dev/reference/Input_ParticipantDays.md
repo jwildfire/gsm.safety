@@ -72,9 +72,9 @@ understate the total and inflate the denominator at once. They leave
 both, and a warning names them. A *recorded* zero is different — it is a
 measurement, and stays.
 
-Negative person-time is treated the same way. It is not a duration, so
-it is not summed, and the warning says how many participants it happened
-to.
+Negative or infinite person-time is treated the same way. It is not a
+duration, so it is not summed, and the warning says how many
+participants it happened to.
 
 ## Examples
 

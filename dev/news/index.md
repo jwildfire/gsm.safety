@@ -85,6 +85,12 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
 - The package now declares `LazyData: true` and `Depends: R (>= 3.5.0)`,
   and the hand-checked transcription with its build script lives in
   `data-raw/`.
+- [`Input_ParticipantDays()`](https://jwildfire.github.io/gsm.safety/dev/reference/Input_ParticipantDays.md)
+  refuses an infinite day count the way it refuses a negative one: the
+  participant leaves both sides of the figure and is named in the
+  warning, instead of the metric publishing `Inf`. Found by the code
+  review of the v1.5.0 candidate.
+  ([\#96](https://github.com/jwildfire/gsm.safety/issues/96))
 - The package site wears the jwildfire.github.io theme, as the obot hub
   does since 2026-09-12: paper ground, graphite ink, plum links,
   Instrument Serif headings, Instrument Sans body, IBM Plex Mono code,

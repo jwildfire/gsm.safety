@@ -64,3 +64,21 @@ test_that("every v1.5.0 feature NEWS bullet links its issue, its pull request an
     expect_match(strBullet, paste0("/pull/", chrPair[2], "\\)"), fixed = FALSE)
   }
 })
+
+test_that("the v1.5.0 NEWS bullets describe the collision guard and the criterion text as shipped (#137)", {
+  # The #102 bullet once said a frame carrying AbnormalityDirection keeps it;
+  # the guard refuses it, and the (#102) test asserts the error.
+  chrFixes <- chrReleaseBullets("1.5.0", "Also in this release")
+  strCollision <- grep("/issues/102\\)", chrFixes, value = TRUE)
+  expect_length(strCollision, 1)
+  expect_no_match(strCollision, "keeps it")
+  expect_match(strCollision, "AbnormalityDirection")
+  expect_match(strCollision, "refused")
+
+  # Only FDA_AbnormalityLevels carries the printed criterion text.
+  chrFeatures <- chrReleaseBullets("1.5.0", "What's new")
+  strData <- grep("/issues/77\\)", chrFeatures, value = TRUE)
+  expect_length(strData, 1)
+  expect_no_match(strData, "Every row carries[^.;]*criterion text")
+  expect_match(strData, "abnormality-level rows also carry each criterion")
+})

@@ -193,6 +193,13 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   `pkgdown/menus/examples/util/`.
   ([\#94](https://github.com/jwildfire/gsm.safety/pull/94),
   [\#95](https://github.com/jwildfire/gsm.safety/pull/95))
+- [`SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/SafetyCensus.md)
+  takes the unnamed-study path, and says so, when the `strGroupCol` the
+  caller named is absent from the subject domain, instead of silently
+  grouping by a `studyid` column the caller did not name. Found by the
+  code review of the v1.5.0 candidate.
+  ([\#126](https://github.com/jwildfire/gsm.safety/issues/126),
+  [\#131](https://github.com/jwildfire/gsm.safety/pull/131))
 
 ## gsm.safety v1.4.0 (Upcoming)
 

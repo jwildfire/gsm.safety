@@ -64,7 +64,7 @@ Report_SafetyCensus <- function(
   )
   gsm.core::stop_if(
     cnd = !is.null(strOutputFile) &&
-      !(is.character(strOutputFile) && length(strOutputFile) == 1 && !is.na(strOutputFile)),
+      !(is.character(strOutputFile) && length(strOutputFile) == 1 && !is.na(strOutputFile) && nzchar(strOutputFile)),
     message = "strOutputFile is not a length-1 character"
   )
 

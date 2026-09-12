@@ -292,7 +292,7 @@ SaveWidgetReport <- function(
     message = "strOutputDir is not a length-1 character"
   )
   gsm.core::stop_if(
-    cnd = !(is.character(strOutputFile) && length(strOutputFile) == 1 && !is.na(strOutputFile)),
+    cnd = !(is.character(strOutputFile) && length(strOutputFile) == 1 && !is.na(strOutputFile) && nzchar(strOutputFile)),
     message = "strOutputFile is not a length-1 character"
   )
 

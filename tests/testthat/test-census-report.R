@@ -466,3 +466,18 @@ test_that("the census report helpers refuse settings supplied as a data.frame (#
   }
   expect_invisible(RequireCensusInputs(dfResults, dfMetrics, CENSUS_REPORT_SETTINGS()))
 })
+
+test_that("Report_SafetyCensus refuses an empty output file name (#143)", {
+  # "" passed the guard and became ".html": a hidden page with no basename.
+  dfResults <- CENSUS_REPORT_RESULTS()
+  dfFigures <- Report_CensusFigures(dfResults, CENSUS_REPORT_METRICS(), CENSUS_REPORT_SETTINGS())
+  strOutputDir <- tempfile("census-report-")
+  dir.create(strOutputDir)
+  expect_error(
+    Report_SafetyCensus(dfFigures, dfResults = dfResults, strOutputDir = strOutputDir, strOutputFile = ""),
+    "strOutputFile"
+  )
+  expect_identical(list.files(strOutputDir, all.files = TRUE, no.. = TRUE), character(0))
+  strPath <- Report_SafetyCensus(dfFigures, dfResults = dfResults, strOutputDir = strOutputDir, strOutputFile = "census")
+  expect_identical(basename(strPath), "census.html")
+})

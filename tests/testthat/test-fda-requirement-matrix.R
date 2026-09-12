@@ -76,3 +76,14 @@ test_that("every FDA-RULE ID a test cites exists in the matrix (#79)", {
   chrMissing <- setdiff(chrCited, l$ids)
   expect_identical(chrMissing, character(0), label = paste("cited but not in the matrix:", paste(chrMissing, collapse = ", ")))
 })
+
+test_that("the FDA-RULE-002 row distinguishes grade 0 from no grade, as Derive_AbnormalityLevel() does (#128)", {
+  l <- MatrixRows()
+  strRequirement <- l$cells[[which(l$ids == "FDA-RULE-002")]][[3]]
+  # Grade 0 is a graded result that met no level; NA is a record the criteria
+  # could not be applied to. The row is the source of record and must not
+  # call both "no grade".
+  expect_match(strRequirement, "is graded 0")
+  expect_match(strRequirement, "has no grade \\(`NA`\\)")
+  expect_no_match(strRequirement, "wrong side of the operator, or for a parameter the tables do not list, has no grade")
+})

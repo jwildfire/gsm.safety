@@ -454,3 +454,15 @@ test_that("Report_SafetyCensus refuses a missing or empty output directory (#120
   strPath <- Report_SafetyCensus(dfFigures, dfResults = dfResults, strOutputDir = strOutputDir)
   expect_true(file.exists(strPath))
 })
+
+test_that("the census report helpers refuse settings supplied as a data.frame (#133)", {
+  dfResults <- CENSUS_REPORT_RESULTS()
+  dfMetrics <- CENSUS_REPORT_METRICS()
+  # is.list() is TRUE for a data.frame; one used to pass and every
+  # lSettings$... lookup then read NULL, as if no setting had been supplied.
+  for (lBad in list(data.frame(), "settings")) {
+    expect_error(RequireCensusInputs(dfResults, dfMetrics, lBad), "lSettings is not a list")
+    expect_error(Report_CensusFigures(dfResults, dfMetrics, lBad), "lSettings is not a list")
+  }
+  expect_invisible(RequireCensusInputs(dfResults, dfMetrics, CENSUS_REPORT_SETTINGS()))
+})

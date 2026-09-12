@@ -27,7 +27,8 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   a reading. Spot values are asserted against the PDF page by page in
   the suite. Nothing in R could supply these thresholds before; now
   `data(FDA_AbnormalityLevels)` does.
-  ([\#77](https://github.com/jwildfire/gsm.safety/issues/77), hub
+  ([\#77](https://github.com/jwildfire/gsm.safety/issues/77),
+  [\#83](https://github.com/jwildfire/gsm.safety/pull/83), hub
   [obot.roadmap#9](https://github.com/jwildfire/obot.roadmap/issues/9))
 
 - **`design/fda-adam-alignment.md` — the ADaM alignment the design left
@@ -40,7 +41,8 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   helper, and which figures are out of scope on the demo data. It ends
   with the column contract the phase 1 engines code against. 51 columns,
   none unmarked, nothing blocked.
-  ([\#80](https://github.com/jwildfire/gsm.safety/issues/80), hub
+  ([\#80](https://github.com/jwildfire/gsm.safety/issues/80),
+  [\#85](https://github.com/jwildfire/gsm.safety/pull/85), hub
   [obot.roadmap#9](https://github.com/jwildfire/obot.roadmap/issues/9))
 
 - **[`Derive_ULNMultiple()`](https://jwildfire.github.io/gsm.safety/dev/reference/Derive_ULNMultiple.md),
@@ -63,7 +65,8 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   multiples reproduce the peaks
   [`Input_HysLaw()`](https://jwildfire.github.io/gsm.safety/dev/reference/Input_HysLaw.md)
   computes for the same participants.
-  ([\#78](https://github.com/jwildfire/gsm.safety/issues/78), hub
+  ([\#78](https://github.com/jwildfire/gsm.safety/issues/78),
+  [\#86](https://github.com/jwildfire/gsm.safety/pull/86), hub
   [obot.roadmap#9](https://github.com/jwildfire/obot.roadmap/issues/9))
 
 - **`requirements/fda-stf.md` — the FDA ST&F requirement matrix.** One
@@ -77,7 +80,8 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   domains and its safety.viz twin; `requirements/README.md` says how
   rows are keyed and how a test cites one, and a test holds the file to
   that shape.
-  ([\#79](https://github.com/jwildfire/gsm.safety/issues/79), hub
+  ([\#79](https://github.com/jwildfire/gsm.safety/issues/79),
+  [\#84](https://github.com/jwildfire/gsm.safety/pull/84), hub
   [obot.roadmap#9](https://github.com/jwildfire/obot.roadmap/issues/9))
 
 ### Also in this release
@@ -149,14 +153,22 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   code review of the v1.5.0 candidate.
   ([\#117](https://github.com/jwildfire/gsm.safety/issues/117),
   [\#118](https://github.com/jwildfire/gsm.safety/pull/118))
+- The `FDA-RULE-002` row of `requirements/fda-stf.md` says what
+  [`Derive_AbnormalityLevel()`](https://jwildfire.github.io/gsm.safety/dev/reference/Derive_AbnormalityLevel.md)
+  does: a graded result meeting no level is `0`, and only a record the
+  criteria cannot be applied to has no grade (`NA`); the row had called
+  both “no grade”. Found by the code review of the v1.5.0 candidate.
+  ([\#128](https://github.com/jwildfire/gsm.safety/issues/128),
+  [\#132](https://github.com/jwildfire/gsm.safety/pull/132))
 - [`Widget_ParticipantProfile()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_ParticipantProfile.md)
-  refuses an `ae` setting that is not a list, and an AE column supplied
-  as `NULL`, naming the setting and pointing to the default, instead of
-  failing with a subscript error or sending `null` to the browser and
-  drawing an empty timeline. Found by the code review of the v1.5.0
-  candidate.
+  refuses an `ae` setting that is not a plain list (a data.frame
+  included), and an AE column supplied as `NULL`, naming the setting and
+  pointing to the default, instead of failing with a subscript error or
+  sending `null` to the browser and drawing an empty timeline. Found by
+  the code review of the v1.5.0 candidate.
   ([\#119](https://github.com/jwildfire/gsm.safety/issues/119),
-  [\#122](https://github.com/jwildfire/gsm.safety/pull/122))
+  [\#122](https://github.com/jwildfire/gsm.safety/pull/122),
+  [\#124](https://github.com/jwildfire/gsm.safety/pull/124))
 - [`Report_SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/Report_SafetyCensus.md)
   refuses a missing or empty `strOutputDir` with the same message it
   uses for a vector, instead of failing later from base R or writing the
@@ -164,6 +176,13 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   v1.5.0 candidate.
   ([\#120](https://github.com/jwildfire/gsm.safety/issues/120),
   [\#123](https://github.com/jwildfire/gsm.safety/pull/123))
+- [`BuildWidgetPayload()`](https://jwildfire.github.io/gsm.safety/dev/reference/BuildWidgetPayload.md)
+  refuses a required group of settings, such as `color` for the AE
+  timelines, supplied as anything but a list, naming the setting,
+  instead of failing inside the check with a subscript error. Found by
+  the code review of the v1.5.0 candidate.
+  ([\#125](https://github.com/jwildfire/gsm.safety/issues/125),
+  [\#130](https://github.com/jwildfire/gsm.safety/pull/130))
 - The package site wears the jwildfire.github.io theme, as the obot hub
   does since 2026-09-12: paper ground, graphite ink, plum links,
   Instrument Serif headings, Instrument Sans body, IBM Plex Mono code,

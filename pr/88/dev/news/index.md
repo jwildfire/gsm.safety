@@ -85,6 +85,36 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
 - The package now declares `LazyData: true` and `Depends: R (>= 3.5.0)`,
   and the hand-checked transcription with its build script lives in
   `data-raw/`.
+- [`Input_ParticipantDays()`](https://jwildfire.github.io/gsm.safety/dev/reference/Input_ParticipantDays.md)
+  refuses an infinite day count the way it refuses a negative one: the
+  participant leaves both sides of the figure and is named in the
+  warning, instead of the metric publishing `Inf`. Found by the code
+  review of the v1.5.0 candidate.
+  ([\#96](https://github.com/jwildfire/gsm.safety/issues/96))
+- [`BuildWidgetPayload()`](https://jwildfire.github.io/gsm.safety/dev/reference/BuildWidgetPayload.md)
+  now validates the `normal_col_high` setting the hepatic explorer,
+  hepatic waterfall and participant profile require, like every other
+  column mapping, so a limit-of-normal column that does not exist fails
+  in R instead of the chart drawing without its limits. Found by the
+  code review of the v1.5.0 candidate.
+  ([\#99](https://github.com/jwildfire/gsm.safety/issues/99))
+- [`BuildWidgetPayload()`](https://jwildfire.github.io/gsm.safety/dev/reference/BuildWidgetPayload.md)
+  refuses a required column setting that is not a single character
+  string, naming the setting, so `list(value_col = 5)` or a vector of
+  two column names fails in R instead of reaching the browser as a
+  property the renderer cannot find. Found by the code review of the
+  v1.5.0 candidate.
+  ([\#103](https://github.com/jwildfire/gsm.safety/issues/103))
+- The package site wears the jwildfire.github.io theme, as the obot hub
+  does since 2026-09-12: paper ground, graphite ink, plum links,
+  Instrument Serif headings, Instrument Sans body, IBM Plex Mono code,
+  and the honeycomb strip along the navbar and footer. The pkgdown pages
+  take the palette and fonts as bslib variables in `_pkgdown.yml` with
+  `pkgdown/extra.css` carrying the bands; the standalone example pages
+  take the same palette through their shared chrome in
+  `pkgdown/menus/examples/util/`.
+  ([\#94](https://github.com/jwildfire/gsm.safety/pull/94),
+  [\#95](https://github.com/jwildfire/gsm.safety/pull/95))
 
 ## gsm.safety v1.4.0 (Upcoming)
 

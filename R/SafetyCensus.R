@@ -287,6 +287,11 @@ SafetyCensus <- function(
 #'
 #' @keywords internal
 .CensusDomains <- function(lDomains, strIDCol, strGroupCol) {
+  # Read before the ID columns are normalised to 'subjid' below: a caller
+  # naming strGroupCol = "subjid" on a frame keyed by another ID column would
+  # otherwise be grouped by the participant ID the loop generates.
+  bHasGroupCol <- strGroupCol %in% names(lDomains$Mapped_SUBJ)
+
   for (strDomain in names(lDomains)) {
     if (is.null(lDomains[[strDomain]])) {
       next
@@ -305,7 +310,7 @@ SafetyCensus <- function(
   # named column is absent, an unrelated 'studyid' the frame happens to carry
   # must not group the census in its place.
   dfSubjects <- lDomains$Mapped_SUBJ
-  if (strGroupCol %in% names(dfSubjects)) {
+  if (bHasGroupCol) {
     dfSubjects <- .RenameColumn(dfSubjects, strGroupCol, "studyid")
   } else {
     # Not an error. The study identifier groups the metrics and is dropped

@@ -345,6 +345,19 @@ test_that("SafetyCensus does not group by an existing studyid when the caller's 
   )
   expect_false(any(grepl("carries no", chrWarnings)))
   expect_identical(CensusValue(lDefault, "Enrolled participants"), 4)
+
+  # Nor by the 'subjid' the ID normalisation generates: a caller keyed on
+  # 'usubjid' who names strGroupCol = "subjid" on a frame without one.
+  dfKeyed <- CENSUS_SUBJECTS
+  names(dfKeyed)[names(dfKeyed) == "subjid"] <- "usubjid"
+  expect_warning(
+    expect_warning(
+      lKeyed <- suppressMessages(SafetyCensus(dfSubjects = dfKeyed, strIDCol = "usubjid", strGroupCol = "subjid")),
+      "carries no 'subjid' column"
+    ),
+    "No domain was supplied"
+  )
+  expect_identical(CensusValue(lKeyed, "Enrolled participants"), 4)
 })
 
 test_that("SafetyCensus rejects a subject domain it cannot key on (#45, #66)", {

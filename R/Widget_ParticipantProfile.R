@@ -64,7 +64,7 @@
 #' Widget_ParticipantProfile(
 #'   dfResults,
 #'   chrParticipants = c("01-701-1015", "01-701-1023", "01-701-1028"),
-#'   dfAE = dfAE[nzchar(dfAE$AEDECOD), ],
+#'   dfAE = dfAE[!is.na(dfAE$AEDECOD) & nzchar(dfAE$AEDECOD), ],
 #'   lSettings = list(
 #'     studyday_col = "VISITNUM",
 #'     measure_values = list(

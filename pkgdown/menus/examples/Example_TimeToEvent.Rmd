@@ -38,7 +38,7 @@ dfAE <- ExampleData("adae")
 gsm.core::RunWorkflow(
   lWorkflow = lWorkflow,
   lData = list(
-    dfResults = dfAE[nzchar(dfAE$AEDECOD), ],
+    dfResults = dfAE[!is.na(dfAE$AEDECOD) & nzchar(dfAE$AEDECOD), ],
     dfPopulation = ExampleData("adsl")
   )
 )
@@ -58,7 +58,7 @@ cat(ExampleWorkflow("time_to_event.yaml"))
 library(gsm.safety)
 
 dfAE <- ExampleData("adae")
-dfResults <- dfAE[nzchar(dfAE$AEDECOD), ]
+dfResults <- dfAE[!is.na(dfAE$AEDECOD) & nzchar(dfAE$AEDECOD), ]
 dfPopulation <- ExampleData("adsl")
 
 Widget_TimeToEvent(

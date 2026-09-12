@@ -16,7 +16,7 @@ chrCohort <- function() {
 
 dfProfileAE <- function() {
   dfAE <- ExampleData("adae")
-  dfAE[nzchar(dfAE$AEDECOD), ]
+  dfAE[!is.na(dfAE$AEDECOD) & nzchar(dfAE$AEDECOD), ]
 }
 
 lProfileSettings <- function() {

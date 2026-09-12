@@ -10,7 +10,7 @@ dfTteEvents <- function() {
   # participant with no events, so the AE renderers' denominator covers the
   # whole safety population. Those rows are not events, and this chart takes
   # its denominator from the population frame instead.
-  dfAE[nzchar(dfAE$AEDECOD), ]
+  dfAE[!is.na(dfAE$AEDECOD) & nzchar(dfAE$AEDECOD), ]
 }
 
 lTteSettings <- function() {

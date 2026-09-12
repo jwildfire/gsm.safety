@@ -279,3 +279,12 @@ test_that("BuildWidgetPayload refuses a required column setting that is not a si
   lPayload <- BuildWidgetPayload(dfResults = dfLabs, strModule = "histogram", lSettings = list(value_col = "STRESN"))
   expect_identical(lPayload$lSettings$value_col, "STRESN")
 })
+
+test_that("SaveWidgetReport refuses a missing output file name (#115)", {
+  dfResults <- ExampleData("adbds")
+  dfAlbumin <- dfResults[dfResults$TEST == "Albumin", ]
+  expect_error(
+    SaveWidgetReport(Widget_Histogram(dfAlbumin), strOutputDir = tempfile("SaveWidgetReport"), strOutputFile = NA_character_),
+    "strOutputFile"
+  )
+})

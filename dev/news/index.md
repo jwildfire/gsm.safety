@@ -98,6 +98,13 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   in R instead of the chart drawing without its limits. Found by the
   code review of the v1.5.0 candidate.
   ([\#99](https://github.com/jwildfire/gsm.safety/issues/99))
+- [`BuildWidgetPayload()`](https://jwildfire.github.io/gsm.safety/dev/reference/BuildWidgetPayload.md)
+  refuses a required column setting that is not a single character
+  string, naming the setting, so `list(value_col = 5)` or a vector of
+  two column names fails in R instead of reaching the browser as a
+  property the renderer cannot find. Found by the code review of the
+  v1.5.0 candidate.
+  ([\#103](https://github.com/jwildfire/gsm.safety/issues/103))
 - The package site wears the jwildfire.github.io theme, as the obot hub
   does since 2026-09-12: paper ground, graphite ink, plum links,
   Instrument Serif headings, Instrument Sans body, IBM Plex Mono code,

@@ -182,7 +182,8 @@ test_that("Widget_ParticipantProfile refuses an ae setting that is not a list or
     Widget_ParticipantProfile(dfResults, dfAE = dfProfileAE(), lSettings = list(ae = 1)),
     "Setting 'ae' must be a list.*numeric"
   )
-  # A data.frame is a list to is.list() and still not a mapping.
+  # is.list() is TRUE for a data.frame, so the list check alone would let one
+  # through; a data.frame is still not a mapping of column names.
   expect_error(
     Widget_ParticipantProfile(dfResults, dfAE = dfProfileAE(), lSettings = list(ae = data.frame(id_col = "USUBJID", stdy_col = "ASTDY"))),
     "Setting 'ae' must be a list.*data.frame"

@@ -182,6 +182,16 @@ CheckRequiredSettings <- function(
     }
     strSetting <- paste0(strPrefix, strKey)
 
+    # A key supplied as NULL is not an omitted key: it would pass the checks
+    # against the schema default and still reach the browser as JSON null.
+    gsm.core::stop_if(
+      cnd = strKey %in% names(lSettings) && is.null(lSettings[[strKey]]),
+      message = paste0(
+        "Setting '", strSetting, "' is NULL; omit it to use the '",
+        strModule, "' schema default"
+      )
+    )
+
     if (identical(lProperty$type, "object")) {
       lNested <- lSettings[[strKey]]
       if (is.null(lNested)) {

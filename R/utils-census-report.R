@@ -47,8 +47,10 @@ RequireCensusInputs <- function(dfResults, dfMetrics, lSettings) {
     cnd = !is.data.frame(dfMetrics),
     message = "dfMetrics is not a data.frame"
   )
+  # A data.frame is a list too, and every lSettings$... lookup below would
+  # read NULL from one, building the page as if nothing had been supplied.
   gsm.core::stop_if(
-    cnd = !is.list(lSettings),
+    cnd = !is.list(lSettings) || is.data.frame(lSettings),
     message = "lSettings is not a list"
   )
   .RequireColumns(dfResults, c("MetricID", "Numerator", "Denominator"), "dfResults")

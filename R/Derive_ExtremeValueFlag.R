@@ -34,7 +34,8 @@
 #'   `ExampleData("adbds")` uses.
 #' @param strOutCol `character` Name of the flag column. Default:
 #'   `"ExtremeValueFlag"`; the direction is added as `<strOutCol>` with
-#'   `Flag` replaced by `Direction`.
+#'   `Flag` replaced by `Direction`. Neither may already be a column of
+#'   `dfResults`: the function appends, it never overwrites.
 #'
 #' @return `dfResults` with two columns appended: the flag (`logical`, `TRUE`
 #'   beyond a threshold, `FALSE` within, `NA` where the parameter or unit could
@@ -59,6 +60,8 @@ Derive_ExtremeValueFlag <- function(
     strOutCol = "ExtremeValueFlag") {
   RequireResultColumns(dfResults, c(strTestCol, strValueCol, strUnitCol))
   RequireOutColToken(strOutCol, "Flag")
+  strDirectionCol <- sub("Flag", "Direction", strOutCol)
+  RequireNewColumns(dfResults, c(strOutCol, strDirectionCol))
   RequireResultColumns(
     dfThresholds, c("Parameter", "UnitSystem", "Unit", "Low", "High"),
     strName = "dfThresholds"
@@ -106,7 +109,7 @@ Derive_ExtremeValueFlag <- function(
   ReportSkipped("Derive_ExtremeValueFlag", lSkipped)
 
   dfResults[[strOutCol]] <- bFlag
-  dfResults[[sub("Flag", "Direction", strOutCol)]] <- chrDirection
+  dfResults[[strDirectionCol]] <- chrDirection
   dfResults
 }
 

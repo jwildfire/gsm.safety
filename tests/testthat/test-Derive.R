@@ -314,3 +314,42 @@ test_that("the platelet row grades a per-microlitre count and the CDISC giga-per
   expect_identical(Derive_AbnormalityLevel(LabRows("Leukocytes", 0.9, strUnit = "10*9/L"))$AbnormalityLevel, 3L)
   expect_identical(Derive_AbnormalityLevel(LabRows("Leukocytes", 0.9, strUnit = "10^9/L"))$AbnormalityLevel, 3L)
 })
+
+test_that("the Derive_* functions refuse to overwrite an input column that shares an output name (#102)", {
+  df <- LabRows("Potassium", 7, strUnit = "mmol/L")
+
+  # The requested column itself: the source result would be replaced.
+  expect_error(Derive_ULNMultiple(df, strOutCol = "STRESN"), "'STRESN' already exists")
+  expect_error(Derive_ULNMultiple(df, strOutCol = "STNRHI"), "'STNRHI' already exists")
+  dfLevel <- df
+  dfLevel$AbnormalityLevel <- 0L
+  expect_error(Derive_AbnormalityLevel(dfLevel), "'AbnormalityLevel' already exists")
+  dfFlag <- df
+  dfFlag$ExtremeValueFlag <- FALSE
+  expect_error(Derive_ExtremeValueFlag(dfFlag), "'ExtremeValueFlag' already exists")
+
+  # A generated sibling: the input column would be replaced by the direction.
+  dfDirection <- df
+  dfDirection$AbnormalityDirection <- "source"
+  expect_error(Derive_AbnormalityLevel(dfDirection), "'AbnormalityDirection' already exists")
+  dfCriterion <- df
+  dfCriterion$AbnormalityCriterion <- "source"
+  expect_error(Derive_AbnormalityLevel(dfCriterion), "'AbnormalityCriterion' already exists")
+  dfXDirection <- df
+  dfXDirection$ExtremeValueDirection <- "source"
+  expect_error(Derive_ExtremeValueFlag(dfXDirection), "'ExtremeValueDirection' already exists")
+
+  # A frame without the names still gains exactly its new columns, in order.
+  out <- Derive_ExtremeValueFlag(Derive_AbnormalityLevel(Derive_ULNMultiple(df)))
+  expect_identical(
+    setdiff(names(out), names(df)),
+    c("ULNMultiple", "AbnormalityLevel", "AbnormalityDirection", "AbnormalityCriterion", "ExtremeValueFlag", "ExtremeValueDirection")
+  )
+  expect_identical(out[names(df)], df)
+
+  # A name that is not one string, or is missing, is refused before anything is assigned.
+  expect_error(Derive_ULNMultiple(df, strOutCol = 5), "single column name")
+  expect_error(Derive_ULNMultiple(df, strOutCol = NA_character_), "single column name")
+  expect_error(Derive_AbnormalityLevel(df, strOutCol = NA_character_), "Level")
+  expect_error(Derive_ExtremeValueFlag(df, strOutCol = NA_character_), "Flag")
+})

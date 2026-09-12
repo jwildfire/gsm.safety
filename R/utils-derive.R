@@ -151,10 +151,35 @@ ULNMultiple <- function(nValue, nULN) {
 #' @keywords internal
 RequireOutColToken <- function(strOutCol, strToken) {
   gsm.core::stop_if(
-    cnd = !is.character(strOutCol) || length(strOutCol) != 1 || !grepl(strToken, strOutCol, fixed = TRUE),
+    cnd = !is.character(strOutCol) || length(strOutCol) != 1 || is.na(strOutCol) ||
+      !grepl(strToken, strOutCol, fixed = TRUE),
     message = paste0("strOutCol must be a single name containing '", strToken, "' (its sibling columns are named from it)")
   )
   invisible(strOutCol)
+}
+
+#' Require that a derivation's output columns are new
+#'
+#' The `Derive_*` functions return the input frame with their columns
+#' appended, dropping and replacing nothing. An output name that already
+#' exists in the frame would be overwritten silently, so it is refused.
+#'
+#' @param df `data.frame` The input frame.
+#' @param chrOutCols `character` The names the derivation is about to add.
+#' @param strName `character` Name of the argument, for the message.
+#'
+#' @keywords internal
+RequireNewColumns <- function(df, chrOutCols, strName = "dfResults") {
+  chrExisting <- intersect(chrOutCols, names(df))
+  gsm.core::stop_if(
+    cnd = length(chrExisting) > 0,
+    message = paste0(
+      "Output column '", chrExisting[1], "' already exists in ", strName,
+      "; the Derive_* functions append, they do not overwrite. ",
+      "Choose another strOutCol or drop the column first"
+    )
+  )
+  invisible(chrOutCols)
 }
 
 #' Say how many records a derivation could not evaluate, and why

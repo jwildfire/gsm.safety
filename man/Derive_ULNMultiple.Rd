@@ -21,7 +21,8 @@ per test per visit, in the shape of \code{ExampleData("adbds")}.}
 \code{"STNRHI"}.}
 
 \item{strOutCol}{\code{character} Name of the column to add. Default:
-\code{"ULNMultiple"}.}
+\code{"ULNMultiple"}. Must not already be a column of \code{dfResults}: the
+function appends, it never overwrites.}
 }
 \value{
 \code{dfResults} with \code{strOutCol} appended: \code{numeric}, the result as a

@@ -42,7 +42,9 @@ the test name(s) the data use for it. Default: the names
 
 \item{strOutCol}{\code{character} Name of the grade column. Default:
 \code{"AbnormalityLevel"}; the direction and the criterion met are added as
-\verb{<strOutCol>} with \code{Level} replaced by \code{Direction} and \code{Criterion}.}
+\verb{<strOutCol>} with \code{Level} replaced by \code{Direction} and \code{Criterion}. None
+of the three may already be a column of \code{dfResults}: the function
+appends, it never overwrites.}
 }
 \value{
 \code{dfResults} with three columns appended: the grade (\code{integer}

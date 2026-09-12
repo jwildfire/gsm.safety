@@ -49,7 +49,9 @@
 #'   `ExampleData("adbds")` uses.
 #' @param strOutCol `character` Name of the grade column. Default:
 #'   `"AbnormalityLevel"`; the direction and the criterion met are added as
-#'   `<strOutCol>` with `Level` replaced by `Direction` and `Criterion`.
+#'   `<strOutCol>` with `Level` replaced by `Direction` and `Criterion`. None
+#'   of the three may already be a column of `dfResults`: the function
+#'   appends, it never overwrites.
 #'
 #' @return `dfResults` with three columns appended: the grade (`integer`
 #'   0 to 3, or `NA`), the direction of the row that graded it (`"low"`,
@@ -78,6 +80,9 @@ Derive_AbnormalityLevel <- function(
     strOutCol = "AbnormalityLevel") {
   RequireResultColumns(dfResults, c(strTestCol, strValueCol, strULNCol, strUnitCol))
   RequireOutColToken(strOutCol, "Level")
+  strDirectionCol <- sub("Level", "Direction", strOutCol)
+  strCriterionCol <- sub("Level", "Criterion", strOutCol)
+  RequireNewColumns(dfResults, c(strOutCol, strDirectionCol, strCriterionCol))
   if (!is.null(strSexCol)) {
     RequireResultColumns(dfResults, strSexCol)
   }
@@ -175,8 +180,8 @@ Derive_AbnormalityLevel <- function(
   ReportSkipped("Derive_AbnormalityLevel", lSkipped)
 
   dfResults[[strOutCol]] <- as.integer(nLevel)
-  dfResults[[sub("Level", "Direction", strOutCol)]] <- chrDirection
-  dfResults[[sub("Level", "Criterion", strOutCol)]] <- chrCriterion
+  dfResults[[strDirectionCol]] <- chrDirection
+  dfResults[[strCriterionCol]] <- chrCriterion
   dfResults
 }
 

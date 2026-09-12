@@ -336,3 +336,19 @@ test_that("SaveWidgetReport refuses a missing or empty output directory (#135)",
   on.exit(unlink(strDir, recursive = TRUE), add = TRUE)
   expect_true(file.exists(SaveWidgetReport(lWidget, strOutputDir = strDir, strOutputFile = "x.html")))
 })
+
+test_that("SaveWidgetReport refuses an empty output file name (#143)", {
+  # "" passed the type and length test and became ".html", a hidden page
+  # with no basename in the output directory.
+  dfResults <- ExampleData("adbds")
+  dfAlbumin <- dfResults[dfResults$TEST == "Albumin", ]
+  strOutputDir <- tempfile("SaveWidgetReport")
+  expect_error(
+    SaveWidgetReport(Widget_Histogram(dfAlbumin), strOutputDir = strOutputDir, strOutputFile = ""),
+    "strOutputFile"
+  )
+  expect_false(dir.exists(strOutputDir))
+  strPath <- SaveWidgetReport(Widget_Histogram(dfAlbumin), strOutputDir = strOutputDir, strOutputFile = "albumin")
+  expect_identical(basename(strPath), "albumin.html")
+  expect_true(file.exists(strPath))
+})

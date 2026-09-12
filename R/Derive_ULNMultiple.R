@@ -22,7 +22,8 @@
 #' @param strULNCol `character` Upper-limit-of-normal column. Default:
 #'   `"STNRHI"`.
 #' @param strOutCol `character` Name of the column to add. Default:
-#'   `"ULNMultiple"`.
+#'   `"ULNMultiple"`. Must not already be a column of `dfResults`: the
+#'   function appends, it never overwrites.
 #'
 #' @return `dfResults` with `strOutCol` appended: `numeric`, the result as a
 #'   multiple of ULN, `NA` where it cannot be formed.
@@ -44,6 +45,11 @@ Derive_ULNMultiple <- function(
     strULNCol = "STNRHI",
     strOutCol = "ULNMultiple") {
   RequireResultColumns(dfResults, c(strValueCol, strULNCol))
+  gsm.core::stop_if(
+    cnd = !is.character(strOutCol) || length(strOutCol) != 1 || !nzchar(strOutCol),
+    message = "strOutCol must be a single column name"
+  )
+  RequireNewColumns(dfResults, strOutCol)
 
   dfResults[[strOutCol]] <- ULNMultiple(dfResults[[strValueCol]], dfResults[[strULNCol]])
   dfResults

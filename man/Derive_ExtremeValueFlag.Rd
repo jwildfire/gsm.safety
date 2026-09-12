@@ -34,7 +34,8 @@ the test name(s) the data use for it. Default: the names
 
 \item{strOutCol}{\code{character} Name of the flag column. Default:
 \code{"ExtremeValueFlag"}; the direction is added as \verb{<strOutCol>} with
-\code{Flag} replaced by \code{Direction}.}
+\code{Flag} replaced by \code{Direction}. Neither may already be a column of
+\code{dfResults}: the function appends, it never overwrites.}
 }
 \value{
 \code{dfResults} with two columns appended: the flag (\code{logical}, \code{TRUE}

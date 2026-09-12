@@ -17,28 +17,52 @@ on:
     - cron: '17 11 * * 1' # Mondays 11:17 UTC
   workflow_dispatch:
 
+# The pull-request path runs repository code, so it gets a read-only token.
+# Only the scheduled follow-up, in its own job, may write an issue (#98).
 permissions:
   contents: read
-  issues: write
 
 jobs:
   parity:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
 
       - name: Check widget parity against the latest safety.viz release
         id: check
         env:
+          # Read-only in this job: the script only reads the public release API,
+          # and the token spares the unauthenticated rate limit.
           GH_TOKEN: ${{ github.token }}
         run: |
           set -o pipefail
           bash tools/check-safety-viz-parity.sh 2>&1 | tee parity.log
 
-      - name: File or update the adoption issue on drift (scheduled runs)
-        if: failure() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+      - name: Keep the log for the scheduled follow-up
+        if: always() && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+        uses: actions/upload-artifact@v4
+        with:
+          name: parity-log
+          path: parity.log
+
+  file-issue:
+    needs: parity
+    if: always() && needs.parity.result == 'failure' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: parity-log
+
+      - name: File or update the adoption issue on drift
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
         run: |
           title="Adopt the latest safety.viz release: widget parity drift detected"
           body_file=$(mktemp)

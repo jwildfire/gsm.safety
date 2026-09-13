@@ -14,7 +14,7 @@ Every row names the guide version and the section it comes from. Figures carry t
 
 | Phase | Figures | Engine | Requirement |
 |---|---|---|---|
-| 0 (this release, gsm.safety v1.5.0) | none; the rules FDA-RULE-001, -002, -004 and -005 ship as `FDA_AbnormalityLevels`, `FDA_ExtremeValues` and the `Derive_*` functions | — | [obot.roadmap#9](https://github.com/jwildfire/obot.roadmap/issues/9) |
+| 0 (this release, gsm.safety v1.2.0) | none; the rules FDA-RULE-001, -002, -004 and -005 ship as `FDA_AbnormalityLevels`, `FDA_ExtremeValues` and the `Derive_*` functions | — | [obot.roadmap#9](https://github.com/jwildfire/obot.roadmap/issues/9) |
 | 1 | F7, F8, F15, F22, F10, F16 to F20, F2, F3 | DILI quadrant scatter, shift scatter, box plot over time, dot + risk-difference forest | [obot.roadmap#323](https://github.com/jwildfire/obot.roadmap/issues/323) |
 | 1b | F5, F21, F12, and the Kaplan-Meier family F1, F4, F11, F13, F14 | paired retention bars, incidence-rate point-range, wrapped Kaplan-Meier | [obot.roadmap#324](https://github.com/jwildfire/obot.roadmap/issues/324) |
 | not scheduled | F6, F9 | mean change line with CI | filed when a session is planned for them |

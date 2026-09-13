@@ -51,7 +51,7 @@ worse than one that never had the bug.
 
 #### The figures that move, and why they were wrong
 
-| Figure | Before v1.3.0 | Now | Why it was wrong |
+| Figure | Before v1.2.0 | Now | Why it was wrong |
 |----|----|----|----|
 | Deaths | 4 | **13** | matched the text of a discontinuation reason, never read the death domain, and counted participants who were never enrolled |
 | Randomised to an arm | *blank* | **577** | read a treatment-arm column no standard domain carries, so it comes out blank on every study but the demo |
@@ -194,24 +194,25 @@ that arrives with two frames needs no change to the machinery.
   an adoption issue automatically on its weekly schedule.
   ([obot.roadmap#164](https://github.com/jwildfire/obot.roadmap/issues/164),
   [\#49](https://github.com/jwildfire/gsm.safety/issues/49))
-- **Two of safety.viz’s thirteen renderers stay unwrapped, on the
-  record**: `participantProfile` and `timeToEvent` are cited deferrals
-  in `.github/parity-allowlist.yaml`, each pointing at
-  [obot.roadmap#165](https://github.com/jwildfire/obot.roadmap/issues/165).
-  Both need two data frames, which the single-`dfResults` widget
-  contract cannot carry, so they are a design question rather than a
-  mechanical wrap. The parity check fails on a deferral that cites
-  nothing, so this cannot quietly become “we forgot”.
-  ([\#49](https://github.com/jwildfire/gsm.safety/issues/49)) — *Both
-  are wrapped in this release, by the two widgets above; the allowlist
-  is now empty.*
+- **The parity allowlist is empty.** `participantProfile` and
+  `timeToEvent` carried cited deferrals in
+  `.github/parity-allowlist.yaml`, each pointing at
+  [obot.roadmap#165](https://github.com/jwildfire/obot.roadmap/issues/165),
+  because both need two data frames that the single-`dfResults` widget
+  contract could not carry. This release wraps both, the two widgets
+  above, on a contract that reads as many frames as it names, so the
+  allowlist is empty; the parity check still fails on a deferral that
+  cites nothing, so a future gap cannot quietly become “we forgot”.
+  ([\#49](https://github.com/jwildfire/gsm.safety/issues/49),
+  [\#71](https://github.com/jwildfire/gsm.safety/issues/71))
 
 ### The census rebuild
 
 Twelve of the thirteen census metrics, and every clinical figure the
 safety overview leads with is now a number the pipeline computes,
-publishes beside its denominator and can be checked on its own — plus
-the report that reads them, and
+publishes beside its denominator and can be checked on its own, or is
+named as absent where the study maps no domain behind it — plus the
+report that reads them, and
 [`SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/SafetyCensus.md)
 rebuilt on top of both. All four steps of the SafetyCensus rebuild
 ([obot.roadmap#274](https://github.com/jwildfire/obot.roadmap/issues/274),
@@ -262,11 +263,13 @@ And one figure is absent rather than wrong wherever a study does not map
 the domain behind it. A study with no death domain now reads as not
 collected for deaths instead of reading a discontinuation reason, with a
 warning naming `Mapped_Death`. That is the intended behaviour and it has
-a consequence worth stating plainly: the demo study maps no death domain
-and no randomisation domain today, so its deaths tile and its randomised
-tile read as not collected until its mapping phase adds them. Absent is
-not zero, and it is not a quiet blank either — the pipeline log names
-the domain that would have produced each figure.
+a consequence worth stating plainly: the [DEMO-301 demo
+site](https://jwildfire.github.io/demo-301/#/safety)’s study maps no
+death domain and no randomisation domain today, so its deaths tile and
+its randomised tile read as not collected until its mapping phase adds
+them (the bundled qualification study maps both, and reports 13 and
+577). Absent is not zero, and it is not a quiet blank either — the
+pipeline log names the domain that would have produced each figure.
 
 #### What’s new in the census
 
@@ -935,6 +938,16 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   unchanged. Found by the code review of the release candidate.
   ([\#149](https://github.com/jwildfire/gsm.safety/issues/149),
   [\#150](https://github.com/jwildfire/gsm.safety/pull/150))
+- The package dates the census rebuild and the parity catch-up to this
+  release everywhere it speaks of them:
+  [`SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/SafetyCensus.md)’s
+  help page, the reference index and the census qualification record no
+  longer date the rebuild to a later release or describe the function as
+  awaiting it, and the qualification script’s closing census call passes
+  the death and randomisation domains so it prints the 13 and 577 the
+  tests report. Found by the code review of the release candidate.
+  ([\#153](https://github.com/jwildfire/gsm.safety/issues/153),
+  [\#154](https://github.com/jwildfire/gsm.safety/pull/154))
 - The package site wears the jwildfire.github.io theme, as the obot hub
   does since 2026-09-12: paper ground, graphite ink, plum links,
   Instrument Serif headings, Instrument Sans body, IBM Plex Mono code,

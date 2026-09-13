@@ -89,8 +89,10 @@ calls gsm.core::Flag().
 
 ## Study census
 
-The safety overview’s denominators. Being rebuilt on the metric steps
-above (obot.roadmap#274); this function is unchanged until step four.
+The safety overview’s denominators, rebuilt on the metric steps above
+(obot.roadmap#274): SafetyCensus() runs the census metric workflows over
+the domains it is given and reads the figures they published, computing
+nothing of its own.
 
 - [`SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/SafetyCensus.md)
   : Study census, exposure and follow-up for a safety overview

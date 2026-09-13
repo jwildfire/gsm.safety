@@ -352,3 +352,26 @@ test_that("SaveWidgetReport refuses an empty output file name (#143)", {
   expect_identical(basename(strPath), "albumin.html")
   expect_true(file.exists(strPath))
 })
+
+test_that("BuildWidgetPayload refuses a zero-row dataset where the contract declares minItems (#149)", {
+  dfResults <- ExampleData("adbds")
+  expect_error(
+    BuildWidgetPayload(dfResults = dfResults[0, ], strModule = "hep-explorer"),
+    "dfResults has 0 rows; the 'hep-explorer' contract requires at least 1",
+    fixed = TRUE
+  )
+  expect_error(
+    BuildWidgetPayload(
+      lData = list(events = dfTteEvents(), population = dfTtePopulation()[0, ]),
+      strModule = "time-to-event"
+    ),
+    "lData$population has 0 rows; the 'time-to-event' contract requires at least 1",
+    fixed = TRUE
+  )
+  # `events` declares no minimum: a study with no events still builds.
+  lPayload <- BuildWidgetPayload(
+    lData = list(events = dfTteEvents()[0, ], population = dfTtePopulation()),
+    strModule = "time-to-event"
+  )
+  expect_identical(nrow(lPayload$lData$events), 0L)
+})

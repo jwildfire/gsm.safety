@@ -69,6 +69,8 @@ BuildWidgetPayload <- function(
   # member that is not one.
   chrDatasets <- setdiff(unlist(lSchema$required), "settings")
 
+  # Remember how the frame arrived so an error names what the caller passed.
+  bFromResults <- is.null(lData)
   if (is.null(lData)) {
     gsm.core::stop_if(
       cnd = length(chrDatasets) != 1,
@@ -95,6 +97,18 @@ BuildWidgetPayload <- function(
       message = paste0(
         "lData$", strDataset, " is missing or not a data.frame; the '",
         strModule, "' contract requires it"
+      )
+    )
+    # The contract's `minItems` is a row count. A zero-row frame passes every
+    # column check and reaches the browser with nothing to draw, so stop here
+    # and name the frame the caller passed.
+    nMinItems <- lSchema$properties[[strDataset]]$minItems
+    strFrame <- if (bFromResults) "dfResults" else paste0("lData$", strDataset)
+    gsm.core::stop_if(
+      cnd = !is.null(nMinItems) && nrow(lData[[strDataset]]) < nMinItems,
+      message = paste0(
+        strFrame, " has ", nrow(lData[[strDataset]]), " rows; the '",
+        strModule, "' contract requires at least ", nMinItems
       )
     )
   }

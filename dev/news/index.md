@@ -1,399 +1,55 @@
 # Changelog
 
-## gsm.safety v1.5.0 (Upcoming)
+## gsm.safety v1.2.0 (Upcoming)
 
 **See it move:** [annotated
-demo](https://jwildfire.github.io/obot.roadmap/reports/gsm-safety-v1.5.0-demo/)
-— the appendix tables as data, the three derivations on the example
-data, the matrix and the alignment, with try-it steps against the
-candidate.
+demo](https://jwildfire.github.io/obot.roadmap/reports/gs-v1.2-demo/) —
+the eDISH peaks that move, named participant by participant; the census
+run under both versions on the same study; the four new widgets; and the
+FDA appendix tables as data with the three derivations on the example
+data, with try-it steps against the candidate.
 
-Phase 0 of the FDA Standard Safety Tables and Figures work
-([obot.roadmap#9](https://github.com/jwildfire/obot.roadmap/issues/9)):
-the guide’s reference criteria arrive as package data, so every static
-figure that follows, and every interactive twin that wants to agree with
-it, reads the FDA’s thresholds from one place instead of retyping them.
+One release, from `dev` into `main`. What had been queued as four
+candidates in order — widget parity, the census rebuild, the last two
+widgets, FDA ST&F phase 0 — ships as one on
+[@jwildfire](https://github.com/jwildfire)’s decision of 2026-09-12,
+with one set of notes and one demo page; `main` moves from v1.1.0 to
+v1.2.0. The notes lead with the two clinical figures that change,
+because a safety package that moved a published number quietly would be
+worse than one that never had the bug.
 
-### What’s new
+### Two clinical figures change
 
-- **`FDA_AbnormalityLevels` and `FDA_ExtremeValues` — Appendix Tables 56
-  to 60 of the FDA ST&F Integrated Guide v2.0 as tested package data.**
-  The level 1, 2 and 3 abnormality criteria for chemistry and hematology
-  (46 rows) and the extreme values suggestive of laboratory or recording
-  error for chemistry, hematology and vital signs (40 parameters, each
-  in US-conventional and SI units). Every row carries the guide table,
-  section and printed page it came from and a note wherever the
-  transcription needed a reading; the abnormality-level rows also carry
-  each criterion as printed beside the parsed number. Spot values are
-  asserted against the PDF page by page in the suite. Nothing in R could
-  supply these thresholds before; now `data(FDA_AbnormalityLevels)`
-  does. ([\#77](https://github.com/jwildfire/gsm.safety/issues/77),
-  [\#83](https://github.com/jwildfire/gsm.safety/pull/83), hub
-  [obot.roadmap#9](https://github.com/jwildfire/obot.roadmap/issues/9))
+- **The vendored safety.viz bundle moves from v1.4.0 to v1.7.0**, so
+  every widget renders with three releases of upstream fixes and
+  features it was missing. One of them changes clinical numbers: the
+  corrected eDISH peak computation
+  ([safety.viz#91](https://github.com/jwildfire/safety.viz/issues/91)) —
+  the v1.4.0 bundle excluded a participant’s baseline record from their
+  on-treatment peaks *by study day* rather than *by identity*, so a
+  participant with no day-0 record had their own baseline counted as an
+  on-treatment peak and could never show a below-baseline peak. Measured
+  on the bundled `adbds` example data, 24 of 364 participants have no
+  day-0 hepatic record and hit the corrected rule: the composite eDISH
+  view now plots 293 participants with 71 excluded (was 295 / 69), 9
+  participants’ plotted peak values move, and 2 leave the plot because
+  they have no genuine on-treatment peak. Quadrant classification is
+  unchanged on this data. The corrected reduction feeds
+  [`Widget_HepExplorer()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_HepExplorer.md)’s
+  composite and migration views and
+  [`Widget_HepWaterfall()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_HepWaterfall.md).
+  Everything else the catch-up brings is feature or appearance:
+  participant-profile drill-down on six charts, the migration Sankey
+  view, eDISH direct manipulation and study-day playback, the shared
+  hep/qt view selector, log-base and axis-limit controls.
+  ([\#49](https://github.com/jwildfire/gsm.safety/issues/49))
+- **The death count, 4 → 13, and four more census figures.** The census
+  rebuild replaced every figure the safety overview leads with by a
+  metric that publishes its own numerator beside its own denominator,
+  and five of those figures move. Each is named here with what it was
+  wrong about; the rebuild itself is under *The census rebuild* below.
 
-- **`design/fda-adam-alignment.md` — the ADaM alignment the design left
-  open, settled.** For each of ADSL, ADAE, ADLB and ADVS the note lists
-  the columns the 22 figures and the phase 0 derivations need, marks
-  each as found in the vendored example data, present in a gsm.mapping
-  `Mapped_*` domain, derivable, or missing, and records a decision for
-  every gap: which columns to vendor from pharmaverseadam (they join on
-  the same CDISC pilot subjects), which to derive once in a shared
-  helper, and which figures are out of scope on the demo data. It ends
-  with the column contract the phase 1 engines code against. 51 columns,
-  none unmarked, nothing blocked.
-  ([\#80](https://github.com/jwildfire/gsm.safety/issues/80),
-  [\#85](https://github.com/jwildfire/gsm.safety/pull/85), hub
-  [obot.roadmap#9](https://github.com/jwildfire/obot.roadmap/issues/9))
-
-- **[`Derive_ULNMultiple()`](https://jwildfire.github.io/gsm.safety/dev/reference/Derive_ULNMultiple.md),
-  [`Derive_AbnormalityLevel()`](https://jwildfire.github.io/gsm.safety/dev/reference/Derive_AbnormalityLevel.md)
-  and
-  [`Derive_ExtremeValueFlag()`](https://jwildfire.github.io/gsm.safety/dev/reference/Derive_ExtremeValueFlag.md)
-  — the guide’s first normative rules, applied once in R.** Each takes
-  long-format results in the shape of `ExampleData("adbds")` and returns
-  the same frame with its derived columns added, never an aggregate: the
-  result as a multiple of its own upper limit of normal; the level 1, 2
-  or 3 abnormality grade from Tables 56 and 57 with the direction and
-  the criterion that fired; and the flag the guide’s extreme-value
-  exclusion rule reads from Tables 58 to 60. The grading and the flag
-  honour the data’s unit column: an absolute threshold is compared only
-  in its own unit system, and a result in a unit the guide does not
-  print is left `NA` and named in a message rather than misgraded.
-  Column names are arguments with the `adbds` names as defaults; the
-  criteria table is an argument too, so an established grading system
-  can stand in for the FDA’s. A cross-check asserts that the ULN
-  multiples reproduce the peaks
-  [`Input_HysLaw()`](https://jwildfire.github.io/gsm.safety/dev/reference/Input_HysLaw.md)
-  computes for the same participants.
-  ([\#78](https://github.com/jwildfire/gsm.safety/issues/78),
-  [\#86](https://github.com/jwildfire/gsm.safety/pull/86), hub
-  [obot.roadmap#9](https://github.com/jwildfire/obot.roadmap/issues/9))
-
-- **`requirements/fda-stf.md` — the FDA ST&F requirement matrix.** One
-  keyed row for each of the guide’s 22 figures (`FDA-FIG-001` to
-  `FDA-FIG-022`) and one for each cross-cutting rule the phase 0
-  derivations and the later static engines implement (`FDA-RULE-001` to
-  `FDA-RULE-016`), in the safety.viz matrix shape, so a static rendering
-  in this package and its interactive twin in safety.viz cite one
-  requirement ID and their evidence meets on the same row. Every row
-  names the guide version and section, its chart engine, its ADaM
-  domains and its safety.viz twin; `requirements/README.md` says how
-  rows are keyed and how a test cites one, and a test holds the file to
-  that shape.
-  ([\#79](https://github.com/jwildfire/gsm.safety/issues/79),
-  [\#84](https://github.com/jwildfire/gsm.safety/pull/84), hub
-  [obot.roadmap#9](https://github.com/jwildfire/obot.roadmap/issues/9))
-
-### Also in this release
-
-- The package now declares `LazyData: true` and `Depends: R (>= 3.5.0)`,
-  and the hand-checked transcription with its build script lives in
-  `data-raw/`.
-- [`Input_ParticipantDays()`](https://jwildfire.github.io/gsm.safety/dev/reference/Input_ParticipantDays.md)
-  refuses an infinite day count the way it refuses a negative one: the
-  participant leaves both sides of the figure and is named in the
-  warning, instead of the metric publishing `Inf`. Found by the code
-  review of the v1.5.0 candidate.
-  ([\#96](https://github.com/jwildfire/gsm.safety/issues/96),
-  [\#97](https://github.com/jwildfire/gsm.safety/pull/97))
-- [`BuildWidgetPayload()`](https://jwildfire.github.io/gsm.safety/dev/reference/BuildWidgetPayload.md)
-  now validates the `normal_col_high` setting the hepatic explorer,
-  hepatic waterfall and participant profile require, like every other
-  column mapping, so a limit-of-normal column that does not exist fails
-  in R instead of the chart drawing without its limits. Found by the
-  code review of the v1.5.0 candidate.
-  ([\#99](https://github.com/jwildfire/gsm.safety/issues/99),
-  [\#101](https://github.com/jwildfire/gsm.safety/pull/101))
-- The `Derive_*` functions refuse to overwrite an input column that
-  shares an output name, naming the column, so
-  `Derive_ULNMultiple(df, strOutCol = "STRESN")` errors instead of
-  replacing the source result, and a frame that already carries a
-  generated sibling such as `AbnormalityDirection` is refused the same
-  way. The documented contract, the input frame plus appended columns,
-  is now enforced. Found by the code review of the v1.5.0 candidate.
-  ([\#102](https://github.com/jwildfire/gsm.safety/issues/102),
-  [\#105](https://github.com/jwildfire/gsm.safety/pull/105))
-- [`BuildWidgetPayload()`](https://jwildfire.github.io/gsm.safety/dev/reference/BuildWidgetPayload.md)
-  refuses a required column setting that is not a single character
-  string, naming the setting, so `list(value_col = 5)` or a vector of
-  two column names fails in R instead of reaching the browser as a
-  property the renderer cannot find. Found by the code review of the
-  v1.5.0 candidate.
-  ([\#103](https://github.com/jwildfire/gsm.safety/issues/103),
-  [\#104](https://github.com/jwildfire/gsm.safety/pull/104))
-- [`Widget_ParticipantProfile()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_ParticipantProfile.md)
-  refuses an adverse-event column setting that is not a single character
-  string, naming the setting and the shape received, in step with the
-  main frame’s mappings. Found by the code review of the v1.5.0
-  candidate.
-  ([\#107](https://github.com/jwildfire/gsm.safety/issues/107),
-  [\#112](https://github.com/jwildfire/gsm.safety/pull/112))
-- [`Report_SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/Report_SafetyCensus.md)
-  and
-  [`SaveWidgetReport()`](https://jwildfire.github.io/gsm.safety/dev/reference/SaveWidgetReport.md)
-  refuse an output file name that is not a single non-missing character
-  string, naming the argument, so a number, a vector or `NA` fails
-  before anything is written instead of part-way through. Found by the
-  code review of the v1.5.0 candidate.
-  ([\#106](https://github.com/jwildfire/gsm.safety/issues/106),
-  [\#111](https://github.com/jwildfire/gsm.safety/pull/111),
-  [\#115](https://github.com/jwildfire/gsm.safety/issues/115),
-  [\#116](https://github.com/jwildfire/gsm.safety/pull/116))
-- [`BuildWidgetPayload()`](https://jwildfire.github.io/gsm.safety/dev/reference/BuildWidgetPayload.md)
-  refuses a required setting supplied as `NULL`, naming it and pointing
-  to the schema default, so `list(value_col = NULL)` no longer passes
-  the checks against the default and then reaches the browser as JSON
-  `null`. Found by the code review of the v1.5.0 candidate.
-  ([\#109](https://github.com/jwildfire/gsm.safety/issues/109),
-  [\#113](https://github.com/jwildfire/gsm.safety/pull/113))
-- [`SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/SafetyCensus.md)
-  refuses a supplied domain that does not carry the participant ID
-  column named by `strIDCol`, naming the domain, instead of counting it
-  under an unrelated `subjid` column or publishing `NA`. Found by the
-  code review of the v1.5.0 candidate.
-  ([\#117](https://github.com/jwildfire/gsm.safety/issues/117),
-  [\#118](https://github.com/jwildfire/gsm.safety/pull/118))
-- The `FDA-RULE-002` row of `requirements/fda-stf.md` says what
-  [`Derive_AbnormalityLevel()`](https://jwildfire.github.io/gsm.safety/dev/reference/Derive_AbnormalityLevel.md)
-  does: a graded result meeting no level is `0`, and only a record the
-  criteria cannot be applied to has no grade (`NA`); the row had called
-  both “no grade”. Found by the code review of the v1.5.0 candidate.
-  ([\#128](https://github.com/jwildfire/gsm.safety/issues/128),
-  [\#132](https://github.com/jwildfire/gsm.safety/pull/132))
-- [`Widget_ParticipantProfile()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_ParticipantProfile.md)
-  refuses an `ae` setting that is not a plain list (a data.frame
-  included), and an AE column supplied as `NULL`, naming the setting and
-  pointing to the default, instead of failing with a subscript error or
-  sending `null` to the browser and drawing an empty timeline. Found by
-  the code review of the v1.5.0 candidate.
-  ([\#119](https://github.com/jwildfire/gsm.safety/issues/119),
-  [\#122](https://github.com/jwildfire/gsm.safety/pull/122),
-  [\#124](https://github.com/jwildfire/gsm.safety/pull/124))
-- [`Report_SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/Report_SafetyCensus.md)
-  refuses a missing or empty `strOutputDir` with the same message it
-  uses for a vector, instead of failing later from base R or writing the
-  page relative to an empty directory. Found by the code review of the
-  v1.5.0 candidate.
-  ([\#120](https://github.com/jwildfire/gsm.safety/issues/120),
-  [\#123](https://github.com/jwildfire/gsm.safety/pull/123))
-- [`BuildWidgetPayload()`](https://jwildfire.github.io/gsm.safety/dev/reference/BuildWidgetPayload.md)
-  refuses a required group of settings, such as `color` for the AE
-  timelines, supplied as anything but a list, naming the setting,
-  instead of failing inside the check with a subscript error. Found by
-  the code review of the v1.5.0 candidate.
-  ([\#125](https://github.com/jwildfire/gsm.safety/issues/125),
-  [\#130](https://github.com/jwildfire/gsm.safety/pull/130))
-- The census report helpers refuse `lSettings` supplied as a data.frame,
-  which [`is.list()`](https://rdrr.io/r/base/list.html) accepts, instead
-  of reading every setting as absent and building the page as if none
-  had been given. Found by the code review of the v1.5.0 candidate.
-  ([\#133](https://github.com/jwildfire/gsm.safety/issues/133),
-  [\#134](https://github.com/jwildfire/gsm.safety/pull/134))
-- [`SaveWidgetReport()`](https://jwildfire.github.io/gsm.safety/dev/reference/SaveWidgetReport.md)
-  refuses a missing or empty `strOutputDir` with the message it already
-  uses for a vector, instead of writing the page relative to the
-  filesystem root; the same guard
-  [`Report_SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/Report_SafetyCensus.md)
-  gained in [\#123](https://github.com/jwildfire/gsm.safety/issues/123).
-  Found by the code review of the v1.5.0 candidate.
-  ([\#135](https://github.com/jwildfire/gsm.safety/issues/135),
-  [\#136](https://github.com/jwildfire/gsm.safety/pull/136))
-- [`SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/SafetyCensus.md)
-  keeps the group column the caller named when the participant ID is
-  normalised onto its name, so
-  `strIDCol = "usubjid", strGroupCol = "subjid"` groups by the values
-  given instead of stopping every study-level metric on a missing
-  `subjid`, and naming the same column for both is refused up front.
-  Found by the code review of the v1.5.0 candidate.
-  ([\#144](https://github.com/jwildfire/gsm.safety/issues/144),
-  [\#146](https://github.com/jwildfire/gsm.safety/pull/146))
-- [`BuildWidgetPayload()`](https://jwildfire.github.io/gsm.safety/dev/reference/BuildWidgetPayload.md)
-  refuses a dataset with fewer rows than its contract’s `minItems`,
-  naming the frame, the module and the minimum, so
-  `Widget_HepExplorer(dfLabs[0, ])` stops in R instead of sending an
-  empty frame to a renderer with nothing to draw; a dataset whose
-  contract sets no minimum, such as the time-to-event `events`, is
-  unchanged. Found by the code review of the v1.5.0 candidate.
-  ([\#149](https://github.com/jwildfire/gsm.safety/issues/149),
-  [\#150](https://github.com/jwildfire/gsm.safety/pull/150))
-- The package site wears the jwildfire.github.io theme, as the obot hub
-  does since 2026-09-12: paper ground, graphite ink, plum links,
-  Instrument Serif headings, Instrument Sans body, IBM Plex Mono code,
-  and the honeycomb strip along the navbar and footer. The pkgdown pages
-  take the palette and fonts as bslib variables in `_pkgdown.yml` with
-  `pkgdown/extra.css` carrying the bands; the standalone example pages
-  take the same palette through their shared chrome in
-  `pkgdown/menus/examples/util/`.
-  ([\#94](https://github.com/jwildfire/gsm.safety/pull/94),
-  [\#95](https://github.com/jwildfire/gsm.safety/pull/95))
-- [`SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/SafetyCensus.md)
-  takes the unnamed-study path, and says so, when the `strGroupCol` the
-  caller named is absent from the subject domain, instead of silently
-  grouping by a `studyid` column the caller did not name. Found by the
-  code review of the v1.5.0 candidate.
-  ([\#126](https://github.com/jwildfire/gsm.safety/issues/126),
-  [\#131](https://github.com/jwildfire/gsm.safety/pull/131))
-- The participant profile and time-to-event examples, pages and test
-  fixtures drop the placeholder adverse-event rows whether the term is
-  blank or missing; `nzchar(NA)` is `TRUE`, so the filter names the
-  missing case too. Not reachable with the shipped example data, which
-  has no missing terms. Found by the code review of the v1.5.0
-  candidate.
-  ([\#139](https://github.com/jwildfire/gsm.safety/issues/139),
-  [\#140](https://github.com/jwildfire/gsm.safety/pull/140))
-- [`Report_SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/Report_SafetyCensus.md)
-  and
-  [`SaveWidgetReport()`](https://jwildfire.github.io/gsm.safety/dev/reference/SaveWidgetReport.md)
-  refuse an empty `strOutputFile` with the message they already use for
-  a missing one, instead of writing the page as a hidden `.html` file
-  with no name. Found by the code review of the v1.5.0 candidate.
-  ([\#143](https://github.com/jwildfire/gsm.safety/issues/143),
-  [\#145](https://github.com/jwildfire/gsm.safety/pull/145))
-
-## gsm.safety v1.4.0 (Upcoming)
-
-Every chart safety.viz draws can now be drawn from R. The last two
-renderers without an R binding — the Kaplan-Meier time-to-event display
-and the participant profile — ship as widgets in this release, so the
-deferral list that has carried them since v1.2.0 is empty.
-
-Both were held back by the same thing, and it was never the JavaScript:
-each needs a second data frame, and the widget contract carried one.
-That contract is now general — a widget reads the datasets its data
-contract names, rather than assuming there is one — so the next renderer
-that arrives with two frames needs no change to the machinery.
-
-### What’s new
-
-- **[`Widget_TimeToEvent()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_TimeToEvent.md)
-  — Kaplan-Meier curves for an endpoint you compose while looking at
-  it.** There is no pre-derived time-to-event dataset, because the
-  endpoint is not fixed in advance: multiselect filters over the adverse
-  events decide which events qualify — every treatment-emergent event by
-  default, and one click away the serious-only endpoint or a body-system
-  basket. The module takes each participant’s first qualifying event,
-  censors everyone else at their own follow-up-end day, and draws the
-  product-limit estimator with Greenwood log-log pointwise 95% bands,
-  censor marks, and the at-risk and cumulative-event tables beneath the
-  axis. Cumulative incidence is the default orientation because that is
-  the safety convention; survival is a control away. Takes two frames:
-  the events, and the population that is the denominator.
-  ([\#71](https://github.com/jwildfire/gsm.safety/issues/71), hub
-  [obot.roadmap#165](https://github.com/jwildfire/obot.roadmap/issues/165))
-- **[`Widget_ParticipantProfile()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_ParticipantProfile.md)
-  — the participant drill-down as a report of its own.** A demographics
-  header, a labs-over-time spaghetti standardized to multiples of the
-  upper limit of normal or of baseline, adverse-event tracks drawn on
-  that same study-day axis so a rash and a bilirubin rise line up, and a
-  measure table whose sparklines expand into an inset. A cohort of more
-  than one is ranked worst-first and stepped through. The profile
-  already existed inside three charts as a rail beside the chart; what
-  it lacked was a standalone surface for a report that already knows its
-  cohort — a per-participant appendix, a narrative for a set of flagged
-  participants. Name the cohort with `chrParticipants`; without one the
-  profile waits for a selection event that a static report never sends.
-  ([\#71](https://github.com/jwildfire/gsm.safety/issues/71))
-- **`ExampleData("adsl")`** — one row per participant with their
-  treatment arm, follow-up-end study day and end-of-study status. The
-  population denominator
-  [`Widget_TimeToEvent()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_TimeToEvent.md)
-  censors against, vendored from the same safety.viz demo data as the
-  other four sets.
-- **Report workflows and example pages for both**, `time_to_event.yaml`
-  and `participant_profile.yaml`, each with its runner script and its
-  live page in the gallery.
-
-### Worth knowing
-
-- **The design question this release was waiting on turned out to be
-  two-thirds already answered.** The requirement asked whether the
-  participant profile’s R surface should be a standalone widget, a
-  compound widget hosting a chart plus a rail, or profile-enabled
-  variants of the lab widgets. The vendored bundle decides it: the
-  compound mount cannot be reached from R at all, because safety.viz
-  does not export `profileRail` on its public object; and the
-  profile-enabled lab widgets already shipped in v1.2.0 —
-  [`Widget_HepExplorer()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_HepExplorer.md),
-  [`Widget_Histogram()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_Histogram.md)
-  and
-  [`Widget_OutlierExplorer()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_OutlierExplorer.md)
-  mount the rail from their `profile` setting, on by default in the
-  first. The standalone surface was the only real gap, and it is what
-  this release adds.
-- **A widget that loads nothing looks exactly like one that works, and
-  now something says so.** A binding that constructs its renderer and
-  never hands it data raises no console error, still emits its element,
-  still ships the bundle, and still carries every data value in the page
-  — measured on a deliberately broken copy of a working widget, which no
-  assertion in the suite could tell apart from the real one. A new test
-  asserts every binding both constructs *and* feeds its module, and it
-  was proven in both directions: red with the feed call removed, green
-  with it restored.
-- **The two deferral lists can no longer disagree.**
-  `.github/parity-allowlist.yaml` and the test’s own deferral list are
-  now asserted equal, and every allowlist entry must still name a filed
-  requirement. A renderer dropped from one file and left in the other
-  used to keep reporting itself as deferred after it shipped.
-- **The eleven existing widgets are byte-for-byte unchanged in what they
-  send the browser.** The generalized payload builder returns exactly
-  the payload it did before for any contract that names a single
-  dataset.
-- **Five workflows had been failing before they started, and two of them
-  are the qualification checks.** `gsm.utils` and `qcthat` moved from
-  the `Gilead-BioStats` organisation to `Gilead-Public` on 2026-08-04.
-  GitHub redirects the old name for an action called from a step, which
-  is why `R-CMD-check` never noticed, but not for a reusable workflow
-  called from a job, which is resolved when the workflow file is parsed.
-  `pkgdown-all`, `test-coverage`, `qcthat` and `workflow-template-check`
-  had failed every run since with zero jobs, and `Release` failed the
-  same way on v1.1.0. A run that fails that early raises no check run at
-  all, so none of it appeared on a pull request: PR
-  [\#68](https://github.com/jwildfire/gsm.safety/pull/68), the v1.2.0
-  candidate, showed six checks and six passes while four workflows were
-  failing against the same commit. Every workflow file is now the
-  current upstream template verbatim.
-  ([\#55](https://github.com/jwildfire/gsm.safety/issues/55))
-
-## gsm.safety v1.3.0 (Upcoming)
-
-Twelve of the thirteen census metrics, and every clinical figure the
-safety overview leads with is now a number the pipeline computes,
-publishes beside its denominator and can be checked on its own — plus
-the report that reads them, and
-[`SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/SafetyCensus.md)
-rebuilt on top of both. All four steps of the SafetyCensus rebuild
-([obot.roadmap#274](https://github.com/jwildfire/obot.roadmap/issues/274),
-design
-[D0023](https://jwildfire.github.io/obot.roadmap/reports/decisions/2026-08-20-safety-census-rebuild/)
-approved 2026-08-20).
-
-The published figures move in this release, and that is the release
-rather than a footnote to it. A safety tool that quietly corrected a
-death count would be worse than one that never had the bug, so every
-figure that moved is named below with what it was wrong about, and every
-figure that left the payload is named with why nothing publishes it yet.
-
-The death count came first because it is the number the review was
-written about. The other eleven follow it into the same machinery: the
-same declared columns, the same guard, the same anchor to the enrolled
-population, and the same empty flag. Four of them report a different
-number than
-[`SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/SafetyCensus.md)
-does today, and each of the four was wrong for a reason named below.
-
-Data completeness, the thirteenth, is not here. Why is under *Worth
-knowing*.
-
-The report is the third step, and its whole job is to read. It presents
-the figures the metrics published, beside the denominators the metrics
-published, under the labels the metric definitions carry — and it
-computes nothing of its own, so there is no second counting lane and no
-way for the census to disagree with the rest of the package about the
-same study. What each metric published is printed verbatim at the foot
-of the page, so every presentation on it can be checked against its
-source without leaving the page.
-
-### The figures that move, and why they were wrong
+#### The figures that move, and why they were wrong
 
 | Figure | Before v1.3.0 | Now | Why it was wrong |
 |----|----|----|----|
@@ -416,7 +72,7 @@ no code, and recorded in
 `inst/qualification/census-metrics-qualification.md` with a reproducer
 that exits non-zero if the routes ever disagree.
 
-#### The death count, in detail
+##### The death count, in detail
 
 [`SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/SafetyCensus.md)
 reports four deaths on the ecosystem’s bundled study. It reaches that
@@ -469,7 +125,127 @@ directly with base R, and the standard mapping run through the workflow
 recorded in `inst/qualification/death-count-qualification.md` and run in
 the suite as `tests/testthat/test-qualification-death-count.R`.
 
-### What left the payload, and why nothing publishes it yet
+### Four new widgets
+
+Every chart safety.viz draws can now be drawn from R. The last two
+renderers without an R binding — the Kaplan-Meier time-to-event display
+and the participant profile — ship as widgets in this release, so the
+deferral list that carried them is empty.
+
+Both were held back by the same thing, and it was never the JavaScript:
+each needs a second data frame, and the widget contract carried one.
+That contract is now general — a widget reads the datasets its data
+contract names, rather than assuming there is one — so the next renderer
+that arrives with two frames needs no change to the machinery.
+
+- **Two new widgets —
+  [`Widget_HepWaterfall()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_HepWaterfall.md)
+  and
+  [`Widget_NepExplorer()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_NepExplorer.md)**
+  — the hepatic ALT waterfall for abnormal-baseline trials (Amirzadegan
+  et al. 2025, Fig. 5) and the KDIGO nephrotoxicity explorer, each with
+  its report workflow, example page, and bundled demo cohort
+  (`adbds_abnbl`; synthetic `AKI-*` participants join `adbds`).
+  ([obot.roadmap#164](https://github.com/jwildfire/obot.roadmap/issues/164),
+  [\#49](https://github.com/jwildfire/gsm.safety/issues/49))
+- **[`Widget_TimeToEvent()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_TimeToEvent.md)
+  — Kaplan-Meier curves for an endpoint you compose while looking at
+  it.** There is no pre-derived time-to-event dataset, because the
+  endpoint is not fixed in advance: multiselect filters over the adverse
+  events decide which events qualify — every treatment-emergent event by
+  default, and one click away the serious-only endpoint or a body-system
+  basket. The module takes each participant’s first qualifying event,
+  censors everyone else at their own follow-up-end day, and draws the
+  product-limit estimator with Greenwood log-log pointwise 95% bands,
+  censor marks, and the at-risk and cumulative-event tables beneath the
+  axis. Cumulative incidence is the default orientation because that is
+  the safety convention; survival is a control away. Takes two frames:
+  the events, and the population that is the denominator.
+  ([\#71](https://github.com/jwildfire/gsm.safety/issues/71), hub
+  [obot.roadmap#165](https://github.com/jwildfire/obot.roadmap/issues/165))
+- **[`Widget_ParticipantProfile()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_ParticipantProfile.md)
+  — the participant drill-down as a report of its own.** A demographics
+  header, a labs-over-time spaghetti standardized to multiples of the
+  upper limit of normal or of baseline, adverse-event tracks drawn on
+  that same study-day axis so a rash and a bilirubin rise line up, and a
+  measure table whose sparklines expand into an inset. A cohort of more
+  than one is ranked worst-first and stepped through. The profile
+  already existed inside three charts as a rail beside the chart; what
+  it lacked was a standalone surface for a report that already knows its
+  cohort — a per-participant appendix, a narrative for a set of flagged
+  participants. Name the cohort with `chrParticipants`; without one the
+  profile waits for a selection event that a static report never sends.
+  ([\#71](https://github.com/jwildfire/gsm.safety/issues/71))
+- **`ExampleData("adsl")`** — one row per participant with their
+  treatment arm, follow-up-end study day and end-of-study status. The
+  population denominator
+  [`Widget_TimeToEvent()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_TimeToEvent.md)
+  censors against, vendored from the same safety.viz demo data as the
+  other four sets.
+- **Report workflows and example pages for both**, `time_to_event.yaml`
+  and `participant_profile.yaml`, each with its runner script and its
+  live page in the gallery.
+- **A safety.viz parity guard makes the next drift loud**: `DESCRIPTION`
+  declares the wrapped library version (`Config/safetyviz/version`), an
+  offline test keeps the declaration, the vendored bundle, and every
+  widget binding in agreement, and a CI workflow checks the latest
+  safety.viz release — blocking PRs on unwrapped renderers unless
+  `.github/parity-allowlist.yaml` cites a filed requirement, and filing
+  an adoption issue automatically on its weekly schedule.
+  ([obot.roadmap#164](https://github.com/jwildfire/obot.roadmap/issues/164),
+  [\#49](https://github.com/jwildfire/gsm.safety/issues/49))
+- **Two of safety.viz’s thirteen renderers stay unwrapped, on the
+  record**: `participantProfile` and `timeToEvent` are cited deferrals
+  in `.github/parity-allowlist.yaml`, each pointing at
+  [obot.roadmap#165](https://github.com/jwildfire/obot.roadmap/issues/165).
+  Both need two data frames, which the single-`dfResults` widget
+  contract cannot carry, so they are a design question rather than a
+  mechanical wrap. The parity check fails on a deferral that cites
+  nothing, so this cannot quietly become “we forgot”.
+  ([\#49](https://github.com/jwildfire/gsm.safety/issues/49)) — *Both
+  are wrapped in this release, by the two widgets above; the allowlist
+  is now empty.*
+
+### The census rebuild
+
+Twelve of the thirteen census metrics, and every clinical figure the
+safety overview leads with is now a number the pipeline computes,
+publishes beside its denominator and can be checked on its own — plus
+the report that reads them, and
+[`SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/SafetyCensus.md)
+rebuilt on top of both. All four steps of the SafetyCensus rebuild
+([obot.roadmap#274](https://github.com/jwildfire/obot.roadmap/issues/274),
+design
+[D0023](https://jwildfire.github.io/obot.roadmap/reports/decisions/2026-08-20-safety-census-rebuild/)
+approved 2026-08-20).
+
+The published figures move in this release, and that is the release
+rather than a footnote to it. A safety tool that quietly corrected a
+death count would be worse than one that never had the bug, so every
+figure that moved is named above with what it was wrong about, and every
+figure that left the payload is named with why nothing publishes it yet.
+
+The death count came first because it is the number the review was
+written about. The other eleven follow it into the same machinery: the
+same declared columns, the same guard, the same anchor to the enrolled
+population, and the same empty flag. Four of them report a different
+number than
+[`SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/SafetyCensus.md)
+does today, and each of the four was wrong for a reason named above.
+
+Data completeness, the thirteenth, is not here. Why is under *Worth
+knowing about the census*.
+
+The report is the third step, and its whole job is to read. It presents
+the figures the metrics published, beside the denominators the metrics
+published, under the labels the metric definitions carry — and it
+computes nothing of its own, so there is no second counting lane and no
+way for the census to disagree with the rest of the package about the
+same study. What each metric published is printed verbatim at the foot
+of the page, so every presentation on it can be checked against its
+source without leaving the page.
+
+#### What left the payload, and why nothing publishes it yet
 
 [`SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/SafetyCensus.md)
 computes nothing now, so a figure no metric publishes is not in what it
@@ -492,7 +268,7 @@ tile read as not collected until its mapping phase adds them. Absent is
 not zero, and it is not a quiet blank either — the pipeline log names
 the domain that would have produced each figure.
 
-### What’s new
+#### What’s new in the census
 
 - **`saf0004`, a descriptive study-level death count**
   ([\#56](https://github.com/jwildfire/gsm.safety/issues/56)) — counted
@@ -716,7 +492,9 @@ the domain that would have produced each figure.
   [`SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/SafetyCensus.md)
   figure for a day and a person reading it caught it, not a test; that
   figure is now checked in both records, which have to agree with each
-  other about it. \## Worth knowing
+  other about it.
+
+#### Worth knowing about the census
 
 - **The bundled study moves, so the qualification is version-pinned.**
   Between gsm.core 1.2.0 and 1.3.1 the reference study changed under the
@@ -814,7 +592,7 @@ the domain that would have produced each figure.
   quietly dropped. The blank-reason defect they were meant to fix was
   not fixed in step four either: it was removed with the free-text
   reason breakdown that carried it, which is under *What left the
-  payload* below.
+  payload* above.
 
 - **The bundled study has moved again, and the recorded figures are
   pinned behind it.** Every figure in this release was measured on
@@ -897,61 +675,299 @@ the domain that would have produced each figure.
   returns the same three tables with the same columns — what changed is
   the numbers in them, and they are named at the top of these notes.
 
-## gsm.safety v1.2.0 (Upcoming)
+### FDA ST&F phase 0
 
-- **Two new widgets —
-  [`Widget_HepWaterfall()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_HepWaterfall.md)
+Phase 0 of the FDA Standard Safety Tables and Figures work
+([obot.roadmap#9](https://github.com/jwildfire/obot.roadmap/issues/9)):
+the guide’s reference criteria arrive as package data, so every static
+figure that follows, and every interactive twin that wants to agree with
+it, reads the FDA’s thresholds from one place instead of retyping them.
+
+- **`FDA_AbnormalityLevels` and `FDA_ExtremeValues` — Appendix Tables 56
+  to 60 of the FDA ST&F Integrated Guide v2.0 as tested package data.**
+  The level 1, 2 and 3 abnormality criteria for chemistry and hematology
+  (46 rows) and the extreme values suggestive of laboratory or recording
+  error for chemistry, hematology and vital signs (40 parameters, each
+  in US-conventional and SI units). Every row carries the guide table,
+  section and printed page it came from and a note wherever the
+  transcription needed a reading; the abnormality-level rows also carry
+  each criterion as printed beside the parsed number. Spot values are
+  asserted against the PDF page by page in the suite. Nothing in R could
+  supply these thresholds before; now `data(FDA_AbnormalityLevels)`
+  does. ([\#77](https://github.com/jwildfire/gsm.safety/issues/77),
+  [\#83](https://github.com/jwildfire/gsm.safety/pull/83), hub
+  [obot.roadmap#9](https://github.com/jwildfire/obot.roadmap/issues/9))
+
+- **`design/fda-adam-alignment.md` — the ADaM alignment the design left
+  open, settled.** For each of ADSL, ADAE, ADLB and ADVS the note lists
+  the columns the 22 figures and the phase 0 derivations need, marks
+  each as found in the vendored example data, present in a gsm.mapping
+  `Mapped_*` domain, derivable, or missing, and records a decision for
+  every gap: which columns to vendor from pharmaverseadam (they join on
+  the same CDISC pilot subjects), which to derive once in a shared
+  helper, and which figures are out of scope on the demo data. It ends
+  with the column contract the phase 1 engines code against. 51 columns,
+  none unmarked, nothing blocked.
+  ([\#80](https://github.com/jwildfire/gsm.safety/issues/80),
+  [\#85](https://github.com/jwildfire/gsm.safety/pull/85), hub
+  [obot.roadmap#9](https://github.com/jwildfire/obot.roadmap/issues/9))
+
+- **[`Derive_ULNMultiple()`](https://jwildfire.github.io/gsm.safety/dev/reference/Derive_ULNMultiple.md),
+  [`Derive_AbnormalityLevel()`](https://jwildfire.github.io/gsm.safety/dev/reference/Derive_AbnormalityLevel.md)
   and
-  [`Widget_NepExplorer()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_NepExplorer.md)**
-  — the hepatic ALT waterfall for abnormal-baseline trials (Amirzadegan
-  et al. 2025, Fig. 5) and the KDIGO nephrotoxicity explorer, each with
-  its report workflow, example page, and bundled demo cohort
-  (`adbds_abnbl`; synthetic `AKI-*` participants join `adbds`).
-  ([obot.roadmap#164](https://github.com/jwildfire/obot.roadmap/issues/164),
-  [\#49](https://github.com/jwildfire/gsm.safety/issues/49))
-- **The vendored safety.viz bundle moves from v1.4.0 to v1.7.0**, so
-  every widget renders with three releases of upstream fixes and
-  features it was missing. One of them changes clinical numbers: the
-  corrected eDISH peak computation
-  ([safety.viz#91](https://github.com/jwildfire/safety.viz/issues/91)) —
-  the v1.4.0 bundle excluded a participant’s baseline record from their
-  on-treatment peaks *by study day* rather than *by identity*, so a
-  participant with no day-0 record had their own baseline counted as an
-  on-treatment peak and could never show a below-baseline peak. Measured
-  on the bundled `adbds` example data, 24 of 364 participants have no
-  day-0 hepatic record and hit the corrected rule: the composite eDISH
-  view now plots 293 participants with 71 excluded (was 295 / 69), 9
-  participants’ plotted peak values move, and 2 leave the plot because
-  they have no genuine on-treatment peak. Quadrant classification is
-  unchanged on this data. The corrected reduction feeds
-  [`Widget_HepExplorer()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_HepExplorer.md)’s
-  composite and migration views and
-  [`Widget_HepWaterfall()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_HepWaterfall.md).
-  Everything else the catch-up brings is feature or appearance:
-  participant-profile drill-down on six charts, the migration Sankey
-  view, eDISH direct manipulation and study-day playback, the shared
-  hep/qt view selector, log-base and axis-limit controls.
-  ([\#49](https://github.com/jwildfire/gsm.safety/issues/49))
-- **A safety.viz parity guard makes the next drift loud**: `DESCRIPTION`
-  declares the wrapped library version (`Config/safetyviz/version`), an
-  offline test keeps the declaration, the vendored bundle, and every
-  widget binding in agreement, and a CI workflow checks the latest
-  safety.viz release — blocking PRs on unwrapped renderers unless
-  `.github/parity-allowlist.yaml` cites a filed requirement, and filing
-  an adoption issue automatically on its weekly schedule.
-  ([obot.roadmap#164](https://github.com/jwildfire/obot.roadmap/issues/164),
-  [\#49](https://github.com/jwildfire/gsm.safety/issues/49))
-- **Two of safety.viz’s thirteen renderers stay unwrapped, on the
-  record**: `participantProfile` and `timeToEvent` are cited deferrals
-  in `.github/parity-allowlist.yaml`, each pointing at
-  [obot.roadmap#165](https://github.com/jwildfire/obot.roadmap/issues/165).
-  Both need two data frames, which the single-`dfResults` widget
-  contract cannot carry, so they are a design question rather than a
-  mechanical wrap. The parity check fails on a deferral that cites
-  nothing, so this cannot quietly become “we forgot”.
-  ([\#49](https://github.com/jwildfire/gsm.safety/issues/49)) — *Both
-  were wrapped in v1.4.0; the allowlist is now empty. See that release’s
-  notes.*
+  [`Derive_ExtremeValueFlag()`](https://jwildfire.github.io/gsm.safety/dev/reference/Derive_ExtremeValueFlag.md)
+  — the guide’s first normative rules, applied once in R.** Each takes
+  long-format results in the shape of `ExampleData("adbds")` and returns
+  the same frame with its derived columns added, never an aggregate: the
+  result as a multiple of its own upper limit of normal; the level 1, 2
+  or 3 abnormality grade from Tables 56 and 57 with the direction and
+  the criterion that fired; and the flag the guide’s extreme-value
+  exclusion rule reads from Tables 58 to 60. The grading and the flag
+  honour the data’s unit column: an absolute threshold is compared only
+  in its own unit system, and a result in a unit the guide does not
+  print is left `NA` and named in a message rather than misgraded.
+  Column names are arguments with the `adbds` names as defaults; the
+  criteria table is an argument too, so an established grading system
+  can stand in for the FDA’s. A cross-check asserts that the ULN
+  multiples reproduce the peaks
+  [`Input_HysLaw()`](https://jwildfire.github.io/gsm.safety/dev/reference/Input_HysLaw.md)
+  computes for the same participants.
+  ([\#78](https://github.com/jwildfire/gsm.safety/issues/78),
+  [\#86](https://github.com/jwildfire/gsm.safety/pull/86), hub
+  [obot.roadmap#9](https://github.com/jwildfire/obot.roadmap/issues/9))
+
+- **`requirements/fda-stf.md` — the FDA ST&F requirement matrix.** One
+  keyed row for each of the guide’s 22 figures (`FDA-FIG-001` to
+  `FDA-FIG-022`) and one for each cross-cutting rule the phase 0
+  derivations and the later static engines implement (`FDA-RULE-001` to
+  `FDA-RULE-016`), in the safety.viz matrix shape, so a static rendering
+  in this package and its interactive twin in safety.viz cite one
+  requirement ID and their evidence meets on the same row. Every row
+  names the guide version and section, its chart engine, its ADaM
+  domains and its safety.viz twin; `requirements/README.md` says how
+  rows are keyed and how a test cites one, and a test holds the file to
+  that shape.
+  ([\#79](https://github.com/jwildfire/gsm.safety/issues/79),
+  [\#84](https://github.com/jwildfire/gsm.safety/pull/84), hub
+  [obot.roadmap#9](https://github.com/jwildfire/obot.roadmap/issues/9))
+
+### Worth knowing about the widgets
+
+- **The design question this release was waiting on turned out to be
+  two-thirds already answered.** The requirement asked whether the
+  participant profile’s R surface should be a standalone widget, a
+  compound widget hosting a chart plus a rail, or profile-enabled
+  variants of the lab widgets. The vendored bundle decides it: the
+  compound mount cannot be reached from R at all, because safety.viz
+  does not export `profileRail` on its public object; and the
+  profile-enabled lab widgets already ship with the safety.viz v1.7.0
+  catch-up above —
+  [`Widget_HepExplorer()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_HepExplorer.md),
+  [`Widget_Histogram()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_Histogram.md)
+  and
+  [`Widget_OutlierExplorer()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_OutlierExplorer.md)
+  mount the rail from their `profile` setting, on by default in the
+  first. The standalone surface was the only real gap, and it is what
+  this release adds.
+- **A widget that loads nothing looks exactly like one that works, and
+  now something says so.** A binding that constructs its renderer and
+  never hands it data raises no console error, still emits its element,
+  still ships the bundle, and still carries every data value in the page
+  — measured on a deliberately broken copy of a working widget, which no
+  assertion in the suite could tell apart from the real one. A new test
+  asserts every binding both constructs *and* feeds its module, and it
+  was proven in both directions: red with the feed call removed, green
+  with it restored.
+- **The two deferral lists can no longer disagree.**
+  `.github/parity-allowlist.yaml` and the test’s own deferral list are
+  now asserted equal, and every allowlist entry must still name a filed
+  requirement. A renderer dropped from one file and left in the other
+  used to keep reporting itself as deferred after it shipped.
+- **The eleven existing widgets are byte-for-byte unchanged in what they
+  send the browser.** The generalized payload builder returns exactly
+  the payload it did before for any contract that names a single
+  dataset.
+- **Five workflows had been failing before they started, and two of them
+  are the qualification checks.** `gsm.utils` and `qcthat` moved from
+  the `Gilead-BioStats` organisation to `Gilead-Public` on 2026-08-04.
+  GitHub redirects the old name for an action called from a step, which
+  is why `R-CMD-check` never noticed, but not for a reusable workflow
+  called from a job, which is resolved when the workflow file is parsed.
+  `pkgdown-all`, `test-coverage`, `qcthat` and `workflow-template-check`
+  had failed every run since with zero jobs, and `Release` failed the
+  same way on v1.1.0. A run that fails that early raises no check run at
+  all, so none of it appeared on a pull request: PR
+  [\#68](https://github.com/jwildfire/gsm.safety/pull/68), the v1.2.0
+  candidate, showed six checks and six passes while four workflows were
+  failing against the same commit. Every workflow file is now the
+  current upstream template verbatim.
+  ([\#55](https://github.com/jwildfire/gsm.safety/issues/55))
+
+### Also in this release
+
+- The package now declares `LazyData: true` and `Depends: R (>= 3.5.0)`,
+  and the hand-checked transcription with its build script lives in
+  `data-raw/`.
+- [`Input_ParticipantDays()`](https://jwildfire.github.io/gsm.safety/dev/reference/Input_ParticipantDays.md)
+  refuses an infinite day count the way it refuses a negative one: the
+  participant leaves both sides of the figure and is named in the
+  warning, instead of the metric publishing `Inf`. Found by the code
+  review of the release candidate.
+  ([\#96](https://github.com/jwildfire/gsm.safety/issues/96),
+  [\#97](https://github.com/jwildfire/gsm.safety/pull/97))
+- [`BuildWidgetPayload()`](https://jwildfire.github.io/gsm.safety/dev/reference/BuildWidgetPayload.md)
+  now validates the `normal_col_high` setting the hepatic explorer,
+  hepatic waterfall and participant profile require, like every other
+  column mapping, so a limit-of-normal column that does not exist fails
+  in R instead of the chart drawing without its limits. Found by the
+  code review of the release candidate.
+  ([\#99](https://github.com/jwildfire/gsm.safety/issues/99),
+  [\#101](https://github.com/jwildfire/gsm.safety/pull/101))
+- The `Derive_*` functions refuse to overwrite an input column that
+  shares an output name, naming the column, so
+  `Derive_ULNMultiple(df, strOutCol = "STRESN")` errors instead of
+  replacing the source result, and a frame that already carries a
+  generated sibling such as `AbnormalityDirection` is refused the same
+  way. The documented contract, the input frame plus appended columns,
+  is now enforced. Found by the code review of the release candidate.
+  ([\#102](https://github.com/jwildfire/gsm.safety/issues/102),
+  [\#105](https://github.com/jwildfire/gsm.safety/pull/105))
+- [`BuildWidgetPayload()`](https://jwildfire.github.io/gsm.safety/dev/reference/BuildWidgetPayload.md)
+  refuses a required column setting that is not a single character
+  string, naming the setting, so `list(value_col = 5)` or a vector of
+  two column names fails in R instead of reaching the browser as a
+  property the renderer cannot find. Found by the code review of the
+  release candidate.
+  ([\#103](https://github.com/jwildfire/gsm.safety/issues/103),
+  [\#104](https://github.com/jwildfire/gsm.safety/pull/104))
+- [`Widget_ParticipantProfile()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_ParticipantProfile.md)
+  refuses an adverse-event column setting that is not a single character
+  string, naming the setting and the shape received, in step with the
+  main frame’s mappings. Found by the code review of the release
+  candidate.
+  ([\#107](https://github.com/jwildfire/gsm.safety/issues/107),
+  [\#112](https://github.com/jwildfire/gsm.safety/pull/112))
+- [`Report_SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/Report_SafetyCensus.md)
+  and
+  [`SaveWidgetReport()`](https://jwildfire.github.io/gsm.safety/dev/reference/SaveWidgetReport.md)
+  refuse an output file name that is not a single non-missing character
+  string, naming the argument, so a number, a vector or `NA` fails
+  before anything is written instead of part-way through. Found by the
+  code review of the release candidate.
+  ([\#106](https://github.com/jwildfire/gsm.safety/issues/106),
+  [\#111](https://github.com/jwildfire/gsm.safety/pull/111),
+  [\#115](https://github.com/jwildfire/gsm.safety/issues/115),
+  [\#116](https://github.com/jwildfire/gsm.safety/pull/116))
+- [`BuildWidgetPayload()`](https://jwildfire.github.io/gsm.safety/dev/reference/BuildWidgetPayload.md)
+  refuses a required setting supplied as `NULL`, naming it and pointing
+  to the schema default, so `list(value_col = NULL)` no longer passes
+  the checks against the default and then reaches the browser as JSON
+  `null`. Found by the code review of the release candidate.
+  ([\#109](https://github.com/jwildfire/gsm.safety/issues/109),
+  [\#113](https://github.com/jwildfire/gsm.safety/pull/113))
+- [`SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/SafetyCensus.md)
+  refuses a supplied domain that does not carry the participant ID
+  column named by `strIDCol`, naming the domain, instead of counting it
+  under an unrelated `subjid` column or publishing `NA`. Found by the
+  code review of the release candidate.
+  ([\#117](https://github.com/jwildfire/gsm.safety/issues/117),
+  [\#118](https://github.com/jwildfire/gsm.safety/pull/118))
+- The `FDA-RULE-002` row of `requirements/fda-stf.md` says what
+  [`Derive_AbnormalityLevel()`](https://jwildfire.github.io/gsm.safety/dev/reference/Derive_AbnormalityLevel.md)
+  does: a graded result meeting no level is `0`, and only a record the
+  criteria cannot be applied to has no grade (`NA`); the row had called
+  both “no grade”. Found by the code review of the release candidate.
+  ([\#128](https://github.com/jwildfire/gsm.safety/issues/128),
+  [\#132](https://github.com/jwildfire/gsm.safety/pull/132))
+- [`Widget_ParticipantProfile()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_ParticipantProfile.md)
+  refuses an `ae` setting that is not a plain list (a data.frame
+  included), and an AE column supplied as `NULL`, naming the setting and
+  pointing to the default, instead of failing with a subscript error or
+  sending `null` to the browser and drawing an empty timeline. Found by
+  the code review of the release candidate.
+  ([\#119](https://github.com/jwildfire/gsm.safety/issues/119),
+  [\#122](https://github.com/jwildfire/gsm.safety/pull/122),
+  [\#124](https://github.com/jwildfire/gsm.safety/pull/124))
+- [`Report_SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/Report_SafetyCensus.md)
+  refuses a missing or empty `strOutputDir` with the same message it
+  uses for a vector, instead of failing later from base R or writing the
+  page relative to an empty directory. Found by the code review of the
+  release candidate.
+  ([\#120](https://github.com/jwildfire/gsm.safety/issues/120),
+  [\#123](https://github.com/jwildfire/gsm.safety/pull/123))
+- [`BuildWidgetPayload()`](https://jwildfire.github.io/gsm.safety/dev/reference/BuildWidgetPayload.md)
+  refuses a required group of settings, such as `color` for the AE
+  timelines, supplied as anything but a list, naming the setting,
+  instead of failing inside the check with a subscript error. Found by
+  the code review of the release candidate.
+  ([\#125](https://github.com/jwildfire/gsm.safety/issues/125),
+  [\#130](https://github.com/jwildfire/gsm.safety/pull/130))
+- The census report helpers refuse `lSettings` supplied as a data.frame,
+  which [`is.list()`](https://rdrr.io/r/base/list.html) accepts, instead
+  of reading every setting as absent and building the page as if none
+  had been given. Found by the code review of the release candidate.
+  ([\#133](https://github.com/jwildfire/gsm.safety/issues/133),
+  [\#134](https://github.com/jwildfire/gsm.safety/pull/134))
+- [`SaveWidgetReport()`](https://jwildfire.github.io/gsm.safety/dev/reference/SaveWidgetReport.md)
+  refuses a missing or empty `strOutputDir` with the message it already
+  uses for a vector, instead of writing the page relative to the
+  filesystem root; the same guard
+  [`Report_SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/Report_SafetyCensus.md)
+  gained in [\#123](https://github.com/jwildfire/gsm.safety/issues/123).
+  Found by the code review of the release candidate.
+  ([\#135](https://github.com/jwildfire/gsm.safety/issues/135),
+  [\#136](https://github.com/jwildfire/gsm.safety/pull/136))
+- [`SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/SafetyCensus.md)
+  keeps the group column the caller named when the participant ID is
+  normalised onto its name, so
+  `strIDCol = "usubjid", strGroupCol = "subjid"` groups by the values
+  given instead of stopping every study-level metric on a missing
+  `subjid`, and naming the same column for both is refused up front.
+  Found by the code review of the release candidate.
+  ([\#144](https://github.com/jwildfire/gsm.safety/issues/144),
+  [\#146](https://github.com/jwildfire/gsm.safety/pull/146))
+- [`BuildWidgetPayload()`](https://jwildfire.github.io/gsm.safety/dev/reference/BuildWidgetPayload.md)
+  refuses a dataset with fewer rows than its contract’s `minItems`,
+  naming the frame, the module and the minimum, so
+  `Widget_HepExplorer(dfLabs[0, ])` stops in R instead of sending an
+  empty frame to a renderer with nothing to draw; a dataset whose
+  contract sets no minimum, such as the time-to-event `events`, is
+  unchanged. Found by the code review of the release candidate.
+  ([\#149](https://github.com/jwildfire/gsm.safety/issues/149),
+  [\#150](https://github.com/jwildfire/gsm.safety/pull/150))
+- The package site wears the jwildfire.github.io theme, as the obot hub
+  does since 2026-09-12: paper ground, graphite ink, plum links,
+  Instrument Serif headings, Instrument Sans body, IBM Plex Mono code,
+  and the honeycomb strip along the navbar and footer. The pkgdown pages
+  take the palette and fonts as bslib variables in `_pkgdown.yml` with
+  `pkgdown/extra.css` carrying the bands; the standalone example pages
+  take the same palette through their shared chrome in
+  `pkgdown/menus/examples/util/`.
+  ([\#94](https://github.com/jwildfire/gsm.safety/pull/94),
+  [\#95](https://github.com/jwildfire/gsm.safety/pull/95))
+- [`SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/SafetyCensus.md)
+  takes the unnamed-study path, and says so, when the `strGroupCol` the
+  caller named is absent from the subject domain, instead of silently
+  grouping by a `studyid` column the caller did not name. Found by the
+  code review of the release candidate.
+  ([\#126](https://github.com/jwildfire/gsm.safety/issues/126),
+  [\#131](https://github.com/jwildfire/gsm.safety/pull/131))
+- The participant profile and time-to-event examples, pages and test
+  fixtures drop the placeholder adverse-event rows whether the term is
+  blank or missing; `nzchar(NA)` is `TRUE`, so the filter names the
+  missing case too. Not reachable with the shipped example data, which
+  has no missing terms. Found by the code review of the release
+  candidate.
+  ([\#139](https://github.com/jwildfire/gsm.safety/issues/139),
+  [\#140](https://github.com/jwildfire/gsm.safety/pull/140))
+- [`Report_SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/Report_SafetyCensus.md)
+  and
+  [`SaveWidgetReport()`](https://jwildfire.github.io/gsm.safety/dev/reference/SaveWidgetReport.md)
+  refuse an empty `strOutputFile` with the message they already use for
+  a missing one, instead of writing the page as a hidden `.html` file
+  with no name. Found by the code review of the release candidate.
+  ([\#143](https://github.com/jwildfire/gsm.safety/issues/143),
+  [\#145](https://github.com/jwildfire/gsm.safety/pull/145))
 
 ## gsm.safety v1.1.0
 

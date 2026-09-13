@@ -207,6 +207,15 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   Found by the code review of the v1.5.0 candidate.
   ([\#144](https://github.com/jwildfire/gsm.safety/issues/144),
   [\#146](https://github.com/jwildfire/gsm.safety/pull/146))
+- [`BuildWidgetPayload()`](https://jwildfire.github.io/gsm.safety/dev/reference/BuildWidgetPayload.md)
+  refuses a dataset with fewer rows than its contract’s `minItems`,
+  naming the frame, the module and the minimum, so
+  `Widget_HepExplorer(dfLabs[0, ])` stops in R instead of sending an
+  empty frame to a renderer with nothing to draw; a dataset whose
+  contract sets no minimum, such as the time-to-event `events`, is
+  unchanged. Found by the code review of the v1.5.0 candidate.
+  ([\#149](https://github.com/jwildfire/gsm.safety/issues/149),
+  [\#150](https://github.com/jwildfire/gsm.safety/pull/150))
 - The package site wears the jwildfire.github.io theme, as the obot hub
   does since 2026-09-12: paper ground, graphite ink, plum links,
   Instrument Serif headings, Instrument Sans body, IBM Plex Mono code,

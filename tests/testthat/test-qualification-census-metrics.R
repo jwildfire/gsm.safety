@@ -253,7 +253,7 @@ test_that("the figures the record says move have moved (#58, #66)", {
   # The "before" figures are history now: step four (#66) removed the
   # arithmetic that produced them, so they cannot be re-measured here. They are
   # asserted as recorded figures in the document-agreement block below, and the
-  # record marks that column as pre-v1.3.0 rather than "today".
+  # record marks that column as pre-v1.2.0 rather than "today".
   #
   # What can be measured is the other half of every row in the record's table
   # of what moves: the figure the function reports now.

@@ -16,7 +16,7 @@
 #' helpers ([Report_CensusFigures()]). Every number it returns is a `Numerator`
 #' a metric published, beside the `Denominator` that same metric published.
 #'
-#' That is the point of the rebuild rather than a detail of it. Until v1.3.0
+#' That is the point of the rebuild rather than a detail of it. Until v1.2.0
 #' this function did its own arithmetic, and four of the figures it published
 #' were wrong — most of all the death count, which matched the text of a
 #' discontinuation reason, never read the death domain, and counted
@@ -33,7 +33,7 @@
 #' nobody publishes **zero**, which is a measurement. Only the last of the
 #' three is a number, and none of them is allowed to read as another.
 #'
-#' @section What moved out of this function in v1.3.0:
+#' @section What moved out of this function in v1.2.0:
 #'
 #' Three things it used to return are not returned any more, because no metric
 #' publishes them and computing them here would be the second counting lane

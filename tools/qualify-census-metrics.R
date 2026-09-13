@@ -171,7 +171,9 @@ lCensus <- suppressWarnings(suppressMessages(gsm.safety::SafetyCensus(
   dfLabs = lMapped$Mapped_LB,
   dfECG = NULL,
   dfAE = lMapped$Mapped_AE,
-  dfDisposition = lMapped$Mapped_STUDCOMP
+  dfDisposition = lMapped$Mapped_STUDCOMP,
+  dfDeath = lMapped$Mapped_Death,
+  dfRandomization = lMapped$Mapped_Randomization
 )))
 print(lCensus$Census)
 

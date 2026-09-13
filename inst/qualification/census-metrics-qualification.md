@@ -47,7 +47,7 @@ The anchor for every figure below is the enrolled population: **762**
 participants of the 1000 in `Raw_SUBJ` have `enrollyn == "Y"`, and
 `Mapped_SUBJ` is exactly those 762.
 
-| Metric | Figure | Route A | Route B | `SafetyCensus()` before v1.3.0 |
+| Metric | Figure | Route A | Route B | `SafetyCensus()` before v1.2.0 |
 |---|---|---|---|---|
 | `saf0005` | Enrolled participants | 762 | 762 | 762 |
 | `saf0006` | Randomised participants | 577 | 577 | *blank* |
@@ -92,7 +92,7 @@ counts all four — three of whom are enrolled and one of whom (`S78705`) is not
 The correction the death metric makes is therefore **4 → 13**, not 1 → 13. It
 is still the largest figure in this release and still the reason the rebuild
 exists; it is not a thirteenfold correction. `death-count-qualification.md` and
-the v1.3.0 release notes carry a correction note pointing here.
+the v1.2.0 release notes carry a correction note pointing here.
 
 ### 2. Step one's note that the discontinuation reason names "four participants
 of whom one is enrolled" has it backwards

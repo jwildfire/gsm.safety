@@ -1,8 +1,13 @@
 #' Example safety data
 #'
-#' Reads one of the example datasets vendored with the package. All three are
-#' derived from pharmaverseadam (CDISC Pilot 01 ADaM) and match the data used
-#' by the safety.viz demos:
+#' Reads one of the example datasets vendored with the package, matching the
+#' data used by the safety.viz demos. `adbds`, `adae`, and `adeg` are derived
+#' from pharmaverseadam (CDISC Pilot 01 ADaM); `adbds` additionally carries the
+#' synthetic `AKI-*` acute-kidney-injury cohort the safety.viz nep-explorer
+#' demo appends (the pilot population alone puts every participant in the
+#' KDIGO no-stage box), and `adbds_abnbl` is the purpose-built synthetic
+#' abnormal-baseline hepatic cohort for [Widget_HepWaterfall()] (the pilot
+#' data cannot form that figure — see the safety.viz demo's data note):
 #'
 #' - `adbds`: long-format BDS labs and vitals results, one record per
 #'   measurement (`USUBJID`, `SITE`, `SITEID`, `SEX`, `RACE`, `ARM`, `VISIT`,
@@ -18,6 +23,14 @@
 #'   `SITE`, `SITEID`, `SEX`, `RACE`, `AGE`, `ARM`, `VISIT`, `VISITNUM`,
 #'   `PARAMCD`, `TEST`, `STRESU`, `STRESN`, `BASE`, `CHG`, `ABLFL`), carrying
 #'   QTcF, QTcB, and Heart Rate for [Widget_QtExplorer()].
+#' - `adbds_abnbl`: long-format labs for 80 synthetic abnormal-baseline
+#'   participants (`ABL-*`), same columns as `adbds`, for
+#'   [Widget_HepWaterfall()].
+#' - `adsl`: one row per participant (`USUBJID`, `ARM`, `EOSDY`, `EOSSTT`) —
+#'   the analysis population, its treatment arm, and the follow-up-end study
+#'   day at which an event-free participant is censored. This is
+#'   [Widget_TimeToEvent()]'s denominator: the events frame says who had an
+#'   event and when, and this says who was at risk and for how long.
 #'
 #' @param strDataset `character` Name of the example dataset to read. Default:
 #'   `"adbds"`.
@@ -35,8 +48,11 @@
 #' dfEG <- ExampleData("adeg")
 #' head(dfEG)
 #'
+#' dfSL <- ExampleData("adsl")
+#' head(dfSL)
+#'
 #' @export
-ExampleData <- function(strDataset = c("adbds", "adae", "adeg")) {
+ExampleData <- function(strDataset = c("adbds", "adae", "adeg", "adbds_abnbl", "adsl")) {
   strDataset <- match.arg(strDataset)
 
   strPath <- system.file(
@@ -53,8 +69,10 @@ ExampleData <- function(strDataset = c("adbds", "adae", "adeg")) {
 
   chrNumericCols <- switch(strDataset,
     adbds = c("VISITNUM", "STRESN", "STNRLO", "STNRHI"),
+    adbds_abnbl = c("VISITNUM", "STRESN", "STNRLO", "STNRHI"),
     adae = c("AESEQ", "ASTDY", "AENDY"),
-    adeg = c("AGE", "VISITNUM", "STRESN", "BASE", "CHG")
+    adeg = c("AGE", "VISITNUM", "STRESN", "BASE", "CHG"),
+    adsl = c("EOSDY")
   )
   for (strCol in chrNumericCols) {
     dfData[[strCol]][!nzchar(dfData[[strCol]])] <- NA_character_

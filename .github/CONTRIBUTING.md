@@ -10,7 +10,7 @@ This repository follows the `gsm` package development conventions where they are
 
 ## CI expectations
 
-This repository uses GitHub Actions templates from `Gilead-BioStats/gsm.utils`:
+This repository uses GitHub Actions templates from `gilead-public/gsm.utils`:
 
 - `R-CMD-check.yaml` — R CMD check on pull requests.
 - `test-coverage.yaml` — test coverage reporting.

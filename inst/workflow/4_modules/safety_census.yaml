@@ -1,0 +1,117 @@
+# The census report (#61, D0023). One report over the census metrics.
+#
+# Every step here reads. The figures, their denominators and the coverage rows
+# all come from the results the metrics in 2_metrics published, and no step in
+# this workflow touches a study domain. A helper that recounted a figure the
+# metrics already produce would be a second counting lane, which is the defect
+# the rebuild exists to remove.
+#
+# Two presentations differ from what is published, and both are declared below
+# rather than decided in code:
+#   - participant-days are published as days and presented as years;
+#   - every figure is shown beside the denominator its own metric published.
+#
+# Nothing on this page flags. D0023.3 - the census metrics declare no
+# threshold and publish an empty flag, and the report presents no flag column.
+meta:
+  Type: Report
+  ID: safety_census
+  Output: html
+  Name: Safety Census
+  Description: Study denominators, exposure and follow-up, read from the census metrics.
+  Active: true
+  lSettings:
+    # The order the figures are read out in, and the headings they sit under.
+    # Metric IDs only - the labels come from each metric's own definition, so
+    # the report cannot disagree with a metric about what its number is called.
+    Sections:
+      - Title: Population
+        Metrics:
+          - saf0005
+          - saf0006
+          - saf0007
+          - saf0004
+      - Title: Exposure
+        Metrics:
+          - saf0008
+          - saf0009
+      - Title: Follow-up
+        Metrics:
+          - saf0010
+          - saf0011
+          - saf0012
+          - saf0013
+          - saf0014
+          - saf0015
+    # Published in days, presented in years. The metrics publish the number
+    # actually summed, because a figure in years is one nothing in the pipeline
+    # can check against the domain it came from; the division belongs here, and
+    # the published days stay on the page under "What the metrics published".
+    PersonTime:
+      Metrics:
+        - saf0008
+        - saf0009
+      DaysPerYear: 365.25
+      Unit: person-years
+    # Data coverage - the thirteenth census figure - is not in this release.
+    # gsm.mapping's lab domain carries no visit column under the standard
+    # mapping and the expected count needs a per-visit study day no domain
+    # supplies; the reasons are recorded on gsm.safety#58. No coverage metric
+    # is named here, so the report renders without a coverage section rather
+    # than with an empty coverage table - an empty table would read as a study
+    # with no data instead of a report with no metric.
+    Coverage:
+      Metrics: []
+spec:
+  Reporting_Results:
+    MetricID:
+      type: character
+    GroupID:
+      type: character
+    GroupLevel:
+      type: character
+    Numerator:
+      type: numeric
+    Denominator:
+      type: numeric
+  Reporting_Metrics:
+    ID:
+      type: character
+    MetricID:
+      type: character
+    Metric:
+      type: character
+    Numerator:
+      type: character
+    Denominator:
+      type: character
+steps:
+  - output: strOutputDir
+    name: getwd
+  - output: dfCensusFigures
+    name: gsm.safety::Report_CensusFigures
+    params:
+      dfResults: Reporting_Results
+      dfMetrics: Reporting_Metrics
+      lSettings: lSettings
+  - output: dfCensusCoverage
+    name: gsm.safety::Report_CensusCoverage
+    params:
+      dfResults: Reporting_Results
+      dfMetrics: Reporting_Metrics
+      lSettings: lSettings
+  - output: dfCensusProvenance
+    name: gsm.safety::Report_CensusProvenance
+    params:
+      dfResults: Reporting_Results
+      dfMetrics: Reporting_Metrics
+      lSettings: lSettings
+  - output: strReportPath
+    name: gsm.safety::Report_SafetyCensus
+    params:
+      dfFigures: dfCensusFigures
+      dfCoverage: dfCensusCoverage
+      dfProvenance: dfCensusProvenance
+      dfResults: Reporting_Results
+      strOutputDir: strOutputDir
+      strOutputFile: ID

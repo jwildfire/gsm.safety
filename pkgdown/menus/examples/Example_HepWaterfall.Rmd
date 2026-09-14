@@ -1,0 +1,76 @@
+---
+title: "Hepatic ALT Waterfall"
+description: "Modified ALT waterfall for abnormal-baseline trials: one floating bar per participant from baseline to on-treatment peak, ranked by baseline, arms meeting at the seam."
+index: 11
+output:
+  html_document:
+    code_folding: hide
+    includes:
+      before_body: util/example-chrome.html
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+source("util/example-page.R")
+```
+
+```{r, echo = FALSE, results = "asis"}
+cat(ExampleHeader())
+```
+
+The modified ALT waterfall of Amirzadegan et al., *Drug Safety* 2025;48(5):443–453, Figure 5 — the population display for trials that enrol participants with **elevated baseline ALT but normal baseline bilirubin**, where eDISH's ×ULN quadrants lose their meaning. One floating bar per participant spans their own baseline to their maximum on-treatment value in absolute U/L, ranked by baseline so the two arms' highest baselines meet at the seam: blue for placebo, bronze for active drug, green overriding either for new-onset jaundice, with a box-and-whisker summary flanking each arm. The chart below is live — rendered by the safety.viz `hepWaterfall` module.
+
+**A note on the demo data.** The pharmaverseadam pilot data cannot form this figure — after the paper's baseline-bilirubin exclusion, none of its participants has a baseline ALT at or above 3×ULN, and the baseline "mountain" never forms. The bundled `adbds_abnbl` dataset is therefore the same purpose-built synthetic abnormal-baseline cohort (80 participants, `ABL-*`) the safety.viz demo uses, and should be read as illustration, not trial data. The renderer is marked a **prototype** upstream pending open clinical judgement calls.
+
+The settings map the four liver-measure keys to the data's `TEST` values and name the two arms explicitly, so the placebo/active split never depends on a string heuristic.
+
+## Render this report from a workflow
+
+The same chart ships as a gsm-idiom report workflow. Run it with `gsm.core::RunWorkflow()` to produce a standalone HTML report, or use the matching runner script:
+
+```{r, eval = FALSE, class.source = "fold-show"}
+lWorkflow <- yaml::read_yaml(
+  system.file("workflow", "4_modules", "hep_waterfall.yaml", package = "gsm.safety")
+)
+
+gsm.core::RunWorkflow(
+  lWorkflow = lWorkflow,
+  lData = list(dfResults = ExampleData("adbds_abnbl"))
+)
+```
+
+```sh
+Rscript inst/examples/hep-waterfall.R <output-dir>
+```
+
+```{r, echo = FALSE, results = "asis"}
+cat(ExampleWorkflow("hep_waterfall.yaml"))
+```
+
+## The live chart
+
+```{r}
+library(gsm.safety)
+
+dfResults <- ExampleData("adbds_abnbl")
+
+Widget_HepWaterfall(
+  dfResults,
+  lSettings = list(
+    studyday_col = "VISITNUM",
+    measure_values = list(
+      ALT = "Alanine Aminotransferase",
+      AST = "Aspartate Aminotransferase",
+      TB = "Bilirubin",
+      ALP = "Alkaline Phosphatase"
+    ),
+    arm_col = "ARM",
+    placebo_arm = "ABL: Placebo",
+    active_arms = list("ABL: Study Drug")
+  )
+)
+```
+
+```{r, echo = FALSE, results = "asis"}
+cat(ExampleFooter())
+```

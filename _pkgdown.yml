@@ -2,6 +2,45 @@ url: https://jwildfire.github.io/gsm.safety
 
 template:
   bootstrap: 5
+  # The obot theme: jwildfire.github.io's palette and type, as the obot hub wears
+  # them (obot.roadmap site/assets/obot-keynote.css, retoned 2026-09-12). The
+  # palette and fonts come in here as bslib variables; pkgdown/extra.css carries
+  # the navbar and footer bands with their honeycomb strip. Orange #f97316 is the
+  # R/Pharma keynote's colour and is not an accent here.
+  bslib:
+    bg: "#fafaf8"
+    fg: "#1f2328"
+    primary: "#6c3270"
+    secondary: "#5b6470"
+    light: "#f3f4f1"
+    dark: "#1f2328"
+    body-secondary-color: "#5b6470"
+    body-tertiary-color: "#98a0aa"
+    body-secondary-bg: "#f3f4f1"
+    body-tertiary-bg: "#f3f4f1"
+    border-color: "#e4e6e3"
+    link-color: "#6c3270"
+    link-hover-color: "#522456"
+    code-color: "#1f2328"
+    pre-color: "#1f2328"
+    # pkgdown's own variables: the navbar and footer bands, and the navbar's
+    # height with the 9px honeycomb strip extra.css adds above the brand.
+    navbar-bg: "#f3f4f1"
+    pkgdown-nav-height: 68px
+    pkgdown-footer-bg: "#f3f4f1"
+    pkgdown-footer-color: "#5b6470"
+    pkgdown-footer-border-color: "#e4e6e3"
+    base_font: '"Instrument Sans", system-ui, -apple-system, "Segoe UI", sans-serif'
+    heading_font: '"Instrument Serif", Georgia, "Times New Roman", serif'
+    code_font: '"IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace'
+    headings-font-weight: 400
+    headings-line-height: 1.15
+    h1-font-size: 2rem
+  includes:
+    in_header: |
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 
 navbar:
   structure:
@@ -26,9 +65,67 @@ reference:
       - Widget_AeExplorer
       - Widget_HepExplorer
       - Widget_QtExplorer
+      - Widget_HepWaterfall
+      - Widget_NepExplorer
+      - Widget_TimeToEvent
+      - Widget_ParticipantProfile
   - title: Data
     contents:
       - ExampleData
+  - title: FDA reference criteria
+    desc: >
+      Appendix Tables 56 to 60 of the FDA Standard Safety Tables and Figures
+      Integrated Guide (v2.0, April 2025) as package data: the level 1, 2 and 3
+      abnormality criteria and the extreme values suggestive of error that the
+      Derive_* functions apply (obot.roadmap#9).
+    contents:
+      - FDA_AbnormalityLevels
+      - FDA_ExtremeValues
+  - title: FDA derivations
+    desc: >
+      The guide's normative rules applied once, in R, over long-format results
+      in the shape of ExampleData("adbds"): each Derive_* function returns the
+      input frame with its derived columns added, never an aggregate, so a
+      static figure and its interactive twin read the same derived values
+      (obot.roadmap#9, requirements/fda-stf.md FDA-RULE-001 to -005).
+    contents:
+      - Derive_ULNMultiple
+      - Derive_AbnormalityLevel
+      - Derive_ExtremeValueFlag
+  - title: Metric steps
+    desc: >
+      The steps behind the metric definitions in inst/workflow/2_metrics/.
+      Input_HysLaw, Input_QtProlongation and Input_SafetyAE feed the three
+      participant-level flagging metrics; Input_Deaths, Input_Participants and
+      Input_ParticipantDays feed the descriptive census metrics, which publish
+      a number, carry no threshold, and call Flag_None where a flagging metric
+      calls gsm.core::Flag().
+    contents:
+      - Input_HysLaw
+      - Input_QtProlongation
+      - Input_SafetyAE
+      - Input_Deaths
+      - Input_Participants
+      - Input_ParticipantDays
+      - Flag_None
+  - title: Study census
+    desc: >
+      The safety overview's denominators, rebuilt on the metric steps above
+      (obot.roadmap#274): SafetyCensus() runs the census metric workflows over
+      the domains it is given and reads the figures they published, computing
+      nothing of its own.
+    contents:
+      - SafetyCensus
   - title: Reports
+    desc: >
+      The steps behind the report definitions in inst/workflow/4_modules/.
+      SaveWidgetReport writes a widget module; the Report_Census* helpers and
+      Report_SafetyCensus assemble and render the safety census, reading the
+      figures the census metrics published and computing nothing of their own
+      (obot.roadmap#274).
     contents:
       - SaveWidgetReport
+      - Report_CensusFigures
+      - Report_CensusCoverage
+      - Report_CensusProvenance
+      - Report_SafetyCensus

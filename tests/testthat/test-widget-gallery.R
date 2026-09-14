@@ -8,7 +8,11 @@ strGalleryModules <- function() {
     Widget_AeTimelines = "ae-timelines",
     Widget_AeExplorer = "ae-explorer",
     Widget_HepExplorer = "hep-explorer",
-    Widget_QtExplorer = "qt-explorer"
+    Widget_QtExplorer = "qt-explorer",
+    Widget_HepWaterfall = "hep-waterfall",
+    Widget_NepExplorer = "nep-explorer",
+    Widget_TimeToEvent = "time-to-event",
+    Widget_ParticipantProfile = "participant-profile"
   )
 }
 

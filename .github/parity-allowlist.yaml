@@ -1,0 +1,11 @@
+# Deliberate deferrals from the safety.viz widget-parity rule ("every renderer
+# gets an R widget", @jwildfire 2026-08-15). Every entry MUST cite the filed
+# requirement that will deliver the widget — tools/check-safety-viz-parity.sh
+# fails on an entry without one. Keep tests/testthat/test-package.R's
+# chrDeferred in sync; that test asserts the two lists are equal, so a module
+# dropped from one file and left in the other fails the suite rather than
+# quietly reporting a shipped widget as deferred.
+#
+# EMPTY since #71 (hub requirement obot.roadmap#165) wrapped the last two —
+# participantProfile and timeToEvent. Every renderer safety.viz exports is
+# reachable from R.

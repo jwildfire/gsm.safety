@@ -52,6 +52,36 @@ test_that("BuildWidgetPayload errors when a settings override names a missing co
   )
 })
 
+test_that("BuildWidgetPayload validates the normal_col_high setting the hepatic contracts require (#99)", {
+  # The column check used to match only keys ending in `_col`, so the two
+  # limit-of-normal mappings slipped through to the browser unvalidated.
+  dfLabs <- ExampleData("adbds")
+  expect_error(
+    BuildWidgetPayload(
+      dfResults = dfLabs,
+      lSettings = list(normal_col_high = "NOT_A_COLUMN"),
+      strModule = "hep-explorer"
+    ),
+    "NOT_A_COLUMN.*normal_col_high"
+  )
+  expect_error(
+    BuildWidgetPayload(
+      dfResults = dfLabs,
+      lSettings = list(normal_col_high = "NOT_A_COLUMN"),
+      strModule = "hep-waterfall"
+    ),
+    "NOT_A_COLUMN.*normal_col_high"
+  )
+  # Only required keys are checked, as before, and a real column still passes.
+  expect_no_error(
+    BuildWidgetPayload(
+      dfResults = dfLabs,
+      lSettings = list(normal_col_high = "STNRHI"),
+      strModule = "hep-explorer"
+    )
+  )
+})
+
 test_that("BuildWidgetPayload checks nested object settings like ae-timelines color (#31)", {
   dfAE <- ExampleData("adae")
 
@@ -127,4 +157,221 @@ test_that("SaveWidgetReport keeps an existing .html extension and validates inpu
       strOutputFile = "report"
     )
   )
+})
+
+# --- Multi-dataset contracts (#71) -------------------------------------------
+# time-to-event is the first module whose contract names two datasets rather
+# than one: `events` + `population`, each declaring its own requiredSettings.
+# The single-`dfResults` payload cannot carry two frames, so BuildWidgetPayload
+# reads the dataset names off the schema instead of assuming one.
+
+dfTteEvents <- function() {
+  ExampleData("adae")[, c("USUBJID", "ARM", "AEBODSYS", "AEDECOD", "AESER", "AESEV", "ASTDY")]
+}
+
+dfTtePopulation <- function() {
+  ExampleData("adsl")
+}
+
+test_that("BuildWidgetPayload carries both frames of a two-dataset contract (#71)", {
+  dfEvents <- dfTteEvents()
+  dfPopulation <- dfTtePopulation()
+
+  lPayload <- BuildWidgetPayload(
+    lData = list(events = dfEvents, population = dfPopulation),
+    lSettings = list(),
+    strModule = "time-to-event"
+  )
+
+  expect_named(lPayload, c("lData", "lSettings", "bDebug"))
+  expect_named(lPayload$lData, c("events", "population"))
+  expect_identical(lPayload$lData$events, dfEvents)
+  expect_identical(lPayload$lData$population, dfPopulation)
+  expect_false(lPayload$bDebug)
+})
+
+test_that("BuildWidgetPayload checks each dataset's own requiredSettings (#71)", {
+  dfEvents <- dfTteEvents()
+  dfPopulation <- dfTtePopulation()
+
+  # fu_day_col belongs to the population frame, not the events frame: naming a
+  # column that exists only in the events data must still fail.
+  expect_error(
+    BuildWidgetPayload(
+      lData = list(events = dfEvents, population = dfPopulation),
+      lSettings = list(fu_day_col = "ASTDY"),
+      strModule = "time-to-event"
+    ),
+    "ASTDY.*fu_day_col"
+  )
+
+  # ...and the reverse: event_day_col is checked against the events frame.
+  expect_error(
+    BuildWidgetPayload(
+      lData = list(events = dfEvents, population = dfPopulation),
+      lSettings = list(event_day_col = "EOSDY"),
+      strModule = "time-to-event"
+    ),
+    "EOSDY.*event_day_col"
+  )
+})
+
+test_that("BuildWidgetPayload errors when a two-dataset contract is missing a frame (#71)", {
+  expect_error(
+    BuildWidgetPayload(
+      lData = list(events = dfTteEvents()),
+      strModule = "time-to-event"
+    ),
+    "population"
+  )
+  expect_error(
+    BuildWidgetPayload(
+      lData = list(events = dfTteEvents(), population = "not a data.frame"),
+      strModule = "time-to-event"
+    ),
+    "population"
+  )
+})
+
+test_that("BuildWidgetPayload refuses a single frame for a two-dataset contract (#71)", {
+  expect_error(
+    BuildWidgetPayload(
+      dfResults = dfTteEvents(),
+      strModule = "time-to-event"
+    ),
+    "events.*population|two datasets|lData"
+  )
+})
+
+test_that("BuildWidgetPayload still takes dfResults for a one-dataset contract (#71)", {
+  # The eleven existing widgets must be untouched by the generalization.
+  lPayload <- BuildWidgetPayload(
+    dfResults = ExampleData("adbds"),
+    strModule = "nep-explorer"
+  )
+  expect_named(lPayload, c("dfResults", "lSettings", "bDebug"))
+})
+
+test_that("BuildWidgetPayload refuses a required column setting that is not a single string (#103)", {
+  dfLabs <- ExampleData("adbds")
+  expect_error(
+    BuildWidgetPayload(dfResults = dfLabs, strModule = "histogram", lSettings = list(value_col = 5)),
+    "value_col.*single column name.*numeric"
+  )
+  expect_error(
+    BuildWidgetPayload(dfResults = dfLabs, strModule = "histogram", lSettings = list(measure_col = c("TEST", "PARAM"))),
+    "measure_col.*single column name.*length 2"
+  )
+  expect_error(
+    BuildWidgetPayload(dfResults = dfLabs, strModule = "hep-explorer", lSettings = list(id_col = TRUE)),
+    "id_col.*single column name.*logical"
+  )
+  expect_error(
+    BuildWidgetPayload(dfResults = dfLabs, strModule = "hep-explorer", lSettings = list(normal_col_high = list("STNRHI"))),
+    "normal_col_high.*single column name.*list"
+  )
+  # A nested required mapping is held to the same shape.
+  expect_error(
+    BuildWidgetPayload(dfResults = ExampleData("adae"), strModule = "ae-timelines", lSettings = list(color = list(value_col = 1))),
+    "color\\$value_col.*single column name"
+  )
+  # A single string that names a column still passes.
+  lPayload <- BuildWidgetPayload(dfResults = dfLabs, strModule = "histogram", lSettings = list(value_col = "STRESN"))
+  expect_identical(lPayload$lSettings$value_col, "STRESN")
+})
+
+test_that("SaveWidgetReport refuses a missing output file name (#115)", {
+  dfResults <- ExampleData("adbds")
+  dfAlbumin <- dfResults[dfResults$TEST == "Albumin", ]
+  expect_error(
+    SaveWidgetReport(Widget_Histogram(dfAlbumin), strOutputDir = tempfile("SaveWidgetReport"), strOutputFile = NA_character_),
+    "strOutputFile"
+  )
+})
+
+test_that("BuildWidgetPayload refuses a required setting supplied as NULL (#109)", {
+  dfLabs <- ExampleData("adbds")
+  expect_error(
+    BuildWidgetPayload(dfResults = dfLabs, strModule = "histogram", lSettings = list(value_col = NULL)),
+    "value_col.*NULL.*omit"
+  )
+  # A nested required mapping is held to the same rule.
+  expect_error(
+    BuildWidgetPayload(dfResults = ExampleData("adae"), strModule = "ae-timelines", lSettings = list(color = list(value_col = NULL))),
+    "color\\$value_col.*NULL"
+  )
+  # An omitted key still takes the schema default and is not sent at all.
+  lPayload <- BuildWidgetPayload(dfResults = dfLabs, strModule = "histogram", lSettings = list(id_col = "USUBJID"))
+  expect_false("value_col" %in% names(lPayload$lSettings))
+})
+
+test_that("BuildWidgetPayload refuses a required object setting that is not a list (#125)", {
+  dfAE <- ExampleData("adae")
+  # An atomic value used to be indexed by name inside the nested check and
+  # failed with a subscript error that named nothing.
+  expect_error(
+    BuildWidgetPayload(dfResults = dfAE, strModule = "ae-timelines", lSettings = list(color = "bad")),
+    "Setting 'color' must be a list.*character"
+  )
+  expect_error(
+    BuildWidgetPayload(dfResults = dfAE, strModule = "ae-timelines", lSettings = list(color = data.frame(value_col = "AESEV"))),
+    "Setting 'color' must be a list.*data.frame"
+  )
+  # A correctly nested list still builds the payload.
+  lPayload <- BuildWidgetPayload(dfResults = dfAE, strModule = "ae-timelines", lSettings = list(color = list(value_col = "AESEV")))
+  expect_identical(lPayload$lSettings$color$value_col, "AESEV")
+})
+
+test_that("SaveWidgetReport refuses a missing or empty output directory (#135)", {
+  lWidget <- Widget_Histogram(ExampleData("adbds"))
+  # NA and "" used to pass the type and length test; "" then reached
+  # normalizePath() and the page landed at the filesystem root.
+  for (strDir in list(NA_character_, "", c("a", "b"))) {
+    expect_error(
+      SaveWidgetReport(lWidget, strOutputDir = strDir, strOutputFile = "x.html"),
+      "strOutputDir is not a length-1 character"
+    )
+  }
+  strDir <- tempfile()
+  on.exit(unlink(strDir, recursive = TRUE), add = TRUE)
+  expect_true(file.exists(SaveWidgetReport(lWidget, strOutputDir = strDir, strOutputFile = "x.html")))
+})
+
+test_that("SaveWidgetReport refuses an empty output file name (#143)", {
+  # "" passed the type and length test and became ".html", a hidden page
+  # with no basename in the output directory.
+  dfResults <- ExampleData("adbds")
+  dfAlbumin <- dfResults[dfResults$TEST == "Albumin", ]
+  strOutputDir <- tempfile("SaveWidgetReport")
+  expect_error(
+    SaveWidgetReport(Widget_Histogram(dfAlbumin), strOutputDir = strOutputDir, strOutputFile = ""),
+    "strOutputFile"
+  )
+  expect_false(dir.exists(strOutputDir))
+  strPath <- SaveWidgetReport(Widget_Histogram(dfAlbumin), strOutputDir = strOutputDir, strOutputFile = "albumin")
+  expect_identical(basename(strPath), "albumin.html")
+  expect_true(file.exists(strPath))
+})
+
+test_that("BuildWidgetPayload refuses a zero-row dataset where the contract declares minItems (#149)", {
+  dfResults <- ExampleData("adbds")
+  expect_error(
+    BuildWidgetPayload(dfResults = dfResults[0, ], strModule = "hep-explorer"),
+    "dfResults has 0 rows; the 'hep-explorer' contract requires at least 1",
+    fixed = TRUE
+  )
+  expect_error(
+    BuildWidgetPayload(
+      lData = list(events = dfTteEvents(), population = dfTtePopulation()[0, ]),
+      strModule = "time-to-event"
+    ),
+    "lData$population has 0 rows; the 'time-to-event' contract requires at least 1",
+    fixed = TRUE
+  )
+  # `events` declares no minimum: a study with no events still builds.
+  lPayload <- BuildWidgetPayload(
+    lData = list(events = dfTteEvents()[0, ], population = dfTtePopulation()),
+    strModule = "time-to-event"
+  )
+  expect_identical(nrow(lPayload$lData$events), 0L)
 })

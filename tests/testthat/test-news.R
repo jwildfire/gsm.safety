@@ -83,12 +83,15 @@ test_that("the v1.2.0 NEWS bullets describe the collision guard and the criterio
   expect_match(strData, "abnormality-level rows also carry each criterion")
 })
 
-test_that("dev carries one unreleased section, v1.2.0, that leads with the two clinical corrections (#151)", {
+test_that("the v1.2.0 section is released, is the newest, and leads with the two clinical corrections (#151)", {
   chrLines <- readLines(strNewsMd(), warn = FALSE)
+  # Released on 2026-09-14: the heading lost its (Upcoming) suffix, and no later
+  # section is open until the next work lands on dev.
   expect_identical(
-    grep("^# gsm.safety v[0-9.]+ \\(Upcoming\\)$", chrLines, value = TRUE),
-    "# gsm.safety v1.2.0 (Upcoming)"
+    grep("^# gsm.safety v", chrLines, value = TRUE)[1],
+    "# gsm.safety v1.2.0"
   )
+  expect_length(grep("\\(Upcoming\\)$", chrLines), 0)
   expect_false(any(grepl("^# gsm.safety v1\\.[345]\\.0", chrLines)))
   expect_identical(as.character(utils::packageVersion("gsm.safety")), "1.2.0")
 

@@ -19,7 +19,9 @@ chrUnreleasedNews <- function() {
   }
   skip_if_not(nzchar(strPath) && file.exists(strPath), "NEWS.md not available in this check context")
   chrLines <- readLines(strPath, warn = FALSE)
-  nStart <- grep("^# gsm.safety v[0-9.]+ \\(Upcoming\\)$", chrLines)
+  # The v1.2.0 section, released on 2026-09-14; it carried the (Upcoming) suffix
+  # while it was the candidate.
+  nStart <- grep("^# gsm.safety v1\\.2\\.0( \\(Upcoming\\))?$", chrLines)
   expect_length(nStart, 1)
   chrSection <- chrLines[seq(nStart, length(chrLines))]
   nEnd <- grep("^# gsm.safety v", chrSection)[2]

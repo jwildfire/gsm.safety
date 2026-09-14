@@ -5,7 +5,7 @@ work accumulates under a vX.Y.Z (Upcoming) heading that loses the suffix when
 the release is cut; the GitHub release publishes from the section verbatim.
 -->
 
-# gsm.safety v1.2.0 (Upcoming)
+# gsm.safety v1.2.0
 
 **See it move:** [annotated demo](https://jwildfire.github.io/obot.roadmap/reports/gs-v1.2-demo/) — the eDISH peaks that move, named participant by participant; the census run under both versions on the same study; the four new widgets; and the FDA appendix tables as data with the three derivations on the example data, with try-it steps against the candidate.
 

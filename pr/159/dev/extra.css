@@ -1,0 +1,60 @@
+/* Widget gallery on the home page (#28).
+ *
+ * The gallery is authored as a plain HTML table in README.md so it renders on
+ * GitHub too. Bootstrap styles that table with rules and cell padding that read
+ * as a data table rather than a set of chart cards, so undo that here. Scoped to
+ * the table immediately following the Gallery heading, leaving the widget /
+ * workflow table further down the page with its default styling.
+ */
+
+#gallery ~ table:first-of-type {
+  border: 0;
+  margin: 1.25rem 0 2.5rem;
+  table-layout: fixed;
+  width: 100%;
+}
+
+#gallery ~ table:first-of-type tr,
+#gallery ~ table:first-of-type td {
+  background: none;
+  border: 0;
+}
+
+/* Cell padding carries the gutter between cards, and the row gap below them. */
+#gallery ~ table:first-of-type td {
+  padding: 0 0.6rem 1.6rem;
+  vertical-align: top;
+}
+
+#gallery ~ table:first-of-type img {
+  border: 1px solid var(--bs-border-color, #dee2e6);
+  border-radius: 6px;
+  /* Inline-block keeps the image on the same flow as the <br>-separated caption
+   * below it, so the caption stays visually attached to its own thumbnail. */
+  display: inline-block;
+  transition:
+    box-shadow 0.15s ease,
+    transform 0.15s ease;
+}
+
+#gallery ~ table:first-of-type a:hover img {
+  box-shadow: 0 4px 14px rgb(0 0 0 / 12%);
+  transform: translateY(-2px);
+}
+
+#gallery ~ table:first-of-type a {
+  text-decoration: none;
+}
+
+#gallery ~ table:first-of-type a:hover b {
+  text-decoration: underline;
+}
+
+/* Function name under the chart name: quieter, and on its own line. */
+#gallery ~ table:first-of-type sub {
+  bottom: 0;
+  color: var(--bs-secondary-color, #6c757d);
+  display: block;
+  font-size: 0.78rem;
+  line-height: 1.4;
+}

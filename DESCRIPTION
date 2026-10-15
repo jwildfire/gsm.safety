@@ -37,9 +37,9 @@ Suggests:
     qcthat,
     testthat (>= 3.0.0)
 Remotes:
-    gsm.core=Gilead-BioStats/gsm.core@main,
-    gsm.mapping=Gilead-BioStats/gsm.mapping@main,
-    gsm.reporting=Gilead-BioStats/gsm.reporting@main,
-    qcthat=Gilead-BioStats/qcthat@main
+    gsm.core=Gilead-Public/gsm.core@main,
+    gsm.mapping=Gilead-Public/gsm.mapping@main,
+    gsm.reporting=Gilead-Public/gsm.reporting@main,
+    qcthat=Gilead-Public/qcthat@main
 Config/testthat/edition: 3
 Config/roxygen2/version: 8.1.0

@@ -109,3 +109,22 @@ test_that("the parity workflow's pull-request job runs with a read-only token (#
   expect_match(lFollowUp[["if"]], "needs.parity.result == 'failure'", fixed = TRUE)
   expect_false(any(grepl("checkout", unlist(lapply(lFollowUp$steps, `[[`, "uses")))))
 })
+
+test_that("no Remotes entry names the organisation that no longer hosts it (#160)", {
+  # Gilead-BioStats/gsm.core, gsm.mapping and gsm.reporting have held only a
+  # moved-repository page since 2026-09-23, so pak finds no package there and
+  # every workflow that installs dependencies stops before it starts its work.
+  strRemotes <- utils::packageDescription("gsm.safety")$Remotes
+  skip_if(is.null(strRemotes), "DESCRIPTION has no Remotes field in this context")
+
+  chrRemotes <- trimws(strsplit(strRemotes, ",")[[1]])
+  chrRemotes <- chrRemotes[nzchar(chrRemotes)]
+  expect_gt(length(chrRemotes), 0)
+
+  chrStale <- chrRemotes[grepl("gilead-biostats/", chrRemotes, ignore.case = TRUE)]
+  expect_identical(
+    chrStale,
+    character(0),
+    label = paste("Remotes naming Gilead-BioStats:", paste(chrStale, collapse = "; "))
+  )
+})

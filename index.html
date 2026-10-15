@@ -23,7 +23,7 @@
 
     <a class="navbar-brand me-2" href="index.html">gsm.safety</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -125,55 +125,55 @@
 <td><code><a href="reference/Widget_Histogram.html">Widget_Histogram()</a></code></td>
 <td>histogram</td>
 <td><code>adbds</code></td>
-<td><a href="inst/workflow/3_reports/safety_histogram.yaml"><code>safety_histogram.yaml</code></a></td>
+<td><a href="inst/workflow/4_modules/safety_histogram.yaml"><code>safety_histogram.yaml</code></a></td>
 </tr>
 <tr>
 <td><code><a href="reference/Widget_ShiftPlot.html">Widget_ShiftPlot()</a></code></td>
 <td>shiftPlot</td>
 <td><code>adbds</code></td>
-<td><a href="inst/workflow/3_reports/safety_shift_plot.yaml"><code>safety_shift_plot.yaml</code></a></td>
+<td><a href="inst/workflow/4_modules/safety_shift_plot.yaml"><code>safety_shift_plot.yaml</code></a></td>
 </tr>
 <tr>
 <td><code><a href="reference/Widget_DeltaDelta.html">Widget_DeltaDelta()</a></code></td>
 <td>deltaDelta</td>
 <td><code>adbds</code></td>
-<td><a href="inst/workflow/3_reports/safety_delta_delta.yaml"><code>safety_delta_delta.yaml</code></a></td>
+<td><a href="inst/workflow/4_modules/safety_delta_delta.yaml"><code>safety_delta_delta.yaml</code></a></td>
 </tr>
 <tr>
 <td><code><a href="reference/Widget_ResultsOverTime.html">Widget_ResultsOverTime()</a></code></td>
 <td>resultsOverTime</td>
 <td><code>adbds</code></td>
-<td><a href="inst/workflow/3_reports/safety_results_over_time.yaml"><code>safety_results_over_time.yaml</code></a></td>
+<td><a href="inst/workflow/4_modules/safety_results_over_time.yaml"><code>safety_results_over_time.yaml</code></a></td>
 </tr>
 <tr>
 <td><code><a href="reference/Widget_OutlierExplorer.html">Widget_OutlierExplorer()</a></code></td>
 <td>outlierExplorer</td>
 <td><code>adbds</code></td>
-<td><a href="inst/workflow/3_reports/safety_outlier_explorer.yaml"><code>safety_outlier_explorer.yaml</code></a></td>
+<td><a href="inst/workflow/4_modules/safety_outlier_explorer.yaml"><code>safety_outlier_explorer.yaml</code></a></td>
 </tr>
 <tr>
 <td><code><a href="reference/Widget_AeTimelines.html">Widget_AeTimelines()</a></code></td>
 <td>aeTimelines</td>
 <td><code>adae</code></td>
-<td><a href="inst/workflow/3_reports/ae_timelines.yaml"><code>ae_timelines.yaml</code></a></td>
+<td><a href="inst/workflow/4_modules/ae_timelines.yaml"><code>ae_timelines.yaml</code></a></td>
 </tr>
 <tr>
 <td><code><a href="reference/Widget_AeExplorer.html">Widget_AeExplorer()</a></code></td>
 <td>aeExplorer</td>
 <td><code>adae</code></td>
-<td><a href="inst/workflow/3_reports/ae_explorer.yaml"><code>ae_explorer.yaml</code></a></td>
+<td><a href="inst/workflow/4_modules/ae_explorer.yaml"><code>ae_explorer.yaml</code></a></td>
 </tr>
 <tr>
 <td><code><a href="reference/Widget_HepExplorer.html">Widget_HepExplorer()</a></code></td>
 <td>hepExplorer</td>
 <td><code>adbds</code></td>
-<td><a href="inst/workflow/3_reports/hep_explorer.yaml"><code>hep_explorer.yaml</code></a></td>
+<td><a href="inst/workflow/4_modules/hep_explorer.yaml"><code>hep_explorer.yaml</code></a></td>
 </tr>
 <tr>
 <td><code><a href="reference/Widget_QtExplorer.html">Widget_QtExplorer()</a></code></td>
 <td>qtExplorer</td>
 <td><code>adeg</code></td>
-<td><a href="inst/workflow/3_reports/qt_explorer.yaml"><code>qt_explorer.yaml</code></a></td>
+<td><a href="inst/workflow/4_modules/qt_explorer.yaml"><code>qt_explorer.yaml</code></a></td>
 </tr>
 </tbody>
 </table>
@@ -202,10 +202,55 @@
 <p>Settings are merged onto each module’s defaults client-side, so only overrides are needed; the defaults already match the example data column names.</p>
 </div>
 <div class="section level2">
+<h2 id="participant-level-metrics">Participant-level metrics<a class="anchor" aria-label="anchor" href="#participant-level-metrics"></a>
+</h2>
+<p><code>inst/workflow/2_metrics/</code> holds three participant-level safety metrics, the gsm.safety counterpart to gsm.kri’s site- and country-level KRIs. Each scores one row per participant with an ordinal tier, follows the <code>pat0015.yaml</code> precedent (<code>GroupLevel: Subject</code>, <code>Model: Identity</code>, <code><a href="https://rdrr.io/pkg/gsm.core/man/Analyze_Identity.html" class="external-link">gsm.core::Analyze_Identity()</a></code> plus deterministic <code><a href="https://rdrr.io/pkg/gsm.core/man/Flag.html" class="external-link">gsm.core::Flag()</a></code> thresholds), and emits the standard <code>analyticsSummary</code> contract.</p>
+<table class="table">
+<colgroup>
+<col width="25%">
+<col width="25%">
+<col width="25%">
+<col width="25%">
+</colgroup>
+<thead><tr>
+<th>Metric</th>
+<th>ID</th>
+<th>Score</th>
+<th>Cut-points</th>
+</tr></thead>
+<tbody>
+<tr>
+<td>Hy’s Law candidate</td>
+<td><a href="inst/workflow/2_metrics/saf0001.yaml"><code>saf0001</code></a></td>
+<td>eDISH quadrant tier 0-3</td>
+<td>
+<code>inst/schema/hep-explorer.json</code> — 3xULN aminotransferase, 2xULN bilirubin</td>
+</tr>
+<tr>
+<td>QTcF prolongation</td>
+<td><a href="inst/workflow/2_metrics/saf0002.yaml"><code>saf0002</code></a></td>
+<td>ICH E14 outlier tier 0-3</td>
+<td>
+<code>inst/schema/qt-explorer.json</code> — 450/480/500 ms absolute, 30/60 ms change</td>
+</tr>
+<tr>
+<td>Serious / related AE</td>
+<td><a href="inst/workflow/2_metrics/saf0003.yaml"><code>saf0003</code></a></td>
+<td>AE review tier 0-3</td>
+<td>seriousness, causality, CTCAE grade</td>
+</tr>
+</tbody>
+</table>
+<p>Every cut-point lives in the workflow’s <code>meta</code> block, not in R, so a flag is traceable to the chart it came from and the threshold that produced it without reading source. Tier 0 is green, tiers 1-2 amber, tier 3 red.</p>
+<p>Two of the three take their thresholds straight from the vendored JSON data contract of the chart they correspond to, so the metric and the chart cannot drift apart. The AE metric has no published cut-point to inherit — seriousness and relatedness are flags, not scales — so its tier ladder is a design decision documented in <code><a href="reference/Input_SafetyAE.html">?Input_SafetyAE</a></code>.</p>
+<p>The metrics score participants, not sites: they set <code>GenerateRiskSignal: false</code> so a participant queued for review never moves a site’s risk score.</p>
+</div>
+<div class="section level2">
 <h2 id="report-workflows">Report workflows<a class="anchor" aria-label="anchor" href="#report-workflows"></a>
 </h2>
-<p>Report workflows under <code>inst/workflow/3_reports/</code> render each widget end-to-end via <code><a href="https://gilead-biostats.github.io/gsm.core/reference/RunWorkflow.html" class="external-link">gsm.core::RunWorkflow()</a></code>. Matching runner scripts live in <code>inst/examples/</code>:</p>
+<p>Report workflows under <code>inst/workflow/4_modules/</code> render each widget end-to-end via <code><a href="https://rdrr.io/pkg/gsm.core/man/RunWorkflow.html" class="external-link">gsm.core::RunWorkflow()</a></code>. Matching runner scripts live in <code>inst/examples/</code>:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="ex">Rscript</span> inst/examples/histogram.R <span class="pp">[</span><span class="ss">output_dir</span><span class="pp">]</span></span></code></pre></div>
+<p><code>4_modules</code> is the standard gsm phase directory for <code>meta.Type: Report</code> workflows — the same one gsm.kri uses for <code>report_kri_site.yaml</code>. The four numbered phases are <code>1_mappings</code> (gsm.mapping), <code>2_metrics</code>, <code>3_reporting</code> (gsm.reporting) and <code>4_modules</code>, and gsm.safety now populates two of them: the participant-level metrics below and these report modules.</p>
 </div>
 <div class="section level2">
 <h2 id="development">Development<a class="anchor" aria-label="anchor" href="#development"></a>

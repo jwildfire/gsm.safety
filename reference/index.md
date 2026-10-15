@@ -28,6 +28,26 @@ Interactive safety.viz charts as htmlwidgets.
 - [`ExampleData()`](https://jwildfire.github.io/gsm.safety/reference/ExampleData.md)
   : Example safety data
 
+## Metric steps
+
+The steps behind the metric definitions in inst/workflow/2_metrics/:
+each turns a domain into the participant-level tier that its flagging
+metric counts.
+
+- [`Input_HysLaw()`](https://jwildfire.github.io/gsm.safety/reference/Input_HysLaw.md)
+  : Participant-level Hy's Law candidate tier from liver chemistry
+- [`Input_QtProlongation()`](https://jwildfire.github.io/gsm.safety/reference/Input_QtProlongation.md)
+  : Participant-level QTc prolongation tier from ECG data
+- [`Input_SafetyAE()`](https://jwildfire.github.io/gsm.safety/reference/Input_SafetyAE.md)
+  : Participant-level serious / related / discontinuation AE tier
+
+## Study census
+
+The safety overview’s denominators, exposure and data coverage.
+
+- [`SafetyCensus()`](https://jwildfire.github.io/gsm.safety/reference/SafetyCensus.md)
+  : Study census, exposure and data coverage for a safety overview
+
 ## Reports
 
 - [`SaveWidgetReport()`](https://jwildfire.github.io/gsm.safety/reference/SaveWidgetReport.md)

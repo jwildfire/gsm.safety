@@ -1,65 +1,57 @@
 # Changelog
 
-## gsm.safety 1.0.0
+## gsm.safety v1.2.0 (Upcoming)
 
-First stable release: gsm.safety is now the R home of the safety.viz
-interactive chart library, mirroring the gsm.kri / gsm.viz architecture.
+Nothing yet — merged-but-unreleased work lands here.
 
-### New features
+## gsm.safety v1.1.0
 
-- Nine interactive safety widgets built on the vendored safety.viz 1.4.0
-  bundle — a binding for every renderer the bundle exports:
-  [`Widget_Histogram()`](https://jwildfire.github.io/gsm.safety/reference/Widget_Histogram.md),
-  [`Widget_ShiftPlot()`](https://jwildfire.github.io/gsm.safety/reference/Widget_ShiftPlot.md),
-  [`Widget_DeltaDelta()`](https://jwildfire.github.io/gsm.safety/reference/Widget_DeltaDelta.md),
-  [`Widget_ResultsOverTime()`](https://jwildfire.github.io/gsm.safety/reference/Widget_ResultsOverTime.md),
-  [`Widget_OutlierExplorer()`](https://jwildfire.github.io/gsm.safety/reference/Widget_OutlierExplorer.md),
-  [`Widget_AeTimelines()`](https://jwildfire.github.io/gsm.safety/reference/Widget_AeTimelines.md),
-  [`Widget_AeExplorer()`](https://jwildfire.github.io/gsm.safety/reference/Widget_AeExplorer.md),
-  [`Widget_HepExplorer()`](https://jwildfire.github.io/gsm.safety/reference/Widget_HepExplorer.md)
-  (eDISH), and
-  [`Widget_QtExplorer()`](https://jwildfire.github.io/gsm.safety/reference/Widget_QtExplorer.md)
-  (QT/QTc, safety.viz QT Explorer Phase 1).
-- Every widget validates its inputs against the module’s vendored JSON
-  data contract (`inst/schema/`), so bad column mappings fail fast in R
-  instead of silently in the browser.
-- [`ExampleData()`](https://jwildfire.github.io/gsm.safety/reference/ExampleData.md)
-  ships pharmaverseadam-derived demo datasets — `adbds` (long-format
-  labs and vitals), `adae` (adverse events, carrying placeholder rows
-  for AE-free participants so prevalence denominators cover the whole
-  safety population), and `adeg` (ECG: QTcF, QTcB, and Heart Rate) —
-  identical to the safety.viz site demos.
-- [`SaveWidgetReport()`](https://jwildfire.github.io/gsm.safety/reference/SaveWidgetReport.md)
-  writes any widget as a self-contained standalone HTML report.
-- Report workflows under `inst/workflow/3_reports/` render each widget
-  end-to-end via
-  [`gsm.core::RunWorkflow()`](https://gilead-biostats.github.io/gsm.core/reference/RunWorkflow.html),
-  with matching runner scripts in `inst/examples/`.
+**See it move:** the [annotated v1.1
+demo](https://jwildfire.github.io/obot.roadmap/reports/gs-v1.1-demo/)
+walks the new metrics running live on the [DEMO-301 study
+site](https://jwildfire.github.io/demo-301/#/safety), with captures and
+try-it-yourself steps.
 
-### Documentation
+gsm.safety could draw the eDISH chart but could not tell you how many
+participants were in the Hy’s Law quadrant. This release adds the
+metrics phase that answers that — three participant-level safety metrics
+plus the denominators a safety overview leads with — and moves the
+report workflows into the standard gsm phase layout on the way. One path
+changes: workflows formerly under `inst/workflow/3_reports/` now live in
+`inst/workflow/4_modules/`.
 
-- A thumbnail gallery on the package home page links every widget to its
-  live example page.
-- Each example page shows the full report workflow that renders its
-  chart — read from the installed package, so the listing is always the
-  shipped YAML — collapsed by default.
-- The example pages carry site chrome: a header band linking back to the
-  package home, the reference index, and the safety.viz chart library,
-  plus navigation across all nine examples generated from the pages
-  themselves.
+### What’s new
 
-### Quality
+- **A `2_metrics` workflow phase: three participant-level safety
+  metrics** ([\#45](https://github.com/jwildfire/gsm.safety/issues/45),
+  PR [\#47](https://github.com/jwildfire/gsm.safety/pull/47); hub
+  [obot.roadmap#138](https://github.com/jwildfire/obot.roadmap/issues/138)).
+  `saf0001` Hy’s Law candidate, `saf0002` QTcF prolongation, and
+  `saf0003` serious / related AE — each scores one row per participant
+  with an ordinal tier through the standard gsm contract
+  (`Analyze_Identity()` + `Flag()`, following gsm.kri’s `pat0015`
+  precedent), so subject-level rows land in `Reporting_Results` beside
+  site and country rows with nothing downstream changing. The liver and
+  QT cut-points come from the vendored data contracts of the charts they
+  correspond to, so the metric and the chart cannot drift apart.
+  Measured on demo data before being treated as real (the hub#138 gate):
+  9 / 11 / 68 red-tier participants of 765 scored. [See them
+  live](https://jwildfire.github.io/demo-301/#/safety/metric/saf0001).
+- **[`SafetyCensus()`](https://jwildfire.github.io/gsm.safety/reference/SafetyCensus.md)**
+  (PR [\#47](https://github.com/jwildfire/gsm.safety/pull/47)) — reduces
+  the mapped domains to the denominators a safety overview leads with:
+  enrollment, exposure, person-years, deaths, and **data coverage per
+  visit** — the figure that decides whether a quiet visit is reassuring
+  or empty. New exported helpers behind the metrics:
+  [`Input_HysLaw()`](https://jwildfire.github.io/gsm.safety/reference/Input_HysLaw.md),
+  [`Input_QtProlongation()`](https://jwildfire.github.io/gsm.safety/reference/Input_QtProlongation.md),
+  [`Input_SafetyAE()`](https://jwildfire.github.io/gsm.safety/reference/Input_SafetyAE.md).
+- **Report workflows move to `inst/workflow/4_modules/`**
+  ([\#46](https://github.com/jwildfire/gsm.safety/issues/46), PR
+  [\#47](https://github.com/jwildfire/gsm.safety/pull/47); hub
+  [obot.roadmap#136](https://github.com/jwildfire/obot.roadmap/issues/136))
+  — the standard gsm phase directory for `meta.Type: Report` workflows,
+  the one gsm.kri already uses. Update any pipeline that globbed
+  `3_reports/`.
 
-- Full qcthat-style qualification: every test is traceable to its GitHub
-  issue, covering widget contracts, input validation, standalone
-  rendering, and workflow execution.
-
-### Breaking changes
-
-- The experimental safetyCharts bridge is retired:
-  `RenderSafetyChartsWidget()`, `MakeExampleData()`, and the
-  safetyCharts-era report scaffolds are removed, along with the
-  safetyCharts and Tendril dependencies. The `ae_explorer` and
-  `hep_explorer` report workflows return, rebuilt on the `Widget_*`
-  pattern; `paneled_outlier_explorer` has no safety.viz module and is
-  gone for good.
+1 286 tests pass; `R CMD check` clean.

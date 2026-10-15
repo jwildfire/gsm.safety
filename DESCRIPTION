@@ -20,7 +20,7 @@ BugReports: https://github.com/jwildfire/gsm.safety/issues
 Encoding: UTF-8
 Depends:
     R (>= 3.5.0)
-Config/safetyviz/version: 1.7.0
+Config/safetyviz/version: 1.11.2
 LazyData: true
 Roxygen: list(markdown = TRUE)
 Imports:
@@ -43,3 +43,4 @@ Remotes:
     qcthat=Gilead-Public/qcthat@main
 Config/testthat/edition: 3
 Config/roxygen2/version: 8.1.0
+RoxygenNote: 7.3.2

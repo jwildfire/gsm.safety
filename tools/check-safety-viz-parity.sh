@@ -9,7 +9,8 @@
 #      release — a stale bundle silently reproduces defects the library has
 #      since fixed;
 #   2. every renderer exported by that release's src/main.js has a matching
-#      Widget_*.R, unless it is deferred in .github/parity-allowlist.yaml —
+#      Widget_*.R (exports in NON_RENDERERS are not charts and owe none),
+#      unless it is deferred in .github/parity-allowlist.yaml —
 #      and every allowlist entry must cite a filed requirement URL, so
 #      "widget follows later" is a tracked commitment, never an intention.
 #
@@ -24,6 +25,12 @@ set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SV_REPO="jwildfire/safety.viz"
 ALLOWLIST="$REPO_ROOT/.github/parity-allowlist.yaml"
+
+# Exports that are not charts, so no widget is owed (#158): the portfolio
+# manifest (safety.viz#138) and the shared chart kit (safety.viz#154). Keep
+# chrNonRenderers in tests/testthat/test-package.R in sync; that test asserts
+# the two lists are equal.
+NON_RENDERERS="portfolio kit"
 
 fail=0
 
@@ -74,6 +81,10 @@ fi
 
 missing=""
 for module in $modules; do
+  if printf '%s\n' $NON_RENDERERS | grep -qx "$module"; then
+    echo "  n/a       $module (not a renderer)"
+    continue
+  fi
   widget="Widget_$(printf '%s' "$module" | awk '{print toupper(substr($0,1,1)) substr($0,2)}')"
   if [ -f "$REPO_ROOT/R/$widget.R" ]; then
     echo "  ok        $module -> $widget"

@@ -1,14 +1,16 @@
 Package: gsm.safety
 Title: Safety Visualizations for Good Statistical Monitoring Workflows
-Version: 1.1.0
+Version: 1.2.0
 Authors@R: c(
     person("obot", role = c("aut", "cre"), email = "obot@users.noreply.github.com")
   )
 Description: HTML widget bindings for the 'safety.viz' JavaScript chart
-    library, providing nine interactive clinical safety displays -
+    library, providing thirteen interactive clinical safety displays -
     histogram, shift plot, delta-delta, results over time, outlier
     explorer, adverse event timelines, adverse event explorer, the eDISH
-    hepatic safety explorer, and the QT safety explorer - as htmlwidgets,
+    hepatic safety explorer, the hepatic ALT waterfall, the QT safety
+    explorer, the KDIGO nephrotoxicity explorer, the Kaplan-Meier
+    time-to-event display, and the participant profile - as htmlwidgets,
     plus bundled example data and report workflows for Good Statistical
     Monitoring.
 License: Apache License (>= 2)
@@ -16,19 +18,29 @@ URL: https://github.com/jwildfire/gsm.safety,
     https://jwildfire.github.io/gsm.safety/
 BugReports: https://github.com/jwildfire/gsm.safety/issues
 Encoding: UTF-8
+Depends:
+    R (>= 3.5.0)
+Config/safetyviz/version: 1.11.2
+LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
 Imports:
     gsm.core,
+    htmltools,
     htmlwidgets,
     jsonlite,
     stats,
-    utils
-Suggests:
-    qcthat,
-    testthat (>= 3.0.0),
+    utils,
     yaml
+Suggests:
+    gsm.mapping,
+    gsm.reporting,
+    qcthat,
+    testthat (>= 3.0.0)
 Remotes:
     gsm.core=Gilead-Public/gsm.core@main,
+    gsm.mapping=Gilead-Public/gsm.mapping@main,
+    gsm.reporting=Gilead-Public/gsm.reporting@main,
     qcthat=Gilead-Public/qcthat@main
 Config/testthat/edition: 3
+Config/roxygen2/version: 8.1.0
+RoxygenNote: 7.3.2

@@ -1,0 +1,41 @@
+Table,Panel,Parameter,Specimen,LowUS,HighUS,UnitUS,LowSI,HighSI,UnitSI,References,GuidePage,Note
+58,General Chemistry,Sodium,serum,95.0,191,mEq/L,95.0,191,mmol/L,"1, 6",122,
+58,General Chemistry,Potassium,serum,1.3,9.0,mEq/L,1.3,9.0,mmol/L,1,122,
+58,General Chemistry,Chloride,serum,65.0,138,mEq/L,65.0,138,mmol/L,1,122,
+58,General Chemistry,Bicarbonate,serum,5.0,50.0,mEq/L,5.0,50.0,mmol/L,2,122,
+58,General Chemistry,Blood Urea Nitrogen,serum/plasma,,200,mg/dL,,71.4,mmol/L,3,122,
+58,General Chemistry,Glucose,plasma,10,2700,mg/dL,0.6,150,mmol/L,"2, 7",122,
+58,General Chemistry,Total Calcium,serum,4.0,20.0,mg/dL,1.0,5.0,mmol/L,2,122,
+58,General Chemistry,Magnesium,serum,0.5,15.0,mg/dL,0.2,6.2,mmol/L,2,122,
+58,General Chemistry,Phosphate,serum,0.3,45.0,mg/dL,0.1,14.5,mmol/L,3,122,
+58,General Chemistry,Total Protein,serum,0.6,90.0,g/dL,6.0,900,g/L,3,122,
+58,General Chemistry,Albumin,serum,0.4,55.0,g/dL,4,550,g/L,3,122,
+58,General Chemistry,Total CPK,serum,3.0,800000,U/L,3.0,800000,U/L,4,122,
+58,General Chemistry,Amylase,serum,,10000,U/L,,10000,U/L,2,122,
+58,General Chemistry,Lipase,serum,,10000,U/L,,167,ukat/L,2,122,
+58,General Chemistry,Creatinine,serum,,80.0,mg/dL,,7072,umol/L,5,122,
+58,General Chemistry,Creatinine Clearance,serum/urine,,200,mL/min,,3.3,mL/s,2,122,
+58,General Chemistry,eGFR,serum/urine,,200,mL/min/1.73 m2,,3.3,mL/s/1.73 m2,2,122,
+58,General Chemistry,Alkaline Phosphatase,serum,3.0,5000,U/L,0.05,83.4,ukat/L,2,122,
+58,General Chemistry,Alanine Aminotransferase,serum,,50000,U/L,,830,ukat/L,2,122,
+58,General Chemistry,Aspartate Aminotransferase,serum,,50000,U/L,,830,ukat/L,2,122,
+58,General Chemistry,GGT,serum,,5000,U/L,,5000,U/L,8,122,
+58,General Chemistry,Total Bilirubin,serum,,200,mg/dL,,3420,umol/L,2,122,
+58,General Chemistry,Total Cholesterol,serum,5.0,3000,mg/dL,0.13,77.7,mmol/L,2,123,
+58,General Chemistry,HDL,serum,5.0,1000,mg/dL,0.13,25.9,mmol/L,2,123,
+58,General Chemistry,LDL,serum,5.0,2000,mg/dL,0.13,51.8,mmol/L,2,123,
+58,General Chemistry,Triglycerides,serum,5.0,3500,mg/dL,0.13,90.7,mmol/L,2,123,
+59,Hematology,Neutrophils,blood,,200000,cells/uL,,200000,cells/uL,3,123,High threshold printed without a comparator; read as > like the rest of the table
+59,Hematology,Lymphocytes,blood,,60000,cells/uL,,60000,cells/uL,1,123,High threshold printed without a comparator; read as > like the rest of the table
+59,Hematology,Eosinophils,blood,,20000,cells/uL,,20000,cells/uL,1,123,High threshold printed without a comparator; read as > like the rest of the table
+59,Hematology,Hemoglobin,blood,0.6,30,g/dL,6,300,g/L,"1, 2",123,
+59,Hematology,Hematocrit,blood,2,90,%,2,90,%,"1, 2",123,
+59,Hematology,Platelets,blood,,5000000,platelets/uL,,5000000,platelets/uL,1,123,
+59,Hematology,PT,plasma,,150,seconds,,150,seconds,1,123,
+59,Hematology,PTT,plasma,,350,seconds,,350,seconds,1,123,
+59,Hematology,INR,plasma,,20,,,20,,1,123,INR is unitless; the guide prints N/A for both unit columns
+60,Vital Signs,Pulse,,10,600,beats/min,10,600,beats/min,1,124,Table 60 carries one unit set; it is repeated under both systems so every row has both
+60,Vital Signs,Blood pressure systolic,,50,400,mmHg,50,400,mmHg,2,124,Table 60 carries one unit set; it is repeated under both systems so every row has both
+60,Vital Signs,Blood pressure diastolic,,25,370,mmHg,25,370,mmHg,2,124,Table 60 carries one unit set; it is repeated under both systems so every row has both
+60,Vital Signs,Respiration,,3,90,breaths/min,3,90,breaths/min,3,124,Table 60 carries one unit set; it is repeated under both systems so every row has both
+60,Vital Signs,Temperature,,50,120,F,10,50,C,"4, 5",124,The guide gives both Fahrenheit and Celsius on one row; F is filed as US-conventional and C as SI

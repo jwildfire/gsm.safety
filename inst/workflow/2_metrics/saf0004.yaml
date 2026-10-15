@@ -1,0 +1,73 @@
+meta:
+  Type: Analysis
+  ID: saf0004
+  # D0023.4 — study level ships first, and the level is a setting from the
+  # first line rather than a later refactor: moving this metric to site level
+  # is GroupLevel: Site plus GroupCol: invid, and nothing else.
+  GroupLevel: Study
+  GroupCol: studyid
+  Abbreviation: DTH
+  Metric: Deaths (Study)
+  Numerator: Participants Who Died
+  Denominator: Enrolled Participant
+  Model: Identity
+  Score: Numerator
+  AnalysisType: identity
+  # D0023.3 — no census number raises anything. There is deliberately no
+  # Threshold, no Flag, and no RiskScoreWeight here, and no gsm.core::Flag
+  # step below: gsm.safety::Flag_None stands in that slot and leaves the flag
+  # empty, the way gsm.kri's srs0001 risk score already does. An empty flag
+  # says this number does not flag; a zero would say measured and found fine.
+  # A metric carrying no threshold contributes no weights, so gsm.kri's
+  # risk-score builder skips it and this figure cannot move a site's score.
+  GenerateRiskSignal: false
+spec:
+  # D0023 — declaring the columns is what stops a missing one from quietly
+  # reading as zero. Mapped_Death is gsm.mapping's union of the death domain
+  # and the study-completion domain's discontinuation reason
+  # (gsm.mapping::complete_death), so no clinical definition of death is
+  # written in this package.
+  Mapped_Death:
+    subjid:
+      type: character
+    death:
+      type: logical
+  Mapped_SUBJ:
+    subjid:
+      type: character
+    studyid:
+      type: character
+steps:
+  - output: Analysis_Input
+    name: gsm.safety::Input_Deaths
+    params:
+      dfDeath: Mapped_Death
+      dfSubjects: Mapped_SUBJ
+      strGroupCol: GroupCol
+      strGroupLevel: GroupLevel
+  - output: Analysis_Transformed
+    name: gsm.core::Transform_Rate
+    params:
+      dfInput: Analysis_Input
+  - output: Analysis_Analyzed
+    name: gsm.core::Analyze_Identity
+    params:
+      dfTransformed: Analysis_Transformed
+      strValueCol: Score
+  - output: Analysis_Flagged
+    name: gsm.safety::Flag_None
+    params:
+      dfAnalyzed: Analysis_Analyzed
+  - output: Analysis_Summary
+    name: gsm.core::Summarize
+    params:
+      dfFlagged: Analysis_Flagged
+  - output: lAnalysis
+    name: list
+    params:
+      ID: ID
+      Analysis_Input: Analysis_Input
+      Analysis_Transformed: Analysis_Transformed
+      Analysis_Analyzed: Analysis_Analyzed
+      Analysis_Flagged: Analysis_Flagged
+      Analysis_Summary: Analysis_Summary

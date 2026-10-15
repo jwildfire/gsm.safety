@@ -1,0 +1,14 @@
+# Deliberate deferrals from the safety.viz widget-parity rule ("every renderer
+# gets an R widget", @jwildfire 2026-08-15). Every entry MUST cite the filed
+# requirement that will deliver the widget: tools/check-safety-viz-parity.sh
+# fails on an entry without one. Keep tests/testthat/test-package.R's
+# chrDeferred in sync; that test asserts the two lists are equal, so a module
+# dropped from one file and left in the other fails the suite rather than
+# quietly reporting a shipped widget as deferred.
+#
+# Empty from #71 (hub requirement obot.roadmap#165) until the safety.viz
+# v1.11.2 catch-up (#158), which brought in the Patient Journey Explorer
+# (safety.viz v1.8.0, a Prototype chart). Its widget is its own filed
+# requirement.
+- module: patientJourneyExplorer
+  requirement: https://github.com/jwildfire/obot.roadmap/issues/350

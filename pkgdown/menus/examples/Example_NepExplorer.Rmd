@@ -1,0 +1,71 @@
+---
+title: "Nephrotoxicity Explorer"
+description: "KDIGO acute-kidney-injury creatinine scatter: maximum fold change against maximum absolute change over the staging zones, with a stage summary table."
+index: 10
+output:
+  html_document:
+    code_folding: hide
+    includes:
+      before_body: util/example-chrome.html
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+source("util/example-page.R")
+```
+
+```{r, echo = FALSE, results = "asis"}
+cat(ExampleHeader())
+```
+
+KDIGO acute-kidney-injury screening, ported from [SafetyGraphics/nepExplorer](https://github.com/SafetyGraphics/nepExplorer). One point per participant at their maximum post-baseline **fold change** in serum creatinine against their maximum **absolute change**, over the L-shaped KDIGO stage zones; participants meeting the ≥ 4.0 mg/dL Stage 3 criterion are drawn as a distinct triangular mark with its own tooltip line. The stage summary table beside the chart counts the population three ways, with dashes where KDIGO defines no stage on absolute change. The chart below is live — rendered by the safety.viz `nepExplorer` module on the package's example data.
+
+The bundled `adbds` dataset uses the BDS column names the module expects (`USUBJID`, `TEST`, `STRESN`, `STRESU`), so the chart initializes with no settings at all; the settings below only add subgroup filters.
+
+**A note on the demo data.** The pharmaverseadam pilot population alone cannot demonstrate this chart — every one of its stageable participants lands in the no-stage box. The bundled `adbds` therefore carries the same synthetic `AKI-*` acute-kidney-injury cohort the safety.viz demo appends: those participants populate the coloured zones, and they are simulated injury, not trial data. The renderer is marked **Experimental** upstream pending clinical confirmation of the staging ladder.
+
+## Render this report from a workflow
+
+The same chart ships as a gsm-idiom report workflow. Run it with `gsm.core::RunWorkflow()` to produce a standalone HTML report, or use the matching runner script:
+
+```{r, eval = FALSE, class.source = "fold-show"}
+lWorkflow <- yaml::read_yaml(
+  system.file("workflow", "4_modules", "nep_explorer.yaml", package = "gsm.safety")
+)
+
+gsm.core::RunWorkflow(
+  lWorkflow = lWorkflow,
+  lData = list(dfResults = ExampleData("adbds"))
+)
+```
+
+```sh
+Rscript inst/examples/nep-explorer.R <output-dir>
+```
+
+```{r, echo = FALSE, results = "asis"}
+cat(ExampleWorkflow("nep_explorer.yaml"))
+```
+
+## The live chart
+
+```{r}
+library(gsm.safety)
+
+dfResults <- ExampleData("adbds")
+
+Widget_NepExplorer(
+  dfResults,
+  lSettings = list(
+    filters = list(
+      list(value_col = "ARM", label = "Treatment Group"),
+      list(value_col = "SEX", label = "Sex"),
+      list(value_col = "RACE", label = "Race")
+    )
+  )
+)
+```
+
+```{r, echo = FALSE, results = "asis"}
+cat(ExampleFooter())
+```

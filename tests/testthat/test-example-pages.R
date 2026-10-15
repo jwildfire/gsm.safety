@@ -1,6 +1,6 @@
 # Guards for the standalone example pages (#43).
 #
-# The nine Example_*.Rmd pages are the package's showcase surface: every gallery
+# The thirteen Example_*.Rmd pages are the package's showcase surface: every gallery
 # thumbnail and README link lands on one. They render outside pkgdown's template
 # (gsm.utils::build_assets() renders them with rmarkdown and drops the HTML into
 # pkgdown/assets/examples/), so their chrome, navigation, and workflow listings

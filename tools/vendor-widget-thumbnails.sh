@@ -38,6 +38,10 @@ MODULES=(
   ae-explorer
   hep-explorer
   qt-explorer
+  hep-waterfall
+  nep-explorer
+  time-to-event
+  participant-profile
 )
 
 if [ ! -d "$SRC_REPO/site/assets" ]; then

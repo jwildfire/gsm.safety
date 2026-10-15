@@ -7,7 +7,16 @@ MetricWorkflow <- function(strID) {
   yaml::read_yaml(strPath)
 }
 
+# Participant-level flagging metrics, following gsm.kri's pat0015 precedent.
 CHR_METRICS <- c("saf0001", "saf0002", "saf0003")
+# Descriptive census metrics: study level, no threshold, no flag (D0023.3/.4).
+# Their own rules are asserted in test-workflow-census-metrics.R; what they
+# share with the flagging metrics is asserted here.
+CHR_CENSUS_METRICS <- c(
+  "saf0004", "saf0005", "saf0006", "saf0007", "saf0008", "saf0009",
+  "saf0010", "saf0011", "saf0012", "saf0013", "saf0014", "saf0015"
+)
+CHR_ALL_METRICS <- c(CHR_METRICS, CHR_CENSUS_METRICS)
 
 test_that("every metric workflow declares the pat0015 participant-level meta (#45)", {
   for (strID in CHR_METRICS) {
@@ -36,9 +45,9 @@ test_that("every metric workflow declares the pat0015 participant-level meta (#4
   }
 })
 
-test_that("metric IDs do not collide with the gsm.kri metric ranges (#45)", {
+test_that("metric IDs do not collide with the gsm.kri metric ranges (#45, #56)", {
   # gsm.kri uses kri####, cou#### and pat####; gsm.safety takes saf####.
-  for (strID in CHR_METRICS) {
+  for (strID in CHR_ALL_METRICS) {
     expect_match(strID, "^saf[0-9]{4}$")
   }
 })
@@ -106,8 +115,8 @@ test_that("each metric workflow runs end to end and emits analyticsSummary (#45)
   }
 })
 
-test_that("metric workflows read only mapped domains their spec declares (#45)", {
-  for (strID in CHR_METRICS) {
+test_that("metric workflows read only mapped domains their spec declares (#45, #56)", {
+  for (strID in CHR_ALL_METRICS) {
     lWorkflow <- MetricWorkflow(strID)
     chrSpec <- names(lWorkflow$spec)
 

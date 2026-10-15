@@ -952,7 +952,8 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   `qcthat` from Gilead-Public. Gilead-BioStats has held only a
   moved-repository page for the first three since 2026-09-23, so every
   workflow that installs dependencies had stopped.
-  ([\#160](https://github.com/jwildfire/gsm.safety/issues/160))
+  ([\#160](https://github.com/jwildfire/gsm.safety/issues/160),
+  [\#161](https://github.com/jwildfire/gsm.safety/pull/161))
 - The package site wears the jwildfire.github.io theme, as the obot hub
   does since 2026-09-12: paper ground, graphite ink, plum links,
   Instrument Serif headings, Instrument Sans body, IBM Plex Mono code,

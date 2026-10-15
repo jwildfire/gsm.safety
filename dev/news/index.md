@@ -20,8 +20,8 @@ worse than one that never had the bug.
 
 ### Two clinical figures change
 
-- **The vendored safety.viz bundle moves from v1.4.0 to v1.7.0**, so
-  every widget renders with three releases of upstream fixes and
+- **The vendored safety.viz bundle moves from v1.4.0 to v1.11.2**, so
+  every widget renders with a dozen releases of upstream fixes and
   features it was missing. One of them changes clinical numbers: the
   corrected eDISH peak computation
   ([safety.viz#91](https://github.com/jwildfire/safety.viz/issues/91)) —
@@ -38,7 +38,7 @@ worse than one that never had the bug.
   [`Widget_HepExplorer()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_HepExplorer.md)’s
   composite and migration views and
   [`Widget_HepWaterfall()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_HepWaterfall.md).
-  Everything else the catch-up brings is feature or appearance:
+  Everything else the v1.7.0 catch-up brought is feature or appearance:
   participant-profile drill-down on six charts, the migration Sankey
   view, eDISH direct manipulation and study-day playback, the shared
   hep/qt view selector, log-base and axis-limit controls.
@@ -808,6 +808,15 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
 
 ### Also in this release
 
+- **The bundle moves on from v1.7.0 to safety.viz v1.11.2,** so the
+  required parity check passes on `dev` again. Two changes reach R
+  users: the QT Explorer averages replicate readings, so its `n` counts
+  participants, and the histogram draws no p-values, so its
+  `test_normality` and `compare_distributions` settings are gone. The
+  Patient Journey Explorer waits on its own widget requirement
+  ([obot.roadmap#350](https://github.com/jwildfire/obot.roadmap/issues/350)).
+  ([\#158](https://github.com/jwildfire/gsm.safety/issues/158),
+  [\#163](https://github.com/jwildfire/gsm.safety/pull/163))
 - The package now declares `LazyData: true` and `Depends: R (>= 3.5.0)`,
   and the hand-checked transcription with its build script lives in
   `data-raw/`.
@@ -948,6 +957,12 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   tests report. Found by the code review of the release candidate.
   ([\#153](https://github.com/jwildfire/gsm.safety/issues/153),
   [\#154](https://github.com/jwildfire/gsm.safety/pull/154))
+- `DESCRIPTION` installs `gsm.core`, `gsm.mapping`, `gsm.reporting` and
+  `qcthat` from Gilead-Public. Gilead-BioStats has held only a
+  moved-repository page for the first three since 2026-09-23, so every
+  workflow that installs dependencies had stopped.
+  ([\#160](https://github.com/jwildfire/gsm.safety/issues/160),
+  [\#161](https://github.com/jwildfire/gsm.safety/pull/161))
 - The package site wears the jwildfire.github.io theme, as the obot hub
   does since 2026-09-12: paper ground, graphite ink, plum links,
   Instrument Serif headings, Instrument Sans body, IBM Plex Mono code,

@@ -29,6 +29,6 @@ Suggests:
     testthat (>= 3.0.0),
     yaml
 Remotes:
-    gsm.core=Gilead-BioStats/gsm.core@main,
-    qcthat=Gilead-BioStats/qcthat@main
+    gsm.core=Gilead-Public/gsm.core@main,
+    qcthat=Gilead-Public/qcthat@main
 Config/testthat/edition: 3

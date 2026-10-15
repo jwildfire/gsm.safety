@@ -29,6 +29,19 @@ reference:
   - title: Data
     contents:
       - ExampleData
+  - title: Metric steps
+    desc: >
+      The steps behind the metric definitions in inst/workflow/2_metrics/:
+      each turns a domain into the participant-level tier that its flagging
+      metric counts.
+    contents:
+      - Input_HysLaw
+      - Input_QtProlongation
+      - Input_SafetyAE
+  - title: Study census
+    desc: The safety overview's denominators, exposure and data coverage.
+    contents:
+      - SafetyCensus
   - title: Reports
     contents:
       - SaveWidgetReport

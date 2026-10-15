@@ -2,8 +2,9 @@
 #'
 #' A widget that renders the safety.viz histogram: the distribution of
 #' long-format safety results (labs, vitals) for a selected measure, with
-#' optional filters, group-by small multiples, normal-range annotations, and
-#' distribution comparison tests.
+#' optional filters, group-by small multiples and normal-range annotations.
+#' Since safety.viz v1.10.0 the histogram draws no p-value; run normality and
+#' distribution comparison tests in R.
 #'
 #' @param dfResults `data.frame` Long-format results data, one record per
 #'   measurement. Column names are supplied by `lSettings`; the defaults
@@ -41,9 +42,7 @@
 #'     ),
 #'     display_normal_range = TRUE,
 #'     annotate_bin_boundaries = TRUE,
-#'     test_normality = TRUE,
-#'     group_by = "ARM",
-#'     compare_distributions = TRUE
+#'     group_by = "ARM"
 #'   )
 #' )
 #'

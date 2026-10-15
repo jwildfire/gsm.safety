@@ -58,16 +58,43 @@ test_that("every renderer exported by the vendored safety.viz bundle has a widge
   )
   expect_true(nzchar(strBundle))
 
-  chrModules <- c(
+  # Read the module collection off the bundle itself (its `main_default`
+  # object), so a re-vendored bundle that adds a renderer fails here until the
+  # renderer is wrapped or deferred (#158).
+  chrBundle <- readLines(strBundle, warn = FALSE)
+  nStart <- grep("^\\s*var main_default = \\{\\s*$", chrBundle)
+  expect_length(nStart, 1)
+  nEnd <- nStart + grep("^\\s*\\};\\s*$", chrBundle[-seq_len(nStart)])[1]
+  chrExports <- trimws(sub("[:,].*$", "", chrBundle[(nStart + 1):(nEnd - 1)]))
+  chrExports <- chrExports[nzchar(chrExports)]
+
+  # Exports that are not charts, so no widget is owed: the portfolio manifest
+  # (safety.viz#138) and the shared chart kit (safety.viz#154). Mirrors
+  # NON_RENDERERS in tools/check-safety-viz-parity.sh.
+  chrNonRenderers <- c("portfolio", "kit")
+  chrModules <- setdiff(chrExports, chrNonRenderers)
+
+  chrWrapped <- c(
     "histogram", "shiftPlot", "deltaDelta", "resultsOverTime",
     "outlierExplorer", "aeTimelines", "hepExplorer", "aeExplorer", "qtExplorer",
     "hepWaterfall", "nepExplorer", "timeToEvent", "participantProfile"
   )
   # Deferred wraps: every entry MUST cite its filed requirement (the parity
   # rule's single-release clause) and mirror .github/parity-allowlist.yaml.
-  # Empty since #71 wrapped the last two: every renderer the bundle exports is
-  # reachable from R.
-  chrDeferred <- character(0)
+  # The Patient Journey Explorer (safety.viz v1.8.0) waits on its widget
+  # requirement, obot.roadmap#350.
+  chrDeferred <- c("patientJourneyExplorer")
+  expect_setequal(chrModules, c(chrWrapped, chrDeferred))
+
+  strParityScript <- testthat::test_path("..", "..", "tools", "check-safety-viz-parity.sh")
+  if (file.exists(strParityScript)) {
+    strLine <- grep("^NON_RENDERERS=", readLines(strParityScript, warn = FALSE), value = TRUE)
+    expect_length(strLine, 1)
+    expect_setequal(
+      strsplit(gsub("^NON_RENDERERS=\"|\"$", "", strLine), " ")[[1]],
+      chrNonRenderers
+    )
+  }
   chrBindings <- basename(list.files(
     system.file("htmlwidgets", package = "gsm.safety"),
     pattern = "^Widget_.*[.]js$"
@@ -81,7 +108,7 @@ test_that("every renderer exported by the vendored safety.viz bundle has a widge
     collapse = "\n"
   )
 
-  for (strModule in chrModules) {
+  for (strModule in chrWrapped) {
     expect_match(
       strBindingSource,
       paste0("SafetyViz.", strModule, "("),
@@ -119,7 +146,7 @@ test_that("every renderer exported by the vendored safety.viz bundle has a widge
       )
     }
   }
-  expect_length(chrBindings, length(chrModules))
+  expect_length(chrBindings, length(chrWrapped))
 })
 
 test_that("every widget binding feeds the module, not just constructs it (#71)", {

@@ -5,6 +5,14 @@ meta:
   Name: Safety Outlier Explorer Report
   Description: Interactive safety.viz outlier explorer of long-format labs and vitals results.
   lSettings:
+    x_axis:
+      options:
+        - key: visit
+          col: VISITNUM
+          label_col: VISIT
+        - key: day
+          col: DY
+      default: visit
     filters:
       - value_col: SITEID
         label: Site ID
@@ -41,6 +49,12 @@ spec:
     TEST:
       type: character
     STRESN:
+      type: numeric
+    VISIT:
+      type: character
+    VISITNUM:
+      type: numeric
+    DY:
       type: numeric
 steps:
   - output: strOutputDir

@@ -5,7 +5,15 @@ meta:
   Name: Participant Profile Report
   Description: Interactive safety.viz participant drill-down for a named cohort - demographics header, standardized labs over time, adverse-event tracks on the same axis, and a measure table with sparklines.
   lSettings:
-    studyday_col: VISITNUM
+    x_axis:
+      options:
+        - key: visit
+          col: VISITNUM
+          label_col: VISIT
+        - key: day
+          col: DY
+      default: visit
+    baseline_col: ABLFL
     measure_values:
       ALT: Alanine Aminotransferase
       AST: Aspartate Aminotransferase
@@ -28,6 +36,14 @@ spec:
       type: numeric
     STNRHI:
       type: numeric
+    VISIT:
+      type: character
+    VISITNUM:
+      type: numeric
+    DY:
+      type: numeric
+    ABLFL:
+      type: character
   dfAE:
     USUBJID:
       type: character

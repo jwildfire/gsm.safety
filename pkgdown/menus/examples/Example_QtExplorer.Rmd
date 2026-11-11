@@ -66,6 +66,13 @@ Widget_QtExplorer(
   dfResults,
   lSettings = list(
     placebo_arm = "Placebo",
+    x_axis = list(
+      options = list(
+        list(key = "visit", col = "VISITNUM", label_col = "VISIT"),
+        list(key = "day", col = "DY")
+      ),
+      default = "visit"
+    ),
     filters = list(
       list(value_col = "SEX", label = "Sex"),
       list(value_col = "RACE", label = "Race"),

@@ -6,6 +6,14 @@ meta:
   Description: Interactive safety.viz QT/QTc safety explorer with central tendency against the ICH E14 threshold, outlier scatter, and categorical summaries.
   lSettings:
     placebo_arm: Placebo
+    x_axis:
+      options:
+        - key: visit
+          col: VISITNUM
+          label_col: VISIT
+        - key: day
+          col: DY
+      default: visit
     filters:
       - value_col: SEX
         label: Sex
@@ -25,6 +33,12 @@ spec:
       type: numeric
     ARM:
       type: character
+    VISIT:
+      type: character
+    VISITNUM:
+      type: numeric
+    DY:
+      type: numeric
 steps:
   - output: strOutputDir
     name: getwd

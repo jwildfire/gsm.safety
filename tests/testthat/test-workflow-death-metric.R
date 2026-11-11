@@ -183,3 +183,16 @@ test_that("SafetyCensus publishes the death count with no disposition domain (#1
   ))
   expect_identical(lCensus$Census$Value[lCensus$Census$Label == "Deaths"], 1)
 })
+
+test_that("an empty Mapped_Death beside a completion domain naming a death publishes that death (#174)", {
+  lData <- DEATH_DATA()
+  lData$Mapped_Death <- lData$Mapped_Death[0, , drop = FALSE]
+  lData$Mapped_STUDCOMP <- data.frame(
+    subjid = c("S3", "S4"),
+    compreas = c("Withdrew Consent", "Death"),
+    stringsAsFactors = FALSE
+  )
+  dfSummary <- RunDeath(lData)$Analysis_Summary
+  expect_identical(nrow(dfSummary), 1L)
+  expect_identical(dfSummary$Numerator, 1)
+})

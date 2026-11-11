@@ -130,8 +130,8 @@ kept so that existing calls keep working (D0023.5, approved).</p></dd>
 
 <dt id="arg-dfdeath">dfDeath<a class="anchor" aria-label="anchor" href="#arg-dfdeath"></a></dt>
 <dd><p><code>data.frame</code> or <code>NULL</code> Mapped death domain (<code>Mapped_Death</code>).
-The death count is this domain joined to the disposition domain's
-discontinuation reason of death, in any case (#168). Without it the death
+The death count is the union of this domain and the disposition
+domain's discontinuation reason of death, in any case (#168). Without it the death
 count is absent: the reason column alone is how the count was wrong
 before.</p></dd>
 

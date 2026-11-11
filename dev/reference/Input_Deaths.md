@@ -100,8 +100,9 @@ death.
 
 ## Absent, empty, and zero are three different answers
 
-The defect this metric replaces reported **one** death on a study whose
-records hold thirteen, by text-matching a discontinuation reason. The
+The defect this metric replaces counted deaths by text-matching a
+discontinuation reason and never read the death domain: on the bundled
+study it reported 2 where the records hold 12 (gsm.core 1.3.2). The
 defect beside it reported **zero** where a column was missing. So the
 three states are kept apart deliberately:
 

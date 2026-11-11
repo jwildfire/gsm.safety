@@ -8,17 +8,18 @@ has captures, try-it steps and the detail behind everything below.
 
 gsm.safety v1.2.0 brings the widgets up to safety.viz v1.12.0 and
 rebuilds the safety census on qualified metrics. Two published clinical
-figures change: the eDISH chart no longer reads a baseline as a peak,
-and the bundled study’s death count goes from 2 to 12.
+figures change: the liver composite view no longer reads a baseline as a
+peak, and the bundled study’s death count goes from 2 to 12.
 [`SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/SafetyCensus.md)
-keeps its name and its arguments. Its figures are qualified on gsm.core
+keeps its name and arguments; its figures are qualified on gsm.core
 1.3.2.
 
 ### What’s new
 
 - **The death count reads both death sources and counts only enrolled
-  participants.** It joins the death domain to a discontinuation reason
-  of death, in any case. On the bundled study it reports 12 of 754 where
+  participants.** It counts the death domain and a discontinuation
+  reason of death, in any case. On the bundled study it reports 12 of
+  754 where
   [`SafetyCensus()`](https://jwildfire.github.io/gsm.safety/dev/reference/SafetyCensus.md)
   reported 2.
   [obot.roadmap#274](https://github.com/jwildfire/obot.roadmap/issues/274),
@@ -35,14 +36,15 @@ keeps its name and its arguments. Its figures are qualified on gsm.core
   [\#62](https://github.com/jwildfire/gsm.safety/pull/62),
   [\#66](https://github.com/jwildfire/gsm.safety/issues/66), PR
   [\#67](https://github.com/jwildfire/gsm.safety/pull/67)
-- **The eDISH chart no longer counts a participant’s baseline as an
+- **The hep-explorer’s composite view no longer counts a baseline as an
   on-treatment peak.** The bundle moves from safety.viz v1.4.0 to
-  v1.12.0. On the example data 23 participants’ peaks fall; Hy’s Law
-  drops from 28 to 13.
+  v1.12.0; on the example data 23 synthetic participants’ peaks fall,
+  and Hy’s Law drops from 28 to 13.
   [obot.roadmap#164](https://github.com/jwildfire/obot.roadmap/issues/164),
   [safety.viz#91](https://github.com/jwildfire/safety.viz/issues/91),
   [\#49](https://github.com/jwildfire/gsm.safety/issues/49), PR
   [\#51](https://github.com/jwildfire/gsm.safety/pull/51),
+  [obot.roadmap#438](https://github.com/jwildfire/obot.roadmap/issues/438),
   [\#165](https://github.com/jwildfire/gsm.safety/issues/165), PR
   [\#169](https://github.com/jwildfire/gsm.safety/pull/169)
 - **Every chart safety.viz draws can be drawn from R.** Four widgets are
@@ -63,6 +65,8 @@ keeps its name and its arguments. Its figures are qualified on gsm.core
   `x_axis` in `lSettings`; the hep waterfall reads `DY` as its study
   day. The example data now carries `DY` and `ABLFL`.
   [obot.roadmap#438](https://github.com/jwildfire/obot.roadmap/issues/438),
+  [\#165](https://github.com/jwildfire/gsm.safety/issues/165), PR
+  [\#169](https://github.com/jwildfire/gsm.safety/pull/169),
   [\#166](https://github.com/jwildfire/gsm.safety/issues/166), PR
   [\#167](https://github.com/jwildfire/gsm.safety/pull/167)
 - **The FDA safety guide’s appendix tables, and three of its rules, are
@@ -123,7 +127,7 @@ keeps its name and its arguments. Its figures are qualified on gsm.core
   [\#149](https://github.com/jwildfire/gsm.safety/issues/149), PR
   [\#150](https://github.com/jwildfire/gsm.safety/pull/150)
 - **The participant profile refuses malformed adverse-event settings,
-  and the examples drop placeholder adverse-event rows.**
+  and examples drop placeholder rows.**
   [\#107](https://github.com/jwildfire/gsm.safety/issues/107), PR
   [\#112](https://github.com/jwildfire/gsm.safety/pull/112),
   [\#119](https://github.com/jwildfire/gsm.safety/issues/119), PR
@@ -165,7 +169,7 @@ keeps its name and its arguments. Its figures are qualified on gsm.core
   [\#128](https://github.com/jwildfire/gsm.safety/issues/128), PR
   [\#132](https://github.com/jwildfire/gsm.safety/pull/132)
 - **The qualification records ship inside the package, and the suite
-  checks every figure in them against the code.**
+  checks their figures against the code.**
   [\#63](https://github.com/jwildfire/gsm.safety/issues/63), PR
   [\#64](https://github.com/jwildfire/gsm.safety/pull/64),
   [\#153](https://github.com/jwildfire/gsm.safety/issues/153), PR
@@ -184,8 +188,8 @@ keeps its name and its arguments. Its figures are qualified on gsm.core
   [\#82](https://github.com/jwildfire/gsm.safety/pull/82)
 - **Four things are knowingly not in this release:** data completeness
   in the census, an ECG figure (gsm.mapping maps no ECG domain), the
-  Patient Journey Explorer widget, and a ruling on three charts’
-  JavaScript confidence intervals.
+  Patient Journey Explorer widget, and a ruling on three charts that
+  ship computing statistics in JavaScript.
   [\#58](https://github.com/jwildfire/gsm.safety/issues/58),
   [\#172](https://github.com/jwildfire/gsm.safety/issues/172),
   [obot.roadmap#350](https://github.com/jwildfire/obot.roadmap/issues/350),
@@ -193,7 +197,7 @@ keeps its name and its arguments. Its figures are qualified on gsm.core
 
 ### Tests and provenance
 
-4,640 tests pass against gsm.core 1.3.2, gsm.mapping 1.2.0 and
+4,654 tests pass against gsm.core 1.3.2, gsm.mapping 1.2.0 and
 gsm.reporting 1.1.8. Every census figure is measured twice, by two
 routes that share no code. The vendored bundle is byte-identical to
 safety.viz v1.12.0 (`122ec3f`), which the parity check confirms.

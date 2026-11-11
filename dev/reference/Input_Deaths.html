@@ -156,8 +156,9 @@ word: "Death of a relative" is not a death.</p>
 
 
 
-<p>The defect this metric replaces reported <strong>one</strong> death on a study whose
-records hold thirteen, by text-matching a discontinuation reason. The defect
+<p>The defect this metric replaces counted deaths by text-matching a
+discontinuation reason and never read the death domain: on the bundled
+study it reported 2 where the records hold 12 (gsm.core 1.3.2). The defect
 beside it reported <strong>zero</strong> where a column was missing. So the three states
 are kept apart deliberately:</p><table class="table table"><tr><td>State</td><td>What the study said</td><td>What this returns</td></tr><tr><td>Absent</td><td>no death domain, or no <code>death</code> / ID column in it</td><td>an <strong>error</strong></td></tr><tr><td>Empty</td><td>a death domain with no rows, and no completion domain with rows</td><td><strong>no row</strong>, and a warning</td></tr><tr><td>Zero</td><td>a populated source marking nobody as died</td><td>a row reading <strong>0</strong></td></tr></table><p>A zero is a measurement — the domain ran and the answer was none. Absence is
 not a measurement, and neither is a table with nothing in it, so neither is

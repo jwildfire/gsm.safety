@@ -48,7 +48,7 @@ view the labs chart opens on (\code{"visit"} when unset). Without it the chart b
 same toggle from \code{visitn_col}, \code{visit_col} and \code{studyday_col}, whose
 defaults are \code{VISITNUM}, \code{VISIT} and \code{DY}.
 \code{baseline_col} names the baseline-flag column (\code{ABLFL} in the bundled
-data) the x Baseline display reads; without it the earliest record is the
+data) the ×Baseline display reads; without it the earliest record is the
 baseline.}
 
 \item{width}{\code{character} Width of the widget as a CSS unit. Default: \code{NULL}.}

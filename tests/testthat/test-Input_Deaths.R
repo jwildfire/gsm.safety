@@ -110,3 +110,67 @@ test_that("the group level and column are settings, not a rewrite (#56)", {
   expect_identical(unique(dfInput$GroupLevel), "Site")
   expect_setequal(dfInput$GroupID, c("0X1", "0X2"))
 })
+
+# The study-completion domain (#168). gsm.mapping 1.2.0 matches the
+# discontinuation reason against "DEATH" exactly, and gsm.core 1.3.2's study
+# writes "Death", so Mapped_Death stopped carrying those participants. The
+# count reads the reason itself, in any case.
+COMP <- data.frame(
+  subjid = c("S1", "S2"),
+  compreas = c(NA, "Death"),
+  stringsAsFactors = FALSE
+)
+NODEATH <- data.frame(subjid = c("S1", "S2"), death = c(NA, NA), stringsAsFactors = FALSE)
+
+test_that("a discontinuation reason of death counts, in any case (#168)", {
+  for (strReason in c("Death", "DEATH", "death", " Death ")) {
+    dfComp <- COMP
+    dfComp$compreas[2] <- strReason
+    expect_identical(
+      Count(Input_Deaths(NODEATH, SUBJ, dfStudyCompletion = dfComp)),
+      1,
+      label = strReason
+    )
+  }
+})
+
+test_that("the two death sources are a union, each participant counted once (#168)", {
+  dfComp <- data.frame(subjid = c("S1", "S2"), compreas = c("DEATH", "Death"), stringsAsFactors = FALSE)
+  # S1 is in both sources, S2 only in the completion domain.
+  expect_identical(Count(Input_Deaths(DEATH, SUBJ, dfStudyCompletion = dfComp)), 2)
+  # Without the completion domain the count is the death domain alone.
+  expect_identical(Count(Input_Deaths(DEATH, SUBJ)), 1)
+})
+
+test_that("other discontinuation reasons, and reasons that only contain the word, do not count (#168)", {
+  dfComp <- data.frame(
+    subjid = c("S1", "S2"),
+    compreas = c("Adverse Event", "Death of a relative"),
+    stringsAsFactors = FALSE
+  )
+  expect_identical(Count(Input_Deaths(NODEATH, SUBJ, dfStudyCompletion = dfComp)), 0)
+})
+
+test_that("a death discontinuation still counts only the enrolled (#168)", {
+  dfComp <- data.frame(subjid = c("S2", "GHOST"), compreas = c("Death", "Death"), stringsAsFactors = FALSE)
+  dfInput <- Input_Deaths(NODEATH, SUBJ, dfStudyCompletion = dfComp)
+  expect_identical(Count(dfInput), 1)
+  expect_identical(sum(dfInput$Denominator), 2)
+})
+
+test_that("a study-completion domain without its reason column errors (#168)", {
+  dfComp <- data.frame(subjid = "S2", reason = "Death", stringsAsFactors = FALSE)
+  expect_error(
+    Input_Deaths(NODEATH, SUBJ, dfStudyCompletion = dfComp),
+    "compreas"
+  )
+})
+
+test_that("an unresolved completion-domain name is read as no completion domain (#168)", {
+  # A workflow step names its inputs; when the named domain was not supplied
+  # the engine passes the name itself as a string. That is absence, not data.
+  expect_identical(
+    Count(Input_Deaths(DEATH, SUBJ, dfStudyCompletion = "Mapped_STUDCOMP")),
+    Count(Input_Deaths(DEATH, SUBJ))
+  )
+})

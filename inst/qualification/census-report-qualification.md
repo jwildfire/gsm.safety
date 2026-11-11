@@ -1,6 +1,6 @@
 # Qualifying the census report (`safety_census`)
 
-Recorded 2026-08-21 · [gsm.safety#61](https://github.com/jwildfire/gsm.safety/issues/61) ·
+Recorded 2026-08-21, re-qualified 2026-11-11 on `gsm.core` 1.3.2 ([gsm.safety#168](https://github.com/jwildfire/gsm.safety/issues/168)) · [gsm.safety#61](https://github.com/jwildfire/gsm.safety/issues/61) ·
 [obot.roadmap#274](https://github.com/jwildfire/obot.roadmap/issues/274) ·
 [D0023](https://jwildfire.github.io/obot.roadmap/reports/decisions/2026-08-20-safety-census-rebuild/)
 
@@ -22,7 +22,7 @@ without arithmetic except the one division the report is told to do.
 ## What was measured
 
 Bundled study `AA-AA-000-0000`, from `gsm.core::lSource`.
-`gsm.core` 1.3.1, `gsm.mapping` 1.1.6, `gsm.reporting` 1.1.5, R 4.3.3.
+`gsm.core` 1.3.2, `gsm.mapping` 1.2.0, `gsm.reporting` 1.1.8, R 4.3.3.
 
 The whole pipeline was run — the standard mapping, the eleven census metrics
 that have a domain on this study, `gsm.reporting::BindResults()` and
@@ -31,23 +31,34 @@ that have a domain on this study, `gsm.reporting::BindResults()` and
 
 | Metric | On the page | Qualified figure | Published by the metric |
 |---|---|---|---|
-| `saf0005` | 762 of 762 | 762 | 762 |
-| `saf0006` | 577 of 762 | 577 | 577 |
-| `saf0007` | 762 of 762 | 762 | 762 |
-| `saf0004` | 13 of 762 | 13 | 13 |
-| `saf0008` | 73.2 person-years of 762 | 26,754 days | 26,754 |
-| `saf0009` | 29.5 person-years of 762 | 10,761 days | 10,761 |
-| `saf0010` | 598 of 762 | 598 | 598 |
+| `saf0005` | 754 of 754 | 754 | 754 |
+| `saf0006` | 567 of 754 | 567 | 567 |
+| `saf0007` | 679 of 754 | 679 | 679 |
+| `saf0004` | 12 of 754 | 12 | 12 |
+| `saf0008` | 74.4 person-years of 754 | 27,186 days | 27,186 |
+| `saf0009` | 56.5 person-years of 679 | 20,641 days | 20,641 |
+| `saf0010` | 572 of 754 | 572 | 572 |
 | `saf0011` | *no row published* | *no domain* | *nothing* |
-| `saf0012` | 661 of 762 | 661 | 661 |
-| `saf0013` | 76 of 762 | 76 | 76 |
-| `saf0014` | 19 of 762 | 19 | 19 |
-| `saf0015` | 9 of 762 | 9 | 9 |
+| `saf0012` | 635 of 754 | 635 | 635 |
+| `saf0013` | 94 of 754 | 94 | 94 |
+| `saf0014` | 15 of 754 | 15 | 15 |
+| `saf0015` | 35 of 754 | 35 | 35 |
 
 Every figure on the page is the numerator its metric published, beside the
 denominator that same metric published. The two exposure rows are the only
 figures the report transforms, and both numbers reach the reader: the years in
 the exposure table, the days in the provenance table below it.
+
+> **Re-qualified 2026-11-11 on `gsm.core` 1.3.2**
+> ([#168](https://github.com/jwildfire/gsm.safety/issues/168)). `gsm.core`
+> 1.3.2 (2026-10-31) regenerated the bundled study, and CI installs it from
+> `main`, so the table above is the new study's. The figures first recorded
+> here were 1.3.1's: 762 enrolled, 577 randomised, 762 dosed, 13 deaths,
+> 26,754 and 10,761 participant-days, 598 with a lab result, 661 with an
+> adverse event, 76 with a disposition record, 19 completed and 9
+> discontinued. The sections below about 1.3.1.9000 are history: that was
+> `gsm.core`'s `dev` branch in August, and neither it nor 1.3.1 is what CI
+> installs now.
 
 The page carries no coverage section, because no coverage metric exists to read
 (see [#58](https://github.com/jwildfire/gsm.safety/issues/58)).

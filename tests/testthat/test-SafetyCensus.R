@@ -87,11 +87,14 @@ test_that("every figure SafetyCensus returns is one a census metric published (#
 
   # Each of these four is a number the old arithmetic could not produce on this
   # fixture, and the value the metric publishes.
-  #   deaths            was 1  - the discontinuation reason named S2 alone
+  #   deaths            was 1  - the discontinuation reason named S2 alone;
+  #                     now 3 - S1 and S3 from the death domain, and S2 from
+  #                     that reason too, read in any case (#168). GHOST is
+  #                     never enrolled and never counted.
   #   dosed             was 3  - inferred from time on treatment, dropping S4
   #   disposition       was 4  - counted GHOST, who was never enrolled
   #   randomised        was 3  - read the arm column rather than a domain
-  expect_identical(CensusValue(lOut, "Deaths"), 2)
+  expect_identical(CensusValue(lOut, "Deaths"), 3)
   expect_identical(CensusValue(lOut, "Received study drug"), 4)
   expect_identical(CensusValue(lOut, "Participants with a disposition record"), 3)
   expect_identical(CensusValue(lOut, "Randomised to an arm"), 2)
@@ -105,9 +108,12 @@ test_that("every figure SafetyCensus returns is one a census metric published (#
 
 test_that("a change in what a metric publishes moves the figure by exactly that much (#66)", {
   # The law a reading function obeys and a counting one does not: the figure is
-  # a function of the domain the metric reads, and of nothing else. The
-  # study-completion domain is held constant throughout, so a function still
-  # counting deaths from a discontinuation reason would return 1 every time.
+  # a function of the domains the metric reads, and of nothing else. The
+  # study-completion domain is held constant throughout and names no death,
+  # so the count moves with the death domain alone. (Since #168 the metric
+  # also counts a death discontinuation reason; the next test covers that.)
+  dfNoDeathReason <- CENSUS_DISPOSITION
+  dfNoDeathReason$compreas[dfNoDeathReason$compreas == "Death"] <- "Withdrew Consent"
   for (nDeaths in 0:3) {
     chrDied <- c("S1", "S2", "S3")[seq_len(nDeaths)]
     dfDeath <- data.frame(
@@ -117,12 +123,28 @@ test_that("a change in what a metric publishes moves the figure by exactly that 
     )
     lOut <- suppressWarnings(suppressMessages(SafetyCensus(
       dfSubjects = CENSUS_SUBJECTS,
-      dfDisposition = CENSUS_DISPOSITION,
+      dfDisposition = dfNoDeathReason,
       dfDeath = dfDeath
     )))
     # An empty death domain has measured nothing, so it publishes nothing.
     nExpected <- if (nDeaths == 0) NA_real_ else as.numeric(nDeaths)
     expect_identical(CensusValue(lOut, "Deaths"), nExpected, info = nDeaths)
+  }
+})
+
+test_that("a death discontinuation adds to the death domain, once per participant (#168)", {
+  dfDeath <- data.frame(subjid = "S1", death = TRUE, stringsAsFactors = FALSE)
+  for (strReason in c("Death", "DEATH", "death")) {
+    dfDisposition <- CENSUS_DISPOSITION
+    dfDisposition$compreas[dfDisposition$subjid == "S2"] <- strReason
+    # S1 also gives death as their reason: in both sources, counted once.
+    dfDisposition$compreas[dfDisposition$subjid == "S1"] <- strReason
+    lOut <- suppressWarnings(suppressMessages(SafetyCensus(
+      dfSubjects = CENSUS_SUBJECTS,
+      dfDisposition = dfDisposition,
+      dfDeath = dfDeath
+    )))
+    expect_identical(CensusValue(lOut, "Deaths"), 2, info = strReason)
   }
 })
 
@@ -218,7 +240,7 @@ test_that("the disposition table is the disposition metrics, and nothing else (#
 
   expect_identical(DispositionCount(lOut, "Completed"), 1)
   expect_identical(DispositionCount(lOut, "Discontinued"), 2)
-  expect_identical(DispositionCount(lOut, "Died"), 2)
+  expect_identical(DispositionCount(lOut, "Died"), 3)
   # Largest first, the order the application renders.
   expect_identical(
     lOut$Disposition$Participants,
@@ -286,7 +308,7 @@ test_that("the deprecated column arguments warn and are ignored (#66)", {
     "No domain was supplied"
   )
   # Both arguments named the old arithmetic's inputs. The figures are unmoved.
-  expect_identical(CensusValue(lOut, "Deaths"), 2)
+  expect_identical(CensusValue(lOut, "Deaths"), 3)
   expect_identical(DispositionCount(lOut, "Completed"), 1)
 })
 

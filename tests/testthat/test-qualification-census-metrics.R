@@ -23,28 +23,34 @@
 # checks at the bottom of this file - the record against the code - run under
 # R CMD check as well as under devtools::test() (#63).
 
-# Measured 2026-08-21 against gsm.core 1.3.1 and gsm.mapping 1.1.6.
+# Re-measured 2026-11-11 against gsm.core 1.3.2 and gsm.mapping 1.2.0 (#168).
+# First measured 2026-08-21 against gsm.core 1.3.1 and gsm.mapping 1.1.6.
 RECORDED_CENSUS <- list(
-  gsm.core = "1.3.1",
-  Enrolled = 762,
-  saf0005 = 762, # enrolled participants
-  saf0006 = 577, # randomised participants
-  saf0007 = 762, # participants dosed
-  saf0008 = 26754, # participant-days on study
-  saf0009 = 10761, # participant-days on treatment
-  saf0010 = 598, # participants with a lab result
-  saf0012 = 661, # participants with a reported AE
-  saf0013 = 76, # participants with a disposition record
-  saf0014 = 19, # participants who completed
-  saf0015 = 9, # participants who discontinued
-  # What SafetyCensus() reported before v1.3.0, measured rather than quoted:
-  # these are the figures the release notes say move. They cannot be measured
-  # any more - #66 removed the arithmetic that produced them - so they live
-  # here as recorded history, checked against the record and nothing else.
-  CensusDosed = 744,
-  CensusDisposition = 100,
+  gsm.core = "1.3.2",
+  Enrolled = 754,
+  saf0005 = 754, # enrolled participants
+  saf0006 = 567, # randomised participants
+  saf0007 = 679, # participants dosed
+  saf0008 = 27186, # participant-days on study
+  saf0009 = 20641, # participant-days on treatment
+  saf0010 = 572, # participants with a lab result
+  saf0012 = 635, # participants with a reported AE
+  saf0013 = 94, # participants with a disposition record
+  saf0014 = 15, # participants who completed
+  saf0015 = 35, # participants who discontinued
+  # The person-time metrics' denominators: participants with recorded
+  # person-time. 754 on study; 679 on treatment, the participants with a
+  # recorded time on treatment (#168).
+  PersonTime = list(saf0008 = 754, saf0009 = 679),
+  # What SafetyCensus() reported before v1.2.0, measured rather than quoted:
+  # these are the figures the release notes say move. #66 removed the
+  # arithmetic from the function, so they were measured with the released
+  # gsm.safety v1.1.0 on the same study, and live here as recorded history,
+  # checked against the record and nothing else.
+  CensusDosed = 599,
+  CensusDisposition = 116,
   CensusRandomised = NA_real_,
-  CensusDeaths = 4
+  CensusDeaths = 2
 )
 
 CHR_QUALIFIED <- c(
@@ -86,6 +92,13 @@ RouteB_Census <- function() {
     RawEG = lSource$Raw_EG,
     DispositionRows = length(unique(as.character(dfComp$subjid))),
     OnTreatmentPositive = sum(nOnTreatment > 0, na.rm = TRUE),
+    # The person-time metrics count against the participants who contributed
+    # person-time: a recorded figure, zero included. On gsm.core 1.3.1's study
+    # that was everyone enrolled; on 1.3.2's it is not (#168).
+    PersonTime = list(
+      saf0008 = sum(is.finite(nOnStudy) & nOnStudy >= 0),
+      saf0009 = sum(is.finite(nOnTreatment) & nOnTreatment >= 0)
+    ),
     saf0005 = length(chrEnrolled),
     saf0006 = InDomain(dfRand, bRandomised),
     saf0007 = length(unique(as.character(
@@ -201,8 +214,9 @@ test_that("route A: every census metric agrees with the records (#58)", {
     # The check itself: the two routes, on the same study, land on the same
     # number, by implementations that share nothing.
     expect_identical(dfSummary$Numerator, as.numeric(lB[[strID]]), label = strID)
+    nDenominator <- if (strID %in% names(lB$PersonTime)) lB$PersonTime[[strID]] else lB$Enrolled
     expect_identical(
-      dfSummary$Denominator, as.numeric(lB$Enrolled),
+      dfSummary$Denominator, as.numeric(nDenominator),
       label = strID
     )
     if (!strID %in% c("saf0008", "saf0009")) {
@@ -222,8 +236,13 @@ test_that("route A: the recorded snapshot of the published rows (#58)", {
       lA$Summary[[strID]]$Numerator, as.numeric(RECORDED_CENSUS[[strID]]),
       label = strID
     )
+    nDenominator <- if (strID %in% names(RECORDED_CENSUS$PersonTime)) {
+      RECORDED_CENSUS$PersonTime[[strID]]
+    } else {
+      RECORDED_CENSUS$Enrolled
+    }
     expect_identical(
-      lA$Summary[[strID]]$Denominator, RECORDED_CENSUS$Enrolled,
+      lA$Summary[[strID]]$Denominator, nDenominator,
       label = strID
     )
   }

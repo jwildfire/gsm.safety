@@ -812,6 +812,16 @@ it, reads the FDA’s thresholds from one place instead of retyping them.
   ([\#165](https://github.com/jwildfire/gsm.safety/issues/165),
   [\#169](https://github.com/jwildfire/gsm.safety/pull/169), hub
   [obot.roadmap#438](https://github.com/jwildfire/obot.roadmap/issues/438))
+- **The participant profile, hep-explorer, outlier explorer and QT
+  explorer take the Visit \| Study day toggle from R.** Each documents
+  `x_axis` under `lSettings` with an example that sets it, and their
+  report workflows pass it. The examples and workflows stop passing the
+  visit number as the study day, so a day-21 adverse event sits among
+  the labs at day 21, and the lab workflows read the baseline flag with
+  `baseline_col`.
+  ([\#166](https://github.com/jwildfire/gsm.safety/issues/166),
+  [\#167](https://github.com/jwildfire/gsm.safety/pull/167), hub
+  [obot.roadmap#438](https://github.com/jwildfire/obot.roadmap/issues/438))
 - The package now declares `LazyData: true` and `Depends: R (>= 3.5.0)`,
   and the hand-checked transcription with its build script lives in
   `data-raw/`.

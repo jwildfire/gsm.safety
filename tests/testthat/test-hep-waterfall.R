@@ -1,6 +1,6 @@
 lWaterfallSettings <- function() {
   list(
-    studyday_col = "VISITNUM",
+    studyday_col = "DY",
     measure_values = list(
       ALT = "Alanine Aminotransferase",
       AST = "Aspartate Aminotransferase",

@@ -55,7 +55,8 @@ dfResults <- ExampleData("adbds_abnbl")
 Widget_HepWaterfall(
   dfResults,
   lSettings = list(
-    studyday_col = "VISITNUM",
+    studyday_col = "DY",
+    baseline_col = "ABLFL",
     measure_values = list(
       ALT = "Alanine Aminotransferase",
       AST = "Aspartate Aminotransferase",

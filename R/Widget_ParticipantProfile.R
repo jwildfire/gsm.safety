@@ -48,6 +48,17 @@
 #'   merged onto the module's `DEFAULT_SETTINGS` client-side, so only overrides
 #'   are needed. `measure_values` maps the ALT/AST/TB/ALP keys onto the data's
 #'   own measure names, and `details` names the header demographics.
+#'
+#'   `x_axis` is the Visit | Study day toggle, the setting every safety.viz chart
+#'   that shows change over time takes. It is a list of `options`, one per view
+#'   (`key` `"visit"` with the visit-number `col` and the visit-name
+#'   `label_col`; `key` `"day"` with the study-day `col`), and the `default`
+#'   view the labs chart opens on (`"visit"` when unset). Without it the chart builds the
+#'   same toggle from `visitn_col`, `visit_col` and `studyday_col`, whose
+#'   defaults are `VISITNUM`, `VISIT` and `DY`.
+#'   `baseline_col` names the baseline-flag column (`ABLFL` in the bundled
+#'   data) the ×Baseline display reads; without it the earliest record is the
+#'   baseline.
 #' @param width `character` Width of the widget as a CSS unit. Default: `NULL`.
 #' @param height `character` Height of the widget as a CSS unit. Default:
 #'   `NULL`.
@@ -60,13 +71,21 @@
 #' dfResults <- ExampleData("adbds")
 #' dfAE <- ExampleData("adae")
 #'
-#' # A named cohort, with the adverse-event tracks beside the labs.
+#' # A named cohort, with the adverse-event tracks beside the labs, opening on
+#' # the Study day view so each event sits at its day among the labs.
 #' Widget_ParticipantProfile(
 #'   dfResults,
 #'   chrParticipants = c("01-701-1015", "01-701-1023", "01-701-1028"),
 #'   dfAE = dfAE[!is.na(dfAE$AEDECOD) & nzchar(dfAE$AEDECOD), ],
 #'   lSettings = list(
-#'     studyday_col = "VISITNUM",
+#'     x_axis = list(
+#'       options = list(
+#'         list(key = "visit", col = "VISITNUM", label_col = "VISIT"),
+#'         list(key = "day", col = "DY")
+#'       ),
+#'       default = "day"
+#'     ),
+#'     baseline_col = "ABLFL",
 #'     measure_values = list(
 #'       ALT = "Alanine Aminotransferase",
 #'       AST = "Aspartate Aminotransferase",

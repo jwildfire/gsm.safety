@@ -38,7 +38,18 @@ already feeding that widget can feed this one the same mapping. Default:
 \item{lSettings}{\code{list} safety.viz participant-profile settings overrides;
 merged onto the module's \code{DEFAULT_SETTINGS} client-side, so only overrides
 are needed. \code{measure_values} maps the ALT/AST/TB/ALP keys onto the data's
-own measure names, and \code{details} names the header demographics.}
+own measure names, and \code{details} names the header demographics.
+
+\code{x_axis} is the Visit | Study day toggle, the setting every safety.viz chart
+that shows change over time takes. It is a list of \code{options}, one per view
+(\code{key} \code{"visit"} with the visit-number \code{col} and the visit-name
+\code{label_col}; \code{key} \code{"day"} with the study-day \code{col}), and the \code{default}
+view the labs chart opens on (\code{"visit"} when unset). Without it the chart builds the
+same toggle from \code{visitn_col}, \code{visit_col} and \code{studyday_col}, whose
+defaults are \code{VISITNUM}, \code{VISIT} and \code{DY}.
+\code{baseline_col} names the baseline-flag column (\code{ABLFL} in the bundled
+data) the x Baseline display reads; without it the earliest record is the
+baseline.}
 
 \item{width}{\code{character} Width of the widget as a CSS unit. Default: \code{NULL}.}
 
@@ -85,13 +96,21 @@ with \code{lSettings$listen_to}, or leave it alone in a page of its own.
 dfResults <- ExampleData("adbds")
 dfAE <- ExampleData("adae")
 
-# A named cohort, with the adverse-event tracks beside the labs.
+# A named cohort, with the adverse-event tracks beside the labs, opening on
+# the Study day view so each event sits at its day among the labs.
 Widget_ParticipantProfile(
   dfResults,
   chrParticipants = c("01-701-1015", "01-701-1023", "01-701-1028"),
   dfAE = dfAE[!is.na(dfAE$AEDECOD) & nzchar(dfAE$AEDECOD), ],
   lSettings = list(
-    studyday_col = "VISITNUM",
+    x_axis = list(
+      options = list(
+        list(key = "visit", col = "VISITNUM", label_col = "VISIT"),
+        list(key = "day", col = "DY")
+      ),
+      default = "day"
+    ),
+    baseline_col = "ABLFL",
     measure_values = list(
       ALT = "Alanine Aminotransferase",
       AST = "Aspartate Aminotransferase",

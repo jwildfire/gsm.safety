@@ -21,7 +21,14 @@ dfProfileAE <- function() {
 
 lProfileSettings <- function() {
   list(
-    studyday_col = "VISITNUM",
+    x_axis = list(
+      options = list(
+        list(key = "visit", col = "VISITNUM", label_col = "VISIT"),
+        list(key = "day", col = "DY")
+      ),
+      default = "day"
+    ),
+    baseline_col = "ABLFL",
     measure_values = list(
       ALT = "Alanine Aminotransferase",
       AST = "Aspartate Aminotransferase",

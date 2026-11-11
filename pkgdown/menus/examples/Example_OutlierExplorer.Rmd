@@ -54,6 +54,13 @@ dfResults <- ExampleData("adbds")
 Widget_OutlierExplorer(
   dfResults,
   lSettings = list(
+    x_axis = list(
+      options = list(
+        list(key = "visit", col = "VISITNUM", label_col = "VISIT"),
+        list(key = "day", col = "DY")
+      ),
+      default = "visit"
+    ),
     filters = list(
       list(value_col = "SITEID", label = "Site ID"),
       list(value_col = "SEX", label = "Sex"),

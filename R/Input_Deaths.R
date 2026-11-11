@@ -5,10 +5,14 @@
 #' anchored to the enrolled population, and hands
 #' `gsm.core::Transform_Rate()` an ordinary `analyticsInput` frame.
 #'
-#' No clinical definition of death is written here. `Mapped_Death` is
-#' gsm.mapping's own union of the death domain and the study-completion
-#' domain's discontinuation reason (`gsm.mapping::complete_death()`); this
-#' function counts the participants that union marks, and nothing else.
+#' A participant has died if the death domain marks them, or, when
+#' `dfStudyCompletion` is given, if their discontinuation reason is death in
+#' any case (`"Death"`, `"DEATH"`, `"death"`). `Mapped_Death` is meant to be
+#' that union already (`gsm.mapping::complete_death()`), but gsm.mapping 1.2.0
+#' compares the reason against `"DEATH"` exactly, and a study that writes
+#' `"Death"` loses those participants (#168). Reading the reason here keeps the
+#' count independent of how the mapping spells it. The reason has to equal the
+#' word: "Death of a relative" is not a death.
 #'
 #' @section Absent, empty, and zero are three different answers:
 #'
@@ -45,7 +49,18 @@
 #' @param dfSubjects `data.frame` Mapped subject-level domain, the enrolled
 #'   population — `gsm.mapping`'s `Mapped_SUBJ`. It is both the anchor and the
 #'   denominator.
-#' @param strIDCol `character` Participant ID column, shared by both domains.
+#' @param dfStudyCompletion `data.frame` or `NULL` Mapped study-completion
+#'   domain, one row per completion record — `gsm.mapping`'s
+#'   `Mapped_STUDCOMP`. When given, a participant whose `strReasonCol` is
+#'   `strDeathReason` in any case and with surrounding spaces ignored counts as
+#'   died. Default: `NULL`, the death domain alone. A single string, which is
+#'   what a workflow step receives when the domain it names was not supplied,
+#'   is read as `NULL`.
+#' @param strReasonCol `character` Discontinuation-reason column of
+#'   `dfStudyCompletion`. Default: `"compreas"`.
+#' @param strDeathReason `character` The reason that means death, compared
+#'   case-insensitively. Default: `"Death"`.
+#' @param strIDCol `character` Participant ID column, shared by every domain.
 #'   Default: `"subjid"`.
 #' @param strDeathCol `character` Column of `dfDeath` marking a death. Read as
 #'   true when logical `TRUE`, a non-zero number, or one of `"TRUE"`, `"T"`,
@@ -69,6 +84,9 @@
 Input_Deaths <- function(
     dfDeath,
     dfSubjects,
+    dfStudyCompletion = NULL,
+    strReasonCol = "compreas",
+    strDeathReason = "Death",
     strIDCol = "subjid",
     strDeathCol = "death",
     strGroupCol = "studyid",
@@ -96,6 +114,24 @@ Input_Deaths <- function(
       cnd = !(strCol %in% names(dfSubjects)),
       message = paste0("Column '", strCol, "' not found in dfSubjects")
     )
+  }
+  # A workflow step names its inputs, and when the named domain was not
+  # supplied the engine passes the name itself as a string: no completion
+  # domain, so the count is the death domain's (#168).
+  if (is.character(dfStudyCompletion) && length(dfStudyCompletion) == 1L) {
+    dfStudyCompletion <- NULL
+  }
+  if (!is.null(dfStudyCompletion)) {
+    gsm.core::stop_if(
+      cnd = !is.data.frame(dfStudyCompletion),
+      message = "dfStudyCompletion is not a data.frame"
+    )
+    for (strCol in c(strIDCol, strReasonCol)) {
+      gsm.core::stop_if(
+        cnd = !(strCol %in% names(dfStudyCompletion)),
+        message = paste0("Column '", strCol, "' not found in dfStudyCompletion")
+      )
+    }
   }
 
   # One row per participant, on both sides, before anything is counted.
@@ -126,7 +162,12 @@ Input_Deaths <- function(
 
   # --- Zero or more. A populated domain is a measurement. --------------------
   bDied <- DeathFlagIsTrue(dfDeath[[strDeathCol]])
-  chrDied <- unique(as.character(dfDeath[[strIDCol]])[bDied])
+  chrDied <- as.character(dfDeath[[strIDCol]])[bDied]
+  if (!is.null(dfStudyCompletion)) {
+    bReason <- ReasonIsDeath(dfStudyCompletion[[strReasonCol]], strDeathReason)
+    chrDied <- c(chrDied, as.character(dfStudyCompletion[[strIDCol]])[bReason])
+  }
+  chrDied <- unique(chrDied)
   chrDied <- chrDied[!is.na(chrDied) & nzchar(chrDied)]
 
   dfNumerator <- stats::setNames(
@@ -165,4 +206,11 @@ DeathFlagIsTrue <- function(x) {
     return(!is.na(x) & x != 0)
   }
   toupper(trimws(as.character(x))) %in% c("TRUE", "T", "Y", "YES", "1")
+}
+
+# A discontinuation reason that is the death reason, compared without regard to
+# case or surrounding spaces (#168). Missing reasons are not deaths.
+ReasonIsDeath <- function(x, strDeathReason = "Death") {
+  chrReason <- toupper(trimws(as.character(x)))
+  !is.na(chrReason) & chrReason == toupper(trimws(strDeathReason))
 }

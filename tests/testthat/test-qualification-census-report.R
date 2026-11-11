@@ -23,20 +23,23 @@
 # pinned to the gsm.core the figures were measured on: the bundled study moved
 # once already between 1.2.0 and 1.3.1.
 
-# Measured 2026-08-21 against gsm.core 1.3.1 and gsm.mapping 1.1.6, and
-# recorded in inst/qualification/census-metrics-qualification.md.
+# Re-measured 2026-11-11 against gsm.core 1.3.2 and gsm.mapping 1.2.0 (#168),
+# and recorded in inst/qualification/census-metrics-qualification.md. First
+# measured 2026-08-21 against gsm.core 1.3.1.
 RECORDED_REPORT <- list(
-  gsm.core = "1.3.1",
+  gsm.core = "1.3.2",
   StudyID = "AA-AA-000-0000",
-  Enrolled = 762,
+  Enrolled = 754,
   # What the metrics publish, and what the report presents where they differ.
   Published = list(
-    saf0004 = 13, saf0005 = 762, saf0006 = 577, saf0007 = 762,
-    saf0008 = 26754, saf0009 = 10761, saf0010 = 598, saf0012 = 661,
-    saf0013 = 76, saf0014 = 19, saf0015 = 9
+    saf0004 = 12, saf0005 = 754, saf0006 = 567, saf0007 = 679,
+    saf0008 = 27186, saf0009 = 20641, saf0010 = 572, saf0012 = 635,
+    saf0013 = 94, saf0014 = 15, saf0015 = 35
   ),
   # Participant-days published, person-years presented.
-  PersonYears = list(saf0008 = 73.2, saf0009 = 29.5),
+  PersonYears = list(saf0008 = 74.4, saf0009 = 56.5),
+  # Their denominators: participants with recorded person-time (#168).
+  PersonTime = list(saf0008 = 754, saf0009 = 679),
   # The one census metric with no domain on any study available today (#58).
   Absent = "saf0011"
 )
@@ -138,8 +141,17 @@ test_that("every figure is presented beside the denominator the metric published
   )
   # Every census figure on this study is counted against the enrolled
   # population; the person-time pair against the participants who contributed
-  # it, which on this study is the same 762.
-  expect_true(all(dfFigures$Denominator == RECORDED_REPORT$Enrolled))
+  # it. On gsm.core 1.3.1's study that was the same 762; on 1.3.2's, time on
+  # treatment is recorded for 679 of the 754 (#168).
+  for (i in seq_len(nrow(dfFigures))) {
+    strID <- dfFigures$ID[i]
+    nExpected <- if (strID %in% names(RECORDED_REPORT$PersonTime)) {
+      RECORDED_REPORT$PersonTime[[strID]]
+    } else {
+      RECORDED_REPORT$Enrolled
+    }
+    expect_identical(as.numeric(dfFigures$Denominator[i]), nExpected, label = strID)
+  }
   expect_true(all(nzchar(dfFigures$DenominatorLabel)))
 })
 
@@ -242,8 +254,8 @@ test_that("the bundled study renders no data-coverage section (#61)", {
   expect_false(grepl("Data coverage", strHTML, ignore.case = TRUE))
   # The qualified figures are on the page.
   expect_match(strHTML, "AA-AA-000-0000", fixed = TRUE)
-  expect_match(strHTML, "13", fixed = TRUE)
-  expect_match(strHTML, "73.2", fixed = TRUE)
+  expect_match(strHTML, as.character(RECORDED_REPORT$Published$saf0004), fixed = TRUE)
+  expect_match(strHTML, format(RECORDED_REPORT$PersonYears$saf0008, nsmall = 1), fixed = TRUE)
 })
 
 
@@ -472,9 +484,15 @@ test_that("the report's own record is the figures the report presents (#63)", {
       STR_REPORT_RECORD, paste(strID, "on the page"),
       QualificationNumber(chrCells[[2]]), nPresented
     )
-    # Every figure on the page is presented beside its denominator.
+    # Every figure on the page is presented beside its denominator: the
+    # enrolled, or for person-time the participants who contributed it (#168).
+    nDenominator <- if (!is.null(RECORDED_REPORT$PersonTime[[strID]])) {
+      RECORDED_REPORT$PersonTime[[strID]]
+    } else {
+      RECORDED_REPORT$Enrolled
+    }
     expect_match(
-      chrCells[[2]], paste0("of ", RECORDED_REPORT$Enrolled), fixed = TRUE,
+      chrCells[[2]], paste0("of ", nDenominator), fixed = TRUE,
       info = paste0(STR_REPORT_RECORD, " records the denominator for ", strID)
     )
     ExpectRecordFigure(

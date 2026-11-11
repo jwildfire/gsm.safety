@@ -25,7 +25,7 @@ chrDeathDomain <- unique(as.character(dfDeath$subjid[!is.na(dfDeath$death_dt)]))
 
 dfComp <- lSource$Raw_STUDCOMP
 chrDiscontinuation <- unique(as.character(
-  dfComp$subjid[!is.na(dfComp$compreas) & dfComp$compreas == "Death"]
+  dfComp$subjid[!is.na(dfComp$compreas) & toupper(trimws(dfComp$compreas)) == "DEATH"]
 ))
 
 chrUnion <- union(chrDeathDomain, chrDiscontinuation)

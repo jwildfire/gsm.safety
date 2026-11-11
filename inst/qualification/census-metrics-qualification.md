@@ -1,6 +1,6 @@
 # Qualifying the eleven census metrics (`saf0005`–`saf0015`)
 
-Recorded 2026-08-21 · [gsm.safety#58](https://github.com/jwildfire/gsm.safety/issues/58) ·
+Recorded 2026-08-21, re-qualified 2026-11-11 on `gsm.core` 1.3.2 ([gsm.safety#168](https://github.com/jwildfire/gsm.safety/issues/168)) · [gsm.safety#58](https://github.com/jwildfire/gsm.safety/issues/58) ·
 [obot.roadmap#274](https://github.com/jwildfire/obot.roadmap/issues/274) ·
 [D0023](https://jwildfire.github.io/obot.roadmap/reports/decisions/2026-08-20-safety-census-rebuild/)
 
@@ -41,28 +41,34 @@ suite as `tests/testthat/test-qualification-census-metrics.R`.
 ## What was measured
 
 Bundled study `AA-AA-000-0000`, from `gsm.core::lSource`.
-`gsm.core` 1.3.1, `gsm.mapping` 1.1.6, R 4.3.3.
+`gsm.core` 1.3.2, `gsm.mapping` 1.2.0, R 4.3.3.
 
-The anchor for every figure below is the enrolled population: **762**
+The anchor for every figure below is the enrolled population: **754**
 participants of the 1000 in `Raw_SUBJ` have `enrollyn == "Y"`, and
-`Mapped_SUBJ` is exactly those 762.
+`Mapped_SUBJ` is exactly those 754.
 
 | Metric | Figure | Route A | Route B | `SafetyCensus()` before v1.2.0 |
 |---|---|---|---|---|
-| `saf0005` | Enrolled participants | 762 | 762 | 762 |
-| `saf0006` | Randomised participants | 577 | 577 | *blank* |
-| `saf0007` | Participants dosed | 762 | 762 | 744 |
-| `saf0008` | Participant-days on study | 26,754 | 26,754 | 73.2 years |
-| `saf0009` | Participant-days on treatment | 10,761 | 10,761 | 29.5 years |
-| `saf0010` | Participants with a lab result | 598 | 598 | 598 |
+| `saf0005` | Enrolled participants | 754 | 754 | 754 |
+| `saf0006` | Randomised participants | 567 | 567 | *blank* |
+| `saf0007` | Participants dosed | 679 | 679 | 599 |
+| `saf0008` | Participant-days on study | 27,186 | 27,186 | 74.4 years |
+| `saf0009` | Participant-days on treatment | 20,641 | 20,641 | 56.5 years |
+| `saf0010` | Participants with a lab result | 572 | 572 | 572 |
 | `saf0011` | Participants with an ECG | *no domain* | *no domain* | *blank* |
-| `saf0012` | Participants with a reported AE | 661 | 661 | 661 |
-| `saf0013` | Participants with a disposition record | 76 | 76 | 100 |
-| `saf0014` | Participants who completed | 19 | 19 | *inside a table* |
-| `saf0015` | Participants who discontinued | 9 | 9 | *inside a table* |
+| `saf0012` | Participants with a reported AE | 635 | 635 | 635 |
+| `saf0013` | Participants with a disposition record | 94 | 94 | 116 |
+| `saf0014` | Participants who completed | 15 | 15 | *inside a table* |
+| `saf0015` | Participants who discontinued | 35 | 35 | *inside a table* |
 
-Every published row carries `Denominator = 762`, `Score = Numerator`, and an
+Every published row carries `Score = Numerator` and an
 **empty** flag — these metrics do not flag, and empty is not zero (D0023.3).
+
+Every count is over the 754 enrolled. The two person-time metrics are over the
+participants who contributed person-time, a recorded figure, zero included:
+`saf0008` over 754 and `saf0009` over **679**, the participants with a recorded
+time on treatment. On 1.3.1's study both were the 762 enrolled, so the
+difference was first visible here ([#168](https://github.com/jwildfire/gsm.safety/issues/168)).
 
 > **Updated 2026-08-22, when step four landed**
 > ([#66](https://github.com/jwildfire/gsm.safety/issues/66)). The last column
@@ -73,49 +79,62 @@ Every published row carries `Denominator = 762`, `Score = Numerator`, and an
 > moved; only its heading, and only to stop it claiming to describe the
 > function as it stands.
 
+> **Re-qualified 2026-11-11 on `gsm.core` 1.3.2**
+> ([#168](https://github.com/jwildfire/gsm.safety/issues/168)), which
+> regenerated the bundled study: every figure in the table above is the new
+> study's, measured by both routes. The last column was measured again too,
+> by running the released gsm.safety v1.1.0's `SafetyCensus()` on the same
+> mapped domains; the 1.3.1 figures this section first recorded (762
+> enrolled, 577 randomised, 762 dosed, 13 deaths) are in the version table
+> below.
+
 ## The findings
 
 Five things did not come out the way the design or step one's notes say. None
 of them changes what was decided; all of them change an arithmetic the decision
 was argued with.
 
-### 1. `SafetyCensus()` reports **four** deaths on this study, not one
+### 1. `SafetyCensus()` reported **two** deaths on this study
 
-D0023 and step one's notes both say the function reports **1**. Measured on
-`gsm.core` 1.3.1 with the standard mapped domains it reports **4**.
+D0023 and step one's notes say the function reports **1**, which is what it
+reported on `gsm.core` 1.2.0's study. On 1.3.1's study it reported **4**. On
+1.3.2's study, measured with the released gsm.safety v1.1.0, it reports **2**:
+the function reads only the discontinuation reason, which names two
+participants, and does not anchor to the enrolled population, so it counts
+both — `S26170`, who is enrolled, and `S32632`, who is not.
 
-One is what the function reported on `gsm.core` 1.2.0, where a single
-participant's discontinuation reason said `Death`; that study now has four. The
-function does not anchor its death count to the enrolled population, so it
-counts all four — three of whom are enrolled and one of whom (`S78705`) is not.
+The correction the death metric makes is therefore **2 → 12** on this study
+(it was 4 → 13 on 1.3.1's). It is still the largest correction in this release
+and the reason the rebuild exists. `death-count-qualification.md` carries the
+same pair.
 
-The correction the death metric makes is therefore **4 → 13**, not 1 → 13. It
-is still the largest figure in this release and still the reason the rebuild
-exists; it is not a thirteenfold correction. `death-count-qualification.md` and
-the v1.2.0 release notes carry a correction note pointing here.
+### 2. Who the discontinuation reason names, and who is excluded
 
-### 2. Step one's note that the discontinuation reason names "four participants
-of whom one is enrolled" has it backwards
+The discontinuation reason names two participants: `S26170` (enrolled) and
+`S32632` (not). The two excluded from `saf0004`'s count are one from the death
+domain (`S68694`) and `S32632`. So the count is 12 death-domain participants of
+whom 11 are enrolled, plus 2 discontinuation-reason participants of whom 1 is
+enrolled, no overlap, giving 12 of 754.
 
-Three of the four are enrolled (`S62400`, `S44367`, `S33412`); one is not
-(`S78705`). The three participants excluded from `saf0004`'s count are two from
-the death domain (`S42425`, `S97688`) and that one. Step one's headline figure
-of 13 is unaffected and was re-measured here: 12 death-domain participants of
-whom 10 are enrolled, plus 4 discontinuation-reason participants of whom 3 are
-enrolled, no overlap, giving 13 of 762.
+`S26170` is also the participant gsm.mapping 1.2.0 drops: its `Death.yaml`
+passes `chrDeathResponse: DEATH` to `complete_death()`, which compares the
+reason exactly, and this study writes `Death`. The metric now reads the reason
+from `Mapped_STUDCOMP` itself, in any case
+([#168](https://github.com/jwildfire/gsm.safety/issues/168)); without that it
+publishes 11.
 
-### 3. "Dosed" moves *up*, to every enrolled participant
+### 3. "Dosed" moves *up*
 
 The design says the dosed count "stops being inferred from treatment time being
-greater than zero". On this study that inference gives 744; a recorded
-first-dose date gives **762**. The 18 participants in the gap have a first-dose
-date and `timeontreatment == 0` — dosed and stopped inside a day.
+greater than zero". On this study that inference gives 599; a recorded
+first-dose date gives **679**. The 80 participants in the gap have a first-dose
+date and `timeontreatment == 0` — dosed and stopped inside a day — and no
+participant has treatment time without a first-dose date.
 
-Worth knowing before anyone reads 762 as a validation of the fix: on this study
-`firstdosedate` is identical to `enrolldt` and to `firstparticipantdate` for
-every enrolled participant. The synthetic study does not distinguish enrolment
-from dosing, so it cannot exercise the difference between `saf0005` and
-`saf0007`. The metric is right; the study is not a test of it.
+On 1.3.1's study `firstdosedate` was identical to `enrolldt` for every
+enrolled participant, so the study could not exercise the difference between
+`saf0005` and `saf0007`. 1.3.2's study can: 679 of the 754 enrolled have a
+first-dose date, and only 62 of those 679 dates equal the enrolment date.
 
 ### 4. The "lab and ECG domains against the visit schedule" cannot be read that
 way
@@ -163,15 +182,16 @@ about:
 
 | Figure | From | To | Why it was wrong |
 |---|---|---|---|
-| Randomised to an arm | *blank* | 577 | read a treatment-arm column no standard domain carries |
-| Received study drug | 744 | 762 | inferred from treatment time, not from a recorded first dose |
-| Deaths | 4 | 13 | matched a discontinuation reason, never read the death domain, and counted participants who were never enrolled |
-| Participants with a disposition record | 100 | 76 | counted every identifier in the disposition domain, enrolled or not |
+| Randomised to an arm | *blank* | 567 | read a treatment-arm column no standard domain carries |
+| Received study drug | 599 | 679 | inferred from treatment time, not from a recorded first dose |
+| Deaths | 2 | 12 | matched a discontinuation reason, never read the death domain, and counted participants who were never enrolled |
+| Participants with a disposition record | 116 | 94 | counted every identifier in the disposition domain, enrolled or not |
 | Participants with an ECG | *blank* | *absent, loudly* | reported blank where the domain is missing rather than saying so |
 
-Person-years on study (73.2) and on treatment (29.5) are unchanged as
-quantities — 26,754 and 10,761 days over 365.25 — but the metrics publish days,
-and the report divides.
+Measured on `gsm.core` 1.3.2's study, the "From" column with the released
+gsm.safety v1.1.0. Person-years on study (74.4) and on treatment (56.5) are
+unchanged as quantities — 27,186 and 20,641 days over 365.25 — but the metrics
+publish days, and the report divides.
 
 > **What this table does not say, added 2026-08-22 with step four.** Two
 > figures the demo study shows today have no metric behind them and left the
@@ -200,9 +220,24 @@ for one assertion is a larger change than it is worth.
 ## The snapshot is version-pinned, on purpose
 
 The bundled study is not fixed. gsm.safety tracks `gsm.core`'s `main` branch,
-and between **1.2.0 and 1.3.1** that study changed under the same name: the
-enrolled population went from 760 to 762 and the discontinuation-reason deaths
-from 1 to 4. Every figure on this page was measured on 1.3.1.
+and that study has changed under the same name twice. Between **1.2.0 and
+1.3.1** the enrolled population went from 760 to 762 and the
+discontinuation-reason deaths from 1 to 4. **1.3.2** (2026-10-31) regenerated
+it. Every figure on this page was measured on 1.3.2:
+
+| Figure | gsm.core 1.3.1 | gsm.core 1.3.2 |
+|---|---|---|
+| Enrolled | 762 | 754 |
+| Randomised | 577 | 567 |
+| Dosed | 762 | 679 |
+| Deaths | 13 | 12 |
+| Participant-days on study | 26,754 | 27,186 |
+| Participant-days on treatment | 10,761 | 20,641 |
+| With a lab result | 598 | 572 |
+| With a reported AE | 661 | 635 |
+| With a disposition record | 76 | 94 |
+| Completed | 19 | 15 |
+| Discontinued | 9 | 35 |
 
 So the qualification test asserts two different kinds of thing. The identities
 between the two routes — that they land on the same number, that no count

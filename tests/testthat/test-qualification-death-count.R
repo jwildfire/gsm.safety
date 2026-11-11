@@ -14,8 +14,9 @@
 # between the two routes hold on any version of the bundled study and are
 # always checked. The exact counts are a snapshot of one study at one version,
 # and gsm.safety tracks gsm.core's main branch, whose bundled study has already
-# moved once: between gsm.core 1.2.0 and 1.3.1 the enrolled population went
-# from 760 to 762 and the discontinuation-reason deaths from 1 to 4. So the
+# moved twice: between gsm.core 1.2.0 and 1.3.1 the enrolled population went
+# from 760 to 762 and the discontinuation-reason deaths from 1 to 4, and 1.3.2
+# regenerated it again, to 754 enrolled and 2 such deaths. So the
 # snapshot is pinned to the version it was measured against, and a different
 # version skips it with both numbers named rather than asserting a stale one.
 #
@@ -25,17 +26,18 @@
 # at the bottom of this file - the record against the code - run under
 # R CMD check as well as under devtools::test() (#63).
 
-# Measured 2026-08-21 against gsm.core 1.3.1 and gsm.mapping 1.1.6.
+# Re-measured 2026-11-11 against gsm.core 1.3.2 and gsm.mapping 1.2.0 (#168).
+# First measured 2026-08-21 against gsm.core 1.3.1 and gsm.mapping 1.1.6.
 RECORDED <- list(
-  gsm.core = "1.3.1",
+  gsm.core = "1.3.2",
   StudyID = "AA-AA-000-0000",
   Subjects = 1000L, # every participant in Raw_SUBJ, enrolled or not
-  Enrolled = 762L,
+  Enrolled = 754L,
   DeathDomain = 12L, # distinct participants with a death record
-  Discontinuation = 4L, # distinct participants whose compreas is "Death"
-  UnionAll = 16L, # the two sources combined, before the enrolment anchor
-  UnionEnrolled = 13L, # the same union, restricted to enrolled participants
-  NotEnrolled = c("S42425", "S97688", "S78705")
+  Discontinuation = 2L, # distinct participants whose compreas is death, any case
+  UnionAll = 14L, # the two sources combined, before the enrolment anchor
+  UnionEnrolled = 12L, # the same union, restricted to enrolled participants
+  NotEnrolled = c("S68694", "S32632")
 )
 
 RouteB <- function() {
@@ -50,7 +52,7 @@ RouteB <- function() {
 
   dfComp <- lSource$Raw_STUDCOMP
   chrDiscontinuation <- unique(as.character(
-    dfComp$subjid[!is.na(dfComp$compreas) & dfComp$compreas == "Death"]
+    dfComp$subjid[!is.na(dfComp$compreas) & toupper(trimws(dfComp$compreas)) == "DEATH"]
   ))
 
   chrUnion <- union(chrDeathDomain, chrDiscontinuation)
@@ -99,11 +101,11 @@ test_that("route B: the two death sources read directly hold together (#56)", {
     sort(setdiff(l$Union, l$NotEnrolled))
   )
   expect_lte(length(l$UnionEnrolled), length(l$Union))
-  # SafetyCensus() reports four on this study, not the one recorded here
-  # before 2026-08-21 (see inst/qualification/census-metrics-qualification.md).
-  # Whatever
-  # the study, the correction this metric exists to make has to be larger than
-  # the single participant the pre-1.3.1 study gave that reason to.
+  # The function this metric replaced reported one death on gsm.core 1.2.0's
+  # study, four on 1.3.1's and two on 1.3.2's (see
+  # inst/qualification/census-metrics-qualification.md). Whatever the study,
+  # the correction this metric exists to make has to be larger than the single
+  # participant the pre-1.3.1 study gave that reason to.
   expect_gt(length(l$UnionEnrolled), 1L)
 })
 
@@ -158,13 +160,19 @@ test_that("route A: the saf0004 workflow agrees with the records (#56)", {
   lA <- RouteA()
   dfSummary <- lA$Summary
 
-  # gsm.mapping's own union, before any metric touches it, reproduced from the
-  # raw records by a route that never calls gsm.mapping.
+  # The union the metric counts, before the enrolment anchor, reproduced from
+  # the raw records by a route that never calls gsm.mapping. Since gsm.mapping
+  # 1.2.0 Mapped_Death is not that union on this study - it matches the
+  # discontinuation reason against "DEATH" and the study writes "Death" - so
+  # the metric reads the reason from Mapped_STUDCOMP itself, in any case
+  # (#168), and that is what is checked here.
   dfDeath <- lA$Mapped$Mapped_Death
-  expect_identical(
-    length(unique(dfDeath$subjid[!is.na(dfDeath$death) & dfDeath$death])),
-    length(lB$Union)
+  dfComp <- lA$Mapped$Mapped_STUDCOMP
+  chrMetricUnion <- union(
+    as.character(dfDeath$subjid[!is.na(dfDeath$death) & dfDeath$death]),
+    as.character(dfComp$subjid[!is.na(dfComp$compreas) & toupper(trimws(dfComp$compreas)) == "DEATH"])
   )
+  expect_setequal(chrMetricUnion, lB$Union)
   expect_identical(nrow(lA$Mapped$Mapped_SUBJ), length(lB$Enrolled))
 
   expect_identical(nrow(dfSummary), 1L)
@@ -176,9 +184,9 @@ test_that("route A: the saf0004 workflow agrees with the records (#56)", {
   expect_identical(dfSummary$Numerator, as.numeric(length(lB$UnionEnrolled)))
   expect_identical(dfSummary$Denominator, as.numeric(length(lB$Enrolled)))
   expect_lte(dfSummary$Numerator, dfSummary$Denominator)
-  # And it exceeds the number the function reported before v1.3.0, which is
-  # what it replaced: four on gsm.core 1.3.1, one on 1.2.0, so the
-  # version-invariant floor is one.
+  # And it exceeds the number the function reported before v1.2.0, which is
+  # what it replaced: two on gsm.core 1.3.2, four on 1.3.1, one on 1.2.0, so
+  # the version-invariant floor is one.
   expect_gt(dfSummary$Numerator, 1)
 })
 

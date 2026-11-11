@@ -1,9 +1,9 @@
 # Publish a metric's rows without a flag
 
 The step a **descriptive** metric calls where a flagging metric calls
-[`gsm.core::Flag()`](https://rdrr.io/pkg/gsm.core/man/Flag.html). It
-adds the `Flag` column
-[`gsm.core::Summarize()`](https://rdrr.io/pkg/gsm.core/man/Summarize.html)
+[`gsm.core::Flag()`](https://gilead-public.github.io/gsm.core/reference/Flag.html).
+It adds the `Flag` column
+[`gsm.core::Summarize()`](https://gilead-public.github.io/gsm.core/reference/Summarize.html)
 requires and leaves it empty.
 
 ## Usage

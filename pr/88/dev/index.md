@@ -4,7 +4,7 @@
 [safety.viz](https://github.com/jwildfire/safety.viz) JavaScript chart
 library: thirteen interactive clinical safety displays as htmlwidgets —
 tracking the renderers the library ships (vendored at safety.viz
-v1.11.2; see `Config/safetyviz/version` in DESCRIPTION) — plus bundled
+v1.12.0; see `Config/safetyviz/version` in DESCRIPTION) — plus bundled
 example data and report workflows for Good Statistical Monitoring. It
 mirrors the `gsm.kri` / `gsm.viz` architecture.
 
@@ -69,9 +69,9 @@ names.
 the gsm.safety counterpart to gsm.kri’s site- and country-level KRIs.
 Each scores one row per participant with an ordinal tier, follows the
 `pat0015.yaml` precedent (`GroupLevel: Subject`, `Model: Identity`,
-[`gsm.core::Analyze_Identity()`](https://rdrr.io/pkg/gsm.core/man/Analyze_Identity.html)
+[`gsm.core::Analyze_Identity()`](https://gilead-public.github.io/gsm.core/reference/Analyze_Identity.html)
 plus deterministic
-[`gsm.core::Flag()`](https://rdrr.io/pkg/gsm.core/man/Flag.html)
+[`gsm.core::Flag()`](https://gilead-public.github.io/gsm.core/reference/Flag.html)
 thresholds), and emits the standard `analyticsSummary` contract.
 
 | Metric | ID | Score | Cut-points |
@@ -100,7 +100,7 @@ moves a site’s risk score.
 
 Report workflows under `inst/workflow/4_modules/` render each widget
 end-to-end via
-[`gsm.core::RunWorkflow()`](https://rdrr.io/pkg/gsm.core/man/RunWorkflow.html).
+[`gsm.core::RunWorkflow()`](https://gilead-public.github.io/gsm.core/reference/RunWorkflow.html).
 Matching runner scripts live in `inst/examples/`:
 
 ``` sh

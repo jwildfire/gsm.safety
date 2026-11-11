@@ -3,7 +3,7 @@
 The numerator step behind `saf0004`, the first of the census metrics. It
 counts the participants a study's **death domain** records as having
 died, anchored to the enrolled population, and hands
-[`gsm.core::Transform_Rate()`](https://rdrr.io/pkg/gsm.core/man/Transform_Rate.html)
+[`gsm.core::Transform_Rate()`](https://gilead-public.github.io/gsm.core/reference/Transform_Rate.html)
 an ordinary `analyticsInput` frame.
 
 ## Usage
@@ -12,6 +12,9 @@ an ordinary `analyticsInput` frame.
 Input_Deaths(
   dfDeath,
   dfSubjects,
+  dfStudyCompletion = NULL,
+  strReasonCol = "compreas",
+  strDeathReason = "Death",
   strIDCol = "subjid",
   strDeathCol = "death",
   strGroupCol = "studyid",
@@ -34,9 +37,28 @@ Input_Deaths(
   `gsm.mapping`'s `Mapped_SUBJ`. It is both the anchor and the
   denominator.
 
+- dfStudyCompletion:
+
+  `data.frame` or `NULL` Mapped study-completion domain, one row per
+  completion record — `gsm.mapping`'s `Mapped_STUDCOMP`. When given, a
+  participant whose `strReasonCol` is `strDeathReason` in any case and
+  with surrounding spaces ignored counts as died. Default: `NULL`, the
+  death domain alone. A single string, which is what a workflow step
+  receives when the domain it names was not supplied, is read as `NULL`.
+
+- strReasonCol:
+
+  `character` Discontinuation-reason column of `dfStudyCompletion`.
+  Default: `"compreas"`.
+
+- strDeathReason:
+
+  `character` The reason that means death, compared case-insensitively.
+  Default: `"Death"`.
+
 - strIDCol:
 
-  `character` Participant ID column, shared by both domains. Default:
+  `character` Participant ID column, shared by every domain. Default:
   `"subjid"`.
 
 - strDeathCol:
@@ -64,12 +86,16 @@ enrolled participant — or zero rows when the death domain is empty.
 
 ## Details
 
-No clinical definition of death is written here. `Mapped_Death` is
-gsm.mapping's own union of the death domain and the study-completion
-domain's discontinuation reason
-([`gsm.mapping::complete_death()`](https://gilead-public.github.io/gsm.mapping/reference/complete_death.html));
-this function counts the participants that union marks, and nothing
-else.
+A participant has died if the death domain marks them, or, when
+`dfStudyCompletion` is given, if their discontinuation reason is death
+in any case (`"Death"`, `"DEATH"`, `"death"`). `Mapped_Death` is meant
+to be that union already
+([`gsm.mapping::complete_death()`](https://gilead-public.github.io/gsm.mapping/reference/complete_death.html)),
+but gsm.mapping 1.2.0 compares the reason against `"DEATH"` exactly, and
+a study that writes `"Death"` loses those participants (#168). Reading
+the reason here keeps the count independent of how the mapping spells
+it. The reason has to equal the word: "Death of a relative" is not a
+death.
 
 ## Absent, empty, and zero are three different answers
 
@@ -88,7 +114,7 @@ three states are kept apart deliberately:
 A zero is a measurement — the domain ran and the answer was none.
 Absence is not a measurement, and neither is a table with nothing in it,
 so neither is allowed to render as a reassuring zero. Note that
-[`gsm.core::CheckSpec()`](https://rdrr.io/pkg/gsm.core/man/CheckSpec.html)
+[`gsm.core::CheckSpec()`](https://gilead-public.github.io/gsm.core/reference/CheckSpec.html)
 only *warns* on a declared column that is missing (it errors only on a
 missing data.frame), so the column check has to live here for the
 guarantee to hold.

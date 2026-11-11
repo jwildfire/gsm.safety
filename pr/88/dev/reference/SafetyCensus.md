@@ -177,9 +177,10 @@ suppressWarnings(SafetyCensus(dfSubjects, dfDeath = dfDeath)$Census)
 #> [INFO] Initializing `Analysis_saf0004` Workflow
 #> [INFO] Checking data against spec
 #> [INFO] Workflow Step 1 of 6: `gsm.safety::Input_Deaths`
-#> [INFO] Evaluating 4 parameter(s) for `gsm.safety::Input_Deaths`
+#> [INFO] Evaluating 5 parameter(s) for `gsm.safety::Input_Deaths`
 #> [INFO] dfDeath = Mapped_Death: Passing lData$Mapped_Death.
 #> [INFO] dfSubjects = Mapped_SUBJ: Passing lData$Mapped_SUBJ.
+#> [INFO] dfStudyCompletion = Mapped_STUDCOMP: No matching data found. Passing 'Mapped_STUDCOMP' as a string.
 #> [INFO] strGroupCol = GroupCol: Passing lMeta$GroupCol.
 #> [INFO] strGroupLevel = GroupLevel: Passing lMeta$GroupLevel.
 #> [INFO] Calling `gsm.safety::Input_Deaths`

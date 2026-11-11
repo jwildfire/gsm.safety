@@ -5,7 +5,7 @@ The numerator step behind most of the census metrics: `saf0005` and
 mapped domain names — optionally only those whose column matches a
 value, or whose column records anything at all — anchored to the
 enrolled population, and hands
-[`gsm.core::Transform_Rate()`](https://rdrr.io/pkg/gsm.core/man/Transform_Rate.html)
+[`gsm.core::Transform_Rate()`](https://gilead-public.github.io/gsm.core/reference/Transform_Rate.html)
 an ordinary `analyticsInput` frame.
 
 ## Usage
@@ -97,7 +97,7 @@ one of them wrong, which is the defect this rebuild exists to remove.
 A zero is a measurement — the domain ran and the answer was none.
 Absence is not a measurement, and neither is a table with nothing in it,
 so neither is allowed to render as a reassuring zero.
-[`gsm.core::CheckSpec()`](https://rdrr.io/pkg/gsm.core/man/CheckSpec.html)
+[`gsm.core::CheckSpec()`](https://gilead-public.github.io/gsm.core/reference/CheckSpec.html)
 only *warns* on a declared column that is missing (it errors only on a
 missing data.frame), so the column check lives here for the guarantee to
 hold.

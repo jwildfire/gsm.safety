@@ -69,10 +69,11 @@
 #'   reads in its own definition, so this function no longer takes a column
 #'   name from its caller. Supplying one warns and changes nothing; they are
 #'   kept so that existing calls keep working (D0023.5, approved).
-#' @param dfDeath `data.frame` or `NULL` Mapped death domain (`Mapped_Death`) —
-#'   `gsm.mapping`'s union of the death domain and the study-completion
-#'   domain's discontinuation reason. Without it the death count is absent
-#'   rather than read from a reason column, which is how it was wrong before.
+#' @param dfDeath `data.frame` or `NULL` Mapped death domain (`Mapped_Death`).
+#'   The death count is this domain joined to the disposition domain's
+#'   discontinuation reason of death, in any case (#168). Without it the death
+#'   count is absent: the reason column alone is how the count was wrong
+#'   before.
 #' @param dfRandomization `data.frame` or `NULL` Mapped randomisation domain
 #'   (`Mapped_Randomization`). Counting that a participant was randomised
 #'   without reading what they were randomised to is what keeps this figure out

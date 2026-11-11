@@ -254,7 +254,14 @@ test_that("the bundled study renders no data-coverage section (#61)", {
   expect_false(grepl("Data coverage", strHTML, ignore.case = TRUE))
   # The qualified figures are on the page.
   expect_match(strHTML, "AA-AA-000-0000", fixed = TRUE)
-  expect_match(strHTML, as.character(RECORDED_REPORT$Published$saf0004), fixed = TRUE)
+  # The death figure in its own row: the bare string would match saf0012 (#171).
+  expect_match(
+    strHTML,
+    paste0(
+      '<td class="id">saf0004</td>\\s*<td>[^<]*</td>\\s*<td class="num">',
+      RECORDED_REPORT$Published$saf0004, '</td>'
+    )
+  )
   expect_match(strHTML, format(RECORDED_REPORT$PersonYears$saf0008, nsmall = 1), fixed = TRUE)
 })
 

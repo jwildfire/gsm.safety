@@ -174,3 +174,55 @@ test_that("an unresolved completion-domain name is read as no completion domain 
     Count(Input_Deaths(DEATH, SUBJ))
   )
 })
+
+test_that("an empty death domain still counts the deaths a completion domain names (#171)", {
+  # Mapped_Death can come out empty on a study whose disposition records name
+  # deaths; the count is the union, so the completion domain is still read.
+  expect_identical(
+    Count(Input_Deaths(DEATH[0, , drop = FALSE], SUBJ, dfStudyCompletion = COMP)),
+    1
+  )
+  # A populated completion domain naming nobody is a measurement: zero.
+  dfAlive <- COMP
+  dfAlive$compreas <- c("Adverse Event", "Withdrew Consent")
+  expect_identical(
+    Count(Input_Deaths(DEATH[0, , drop = FALSE], SUBJ, dfStudyCompletion = dfAlive)),
+    0
+  )
+  # Both sources empty has measured nothing: no figure, as before.
+  expect_warning(
+    dfInput <- Input_Deaths(DEATH[0, , drop = FALSE], SUBJ, dfStudyCompletion = COMP[0, , drop = FALSE]),
+    "empty"
+  )
+  expect_identical(nrow(dfInput), 0L)
+})
+
+test_that("several death reasons are each matched, whatever the row order (#171)", {
+  dfComp <- data.frame(
+    subjid = c("S1", "S2", "S3"),
+    compreas = c("Death", "Died", "Adverse Event"),
+    stringsAsFactors = FALSE
+  )
+  dfSubjects <- data.frame(
+    subjid = c("S1", "S2", "S3"), studyid = "AA", stringsAsFactors = FALSE
+  )
+  dfNone <- data.frame(subjid = "S1", death = NA)
+  for (nOrder in list(1:3, 3:1, c(2, 3, 1))) {
+    expect_identical(
+      Count(Input_Deaths(
+        dfNone, dfSubjects,
+        dfStudyCompletion = dfComp[nOrder, , drop = FALSE],
+        strDeathReason = c("DEATH", "DIED")
+      )),
+      2,
+      label = paste(nOrder, collapse = "")
+    )
+  }
+})
+
+test_that("a death count read without a completion domain says so in the log (#171)", {
+  expect_message(
+    Input_Deaths(DEATH, SUBJ, dfStudyCompletion = "Mapped_STUDCOMP"),
+    "death domain alone"
+  )
+})

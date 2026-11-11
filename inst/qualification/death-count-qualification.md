@@ -154,8 +154,8 @@ The three states the count must never collapse, checked in
 | State | The study said | The metric does |
 |---|---|---|
 | Absent | no death domain, or no `death` / `subjid` column in it | errors |
-| Empty | a death domain with no rows | publishes no row, and warns |
-| Zero | a populated death domain marking nobody as died | publishes `0` |
+| Empty | a death domain with no rows, and no completion domain with rows | publishes no row, and warns |
+| Zero | a populated source marking nobody as died | publishes `0` |
 
 One thing worth naming, because the design assumed otherwise:
 `gsm.core::CheckSpec()` **errors on a missing data.frame but only warns on a

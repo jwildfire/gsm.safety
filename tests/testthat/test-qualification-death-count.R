@@ -125,10 +125,11 @@ test_that("route B: the recorded snapshot of the bundled study (#56)", {
   expect_identical(length(intersect(l$DeathDomain, l$Discontinuation)), 0L)
   expect_identical(length(l$Union), RECORDED$UnionAll)
 
-  # The finding this qualification turned up: three of the sixteen have a death
-  # record or a death discontinuation reason but enrollyn == "N", so the
-  # standard mapping's enrolled population — every gsm metric's denominator —
-  # does not contain them, and the published count is thirteen.
+  # The finding this qualification turned up: some participants have a death
+  # record or a death discontinuation reason but enrollyn == "N" (two of
+  # fourteen on gsm.core 1.3.2), so the standard mapping's enrolled population
+  # — every gsm metric's denominator — does not contain them, and the
+  # published count is the enrolled union (twelve on 1.3.2).
   expect_identical(length(l$UnionEnrolled), RECORDED$UnionEnrolled)
   expect_setequal(l$NotEnrolled, RECORDED$NotEnrolled)
 })

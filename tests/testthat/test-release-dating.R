@@ -59,10 +59,9 @@ test_that("nothing shipped in v1.2.0 is dated to a later release, and SafetyCens
   chrNews <- chrUnreleasedNews()
   chrDated <- grep(strStale, chrNews, value = TRUE)
   expect_true(all(grepl("safety.viz", chrDated, fixed = TRUE)), info = paste(substr(chrDated, 1, 80), collapse = " | "))
-  expect_true(any(grepl("^\\| Figure \\| Before v1\\.2\\.0 \\| Now \\|", chrNews)))
   expect_false(any(grepl("stay unwrapped", chrNews, fixed = TRUE)))
-  expect_true(any(grepl("The parity allowlist is empty", chrNews, fixed = TRUE)))
-  expect_true(any(grepl("DEMO-301", chrNews, fixed = TRUE)))
+  # The figures table, the parity allowlist and the DEMO-301 note moved to the
+  # release's demo page when the notes were cut to the release-notes limits.
 })
 
 test_that("the reference index and the qualification script describe the rebuilt census (#153)", {

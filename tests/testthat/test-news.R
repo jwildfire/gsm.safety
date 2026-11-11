@@ -47,21 +47,15 @@ test_that("every v1.2.0 review-fix NEWS bullet links its issue and its pull requ
   }
 })
 
-test_that("every v1.2.0 FDA phase 0 NEWS bullet links its issue, its pull request and the hub requirement (#127)", {
-  chrBullets <- chrReleaseBullets("1.2.0", "FDA ST&F phase 0")
-  chrCited <- grep("gsm.safety/issues/[0-9]+", chrBullets, value = TRUE)
-  expect_length(chrCited, 4)
-
-  for (strBullet in chrCited) {
-    expect_match(strBullet, "gsm.safety/pull/[0-9]+", info = substr(strBullet, 1, 60))
-    expect_match(strBullet, "obot.roadmap/issues/9\\)", info = substr(strBullet, 1, 60))
-  }
+test_that("the v1.2.0 FDA phase 0 NEWS bullet links each issue, its pull request and the hub requirement (#127)", {
+  chrFeatures <- chrReleaseBullets("1.2.0", "What's new")
+  strBullet <- grep("/issues/77\\)", chrFeatures, value = TRUE)
+  expect_length(strBullet, 1)
+  expect_match(strBullet, "obot.roadmap/issues/9\\)")
 
   lPairs <- list(c("77", "83"), c("79", "84"), c("80", "85"), c("78", "86"))
   for (chrPair in lPairs) {
-    strBullet <- grep(paste0("/issues/", chrPair[1], "\\)"), chrBullets, value = TRUE)
-    expect_length(strBullet, 1)
-    expect_match(strBullet, paste0("/pull/", chrPair[2], "\\)"), fixed = FALSE)
+    expect_match(strBullet, paste0("/issues/", chrPair[1], "\\), PR \\[#", chrPair[2], "\\]"))
   }
 })
 
@@ -75,15 +69,15 @@ test_that("the v1.2.0 NEWS bullets describe the collision guard and the criterio
   expect_match(strCollision, "AbnormalityDirection")
   expect_match(strCollision, "refused")
 
-  # Only FDA_AbnormalityLevels carries the printed criterion text.
-  chrFeatures <- chrReleaseBullets("1.2.0", "FDA ST&F phase 0")
+  # Only FDA_AbnormalityLevels carries the printed criterion text; the notes
+  # must not say every row does (the detail is on the demo page).
+  chrFeatures <- chrReleaseBullets("1.2.0", "What's new")
   strData <- grep("/issues/77\\)", chrFeatures, value = TRUE)
   expect_length(strData, 1)
   expect_no_match(strData, "Every row carries[^.;]*criterion text")
-  expect_match(strData, "abnormality-level rows also carry each criterion")
 })
 
-test_that("dev carries one unreleased section, v1.2.0, that leads with the two clinical corrections (#151)", {
+test_that("dev carries one unreleased section, v1.2.0, in the release-notes shape, led by the death count (#151)", {
   chrLines <- readLines(strNewsMd(), warn = FALSE)
   expect_identical(
     grep("^# gsm.safety v[0-9.]+ \\(Upcoming\\)$", chrLines, value = TRUE),
@@ -98,18 +92,15 @@ test_that("dev carries one unreleased section, v1.2.0, that leads with the two c
   chrSection <- chrSection[seq_len(nEnd - 1)]
   expect_identical(
     grep("^## ", chrSection, value = TRUE),
-    c(
-      "## Two clinical figures change", "## Four new widgets", "## The census rebuild",
-      "## FDA ST&F phase 0", "## Worth knowing about the widgets", "## Also in this release"
-    )
+    c("## What's new", "## Deprecated", "## Removed", "## Also in this release", "## Tests and provenance")
   )
-  # The corrections keep their measured figures: the table of what moves and the eDISH counts.
-  # The census figures are gsm.core 1.3.2's since the re-qualification (#168).
-  expect_true(any(grepl("^\\| Deaths \\| 2 \\| \\*\\*12\\*\\* \\|", chrSection)))
-  expect_true(any(grepl("293 participants with 71 excluded", chrSection, fixed = TRUE)))
+  # The death count leads, with the figures it moves between (#168 re-measured
+  # them on gsm.core 1.3.2).
+  chrNew <- chrReleaseBullets("1.2.0", "What's new")
+  expect_match(chrNew[1], "12 of 754 where `SafetyCensus()` reported 2", fixed = TRUE)
   expect_match(
     grep("^\\*\\*See it move:\\*\\*", chrSection, value = TRUE)[1],
-    "https://jwildfire.github.io/obot.roadmap/reports/gs-v1.2-demo/",
+    "https://jwildfire.github.io/obot.roadmap/reports/gsm-safety-v1.2.0-demo/",
     fixed = TRUE
   )
 })

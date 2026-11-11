@@ -43,8 +43,9 @@ Input_Deaths(
   completion record — `gsm.mapping`'s `Mapped_STUDCOMP`. When given, a
   participant whose `strReasonCol` is `strDeathReason` in any case and
   with surrounding spaces ignored counts as died. Default: `NULL`, the
-  death domain alone. A single string, which is what a workflow step
-  receives when the domain it names was not supplied, is read as `NULL`.
+  death domain alone, which the log says. A single string, which is what
+  a workflow step receives when the domain it names was not supplied, is
+  read as `NULL`.
 
 - strReasonCol:
 
@@ -53,8 +54,8 @@ Input_Deaths(
 
 - strDeathReason:
 
-  `character` The reason that means death, compared case-insensitively.
-  Default: `"Death"`.
+  `character` The reason, or reasons, that mean death, compared
+  case-insensitively. Default: `"Death"`.
 
 - strIDCol:
 
@@ -82,7 +83,7 @@ Input_Deaths(
 
 `data.frame` conforming to `analyticsInput` (`SubjectID`, `GroupID`,
 `GroupLevel`, `Numerator`, `Denominator`, `Metric`), one row per
-enrolled participant — or zero rows when the death domain is empty.
+enrolled participant — or zero rows when both sources are empty.
 
 ## Details
 
@@ -108,8 +109,8 @@ three states are kept apart deliberately:
 |----|----|----|
 | State | What the study said | What this returns |
 | Absent | no death domain, or no `death` / ID column in it | an **error** |
-| Empty | a death domain with no rows at all | **no row**, and a warning |
-| Zero | a populated death domain marking nobody as died | a row reading **0** |
+| Empty | a death domain with no rows, and no completion domain with rows | **no row**, and a warning |
+| Zero | a populated source marking nobody as died | a row reading **0** |
 
 A zero is a measurement — the domain ran and the answer was none.
 Absence is not a measurement, and neither is a table with nothing in it,
@@ -134,6 +135,7 @@ the numerator can never exceed its denominator.
 dfSubjects <- data.frame(subjid = c("S1", "S2"), studyid = "AA-AA-000-0000")
 dfDeath <- data.frame(subjid = c("S1", "S2"), death = c(TRUE, NA))
 Input_Deaths(dfDeath, dfSubjects)
+#> ℹ No study-completion domain was supplied, so the death count reads the death domain alone.
 #>   SubjectID        GroupID GroupLevel Numerator Denominator Metric
 #> 1        S1 AA-AA-000-0000      Study         1           1      1
 #> 2        S2 AA-AA-000-0000      Study         0           1      0

@@ -97,9 +97,9 @@ denominator.</p></dd>
 domain, one row per completion record — <code>gsm.mapping</code>'s
 <code>Mapped_STUDCOMP</code>. When given, a participant whose <code>strReasonCol</code> is
 <code>strDeathReason</code> in any case and with surrounding spaces ignored counts as
-died. Default: <code>NULL</code>, the death domain alone. A single string, which is
-what a workflow step receives when the domain it names was not supplied,
-is read as <code>NULL</code>.</p></dd>
+died. Default: <code>NULL</code>, the death domain alone, which the log says. A
+single string, which is what a workflow step receives when the domain it
+names was not supplied, is read as <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-strreasoncol">strReasonCol<a class="anchor" aria-label="anchor" href="#arg-strreasoncol"></a></dt>
@@ -108,8 +108,8 @@ is read as <code>NULL</code>.</p></dd>
 
 
 <dt id="arg-strdeathreason">strDeathReason<a class="anchor" aria-label="anchor" href="#arg-strdeathreason"></a></dt>
-<dd><p><code>character</code> The reason that means death, compared
-case-insensitively. Default: <code>"Death"</code>.</p></dd>
+<dd><p><code>character</code> The reason, or reasons, that mean death,
+compared case-insensitively. Default: <code>"Death"</code>.</p></dd>
 
 
 <dt id="arg-stridcol">strIDCol<a class="anchor" aria-label="anchor" href="#arg-stridcol"></a></dt>
@@ -138,7 +138,7 @@ different metric.</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     <p><code>data.frame</code> conforming to <code>analyticsInput</code> (<code>SubjectID</code>, <code>GroupID</code>,
 <code>GroupLevel</code>, <code>Numerator</code>, <code>Denominator</code>, <code>Metric</code>), one row per enrolled
-participant — or zero rows when the death domain is empty.</p>
+participant — or zero rows when both sources are empty.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -159,7 +159,7 @@ word: "Death of a relative" is not a death.</p>
 <p>The defect this metric replaces reported <strong>one</strong> death on a study whose
 records hold thirteen, by text-matching a discontinuation reason. The defect
 beside it reported <strong>zero</strong> where a column was missing. So the three states
-are kept apart deliberately:</p><table class="table table"><tr><td>State</td><td>What the study said</td><td>What this returns</td></tr><tr><td>Absent</td><td>no death domain, or no <code>death</code> / ID column in it</td><td>an <strong>error</strong></td></tr><tr><td>Empty</td><td>a death domain with no rows at all</td><td><strong>no row</strong>, and a warning</td></tr><tr><td>Zero</td><td>a populated death domain marking nobody as died</td><td>a row reading <strong>0</strong></td></tr></table><p>A zero is a measurement — the domain ran and the answer was none. Absence is
+are kept apart deliberately:</p><table class="table table"><tr><td>State</td><td>What the study said</td><td>What this returns</td></tr><tr><td>Absent</td><td>no death domain, or no <code>death</code> / ID column in it</td><td>an <strong>error</strong></td></tr><tr><td>Empty</td><td>a death domain with no rows, and no completion domain with rows</td><td><strong>no row</strong>, and a warning</td></tr><tr><td>Zero</td><td>a populated source marking nobody as died</td><td>a row reading <strong>0</strong></td></tr></table><p>A zero is a measurement — the domain ran and the answer was none. Absence is
 not a measurement, and neither is a table with nothing in it, so neither is
 allowed to render as a reassuring zero. Note that <code><a href="https://gilead-public.github.io/gsm.core/reference/CheckSpec.html" class="external-link">gsm.core::CheckSpec()</a></code>
 only <em>warns</em> on a declared column that is missing (it errors only on a
@@ -184,6 +184,7 @@ never exceed its denominator.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">dfSubjects</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>subjid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S1"</span>, <span class="st">"S2"</span><span class="op">)</span>, studyid <span class="op">=</span> <span class="st">"AA-AA-000-0000"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">dfDeath</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span>subjid <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"S1"</span>, <span class="st">"S2"</span><span class="op">)</span>, death <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="cn">NA</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">Input_Deaths</span><span class="op">(</span><span class="va">dfDeath</span>, <span class="va">dfSubjects</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No study-completion domain was supplied, so the death count reads the death domain alone.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   SubjectID        GroupID GroupLevel Numerator Denominator Metric</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 1        S1 AA-AA-000-0000      Study         1           1      1</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> 2        S2 AA-AA-000-0000      Study         0           1      0</span>

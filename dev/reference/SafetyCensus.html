@@ -129,10 +129,11 @@ kept so that existing calls keep working (D0023.5, approved).</p></dd>
 
 
 <dt id="arg-dfdeath">dfDeath<a class="anchor" aria-label="anchor" href="#arg-dfdeath"></a></dt>
-<dd><p><code>data.frame</code> or <code>NULL</code> Mapped death domain (<code>Mapped_Death</code>) —
-<code>gsm.mapping</code>'s union of the death domain and the study-completion
-domain's discontinuation reason. Without it the death count is absent
-rather than read from a reason column, which is how it was wrong before.</p></dd>
+<dd><p><code>data.frame</code> or <code>NULL</code> Mapped death domain (<code>Mapped_Death</code>).
+The death count is this domain joined to the disposition domain's
+discontinuation reason of death, in any case (#168). Without it the death
+count is absent: the reason column alone is how the count was wrong
+before.</p></dd>
 
 
 <dt id="arg-dfrandomization">dfRandomization<a class="anchor" aria-label="anchor" href="#arg-dfrandomization"></a></dt>
@@ -235,6 +236,7 @@ discontinued and died.</p></li>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> [INFO] strGroupCol = GroupCol: Passing lMeta$GroupCol.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> [INFO] strGroupLevel = GroupLevel: Passing lMeta$GroupLevel.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> [INFO] Calling `gsm.safety::Input_Deaths`</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No study-completion domain was supplied, so the death count reads the death domain alone.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> [INFO] 3x6 data.frame saved as `lData$Analysis_Input`.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> [INFO] Workflow Step 2 of 6: `gsm.core::Transform_Rate`</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> [INFO] Evaluating 1 parameter(s) for `gsm.core::Transform_Rate`</span>

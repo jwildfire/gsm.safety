@@ -74,11 +74,11 @@ SafetyCensus(
 
 - dfDeath:
 
-  `data.frame` or `NULL` Mapped death domain (`Mapped_Death`) —
-  `gsm.mapping`'s union of the death domain and the study-completion
-  domain's discontinuation reason. Without it the death count is absent
-  rather than read from a reason column, which is how it was wrong
-  before.
+  `data.frame` or `NULL` Mapped death domain (`Mapped_Death`). The death
+  count is this domain joined to the disposition domain's
+  discontinuation reason of death, in any case (#168). Without it the
+  death count is absent: the reason column alone is how the count was
+  wrong before.
 
 - dfRandomization:
 
@@ -184,6 +184,7 @@ suppressWarnings(SafetyCensus(dfSubjects, dfDeath = dfDeath)$Census)
 #> [INFO] strGroupCol = GroupCol: Passing lMeta$GroupCol.
 #> [INFO] strGroupLevel = GroupLevel: Passing lMeta$GroupLevel.
 #> [INFO] Calling `gsm.safety::Input_Deaths`
+#> ℹ No study-completion domain was supplied, so the death count reads the death domain alone.
 #> [INFO] 3x6 data.frame saved as `lData$Analysis_Input`.
 #> [INFO] Workflow Step 2 of 6: `gsm.core::Transform_Rate`
 #> [INFO] Evaluating 1 parameter(s) for `gsm.core::Transform_Rate`

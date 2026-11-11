@@ -43,7 +43,7 @@ gsm.safety v1.2.0 brings the widgets up to safety.viz v1.12.0 and rebuilds the s
 
 ## Tests and provenance
 
-4,651 tests pass against gsm.core 1.3.2, gsm.mapping 1.2.0 and gsm.reporting 1.1.8. Every census figure is measured twice, by two routes that share no code. The vendored bundle is byte-identical to the safety.viz v1.12.0 release, which the parity check confirms.
+4,621 tests pass against gsm.core 1.3.2, gsm.mapping 1.2.0 and gsm.reporting 1.1.8. Every census figure is measured twice, by two routes that share no code. The vendored bundle is byte-identical to the safety.viz v1.12.0 release, which the parity check confirms.
 
 # gsm.safety v1.1.0
 

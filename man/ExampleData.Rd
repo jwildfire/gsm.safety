@@ -28,7 +28,10 @@ data cannot form that figure — see the safety.viz demo's data note):
 \itemize{
 \item \code{adbds}: long-format BDS labs and vitals results, one record per
 measurement (\code{USUBJID}, \code{SITE}, \code{SITEID}, \code{SEX}, \code{RACE}, \code{ARM}, \code{VISIT},
-\code{VISITNUM}, \code{TEST}, \code{STRESU}, \code{STRESN}, \code{STNRLO}, \code{STNRHI}).
+\code{VISITNUM}, \code{TEST}, \code{STRESU}, \code{STRESN}, \code{STNRLO}, \code{STNRHI}, \code{DY},
+\code{ABLFL}). \code{DY} is the ADaM study day of the measurement and \code{ABLFL} is
+\code{"Y"} on the baseline record, so a chart can plot real days with
+\code{x_axis} and read the baseline with \code{baseline_col}.
 \item \code{adae}: adverse events, one record per event (\code{USUBJID}, \code{ARM}, \code{AESEQ},
 \code{AEBODSYS}, \code{AEDECOD}, \code{AETERM}, \code{AESEV}, \code{AESER}, \code{ASTDY}, \code{AENDY}),
 plus one placeholder row per participant with no adverse events. A
@@ -38,8 +41,8 @@ population (254 participants, 217 of them with events) rather than only
 participants who reported an event.
 \item \code{adeg}: long-format ECG results, one record per measurement (\code{USUBJID},
 \code{SITE}, \code{SITEID}, \code{SEX}, \code{RACE}, \code{AGE}, \code{ARM}, \code{VISIT}, \code{VISITNUM},
-\code{PARAMCD}, \code{TEST}, \code{STRESU}, \code{STRESN}, \code{BASE}, \code{CHG}, \code{ABLFL}), carrying
-QTcF, QTcB, and Heart Rate for \code{\link[=Widget_QtExplorer]{Widget_QtExplorer()}}.
+\code{PARAMCD}, \code{TEST}, \code{STRESU}, \code{STRESN}, \code{BASE}, \code{CHG}, \code{ABLFL}, \code{DY}),
+carrying QTcF, QTcB, and Heart Rate for \code{\link[=Widget_QtExplorer]{Widget_QtExplorer()}}.
 \item \code{adbds_abnbl}: long-format labs for 80 synthetic abnormal-baseline
 participants (\verb{ABL-*}), same columns as \code{adbds}, for
 \code{\link[=Widget_HepWaterfall]{Widget_HepWaterfall()}}.

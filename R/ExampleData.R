@@ -11,7 +11,10 @@
 #'
 #' - `adbds`: long-format BDS labs and vitals results, one record per
 #'   measurement (`USUBJID`, `SITE`, `SITEID`, `SEX`, `RACE`, `ARM`, `VISIT`,
-#'   `VISITNUM`, `TEST`, `STRESU`, `STRESN`, `STNRLO`, `STNRHI`).
+#'   `VISITNUM`, `TEST`, `STRESU`, `STRESN`, `STNRLO`, `STNRHI`, `DY`,
+#'   `ABLFL`). `DY` is the ADaM study day of the measurement and `ABLFL` is
+#'   `"Y"` on the baseline record, so a chart can plot real days with
+#'   `x_axis` and read the baseline with `baseline_col`.
 #' - `adae`: adverse events, one record per event (`USUBJID`, `ARM`, `AESEQ`,
 #'   `AEBODSYS`, `AEDECOD`, `AETERM`, `AESEV`, `AESER`, `ASTDY`, `AENDY`),
 #'   plus one placeholder row per participant with no adverse events. A
@@ -21,8 +24,8 @@
 #'   participants who reported an event.
 #' - `adeg`: long-format ECG results, one record per measurement (`USUBJID`,
 #'   `SITE`, `SITEID`, `SEX`, `RACE`, `AGE`, `ARM`, `VISIT`, `VISITNUM`,
-#'   `PARAMCD`, `TEST`, `STRESU`, `STRESN`, `BASE`, `CHG`, `ABLFL`), carrying
-#'   QTcF, QTcB, and Heart Rate for [Widget_QtExplorer()].
+#'   `PARAMCD`, `TEST`, `STRESU`, `STRESN`, `BASE`, `CHG`, `ABLFL`, `DY`),
+#'   carrying QTcF, QTcB, and Heart Rate for [Widget_QtExplorer()].
 #' - `adbds_abnbl`: long-format labs for 80 synthetic abnormal-baseline
 #'   participants (`ABL-*`), same columns as `adbds`, for
 #'   [Widget_HepWaterfall()].
@@ -68,10 +71,10 @@ ExampleData <- function(strDataset = c("adbds", "adae", "adeg", "adbds_abnbl", "
   dfData <- utils::read.csv(gzfile(strPath), colClasses = "character")
 
   chrNumericCols <- switch(strDataset,
-    adbds = c("VISITNUM", "STRESN", "STNRLO", "STNRHI"),
-    adbds_abnbl = c("VISITNUM", "STRESN", "STNRLO", "STNRHI"),
+    adbds = c("VISITNUM", "STRESN", "STNRLO", "STNRHI", "DY"),
+    adbds_abnbl = c("VISITNUM", "STRESN", "STNRLO", "STNRHI", "DY"),
     adae = c("AESEQ", "ASTDY", "AENDY"),
-    adeg = c("AGE", "VISITNUM", "STRESN", "BASE", "CHG"),
+    adeg = c("AGE", "VISITNUM", "STRESN", "BASE", "CHG", "DY"),
     adsl = c("EOSDY")
   )
   for (strCol in chrNumericCols) {

@@ -66,6 +66,9 @@ anchored to the enrolled population, and hands
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">Input_Deaths</span><span class="op">(</span></span>
 <span>  <span class="va">dfDeath</span>,</span>
 <span>  <span class="va">dfSubjects</span>,</span>
+<span>  dfStudyCompletion <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  strReasonCol <span class="op">=</span> <span class="st">"compreas"</span>,</span>
+<span>  strDeathReason <span class="op">=</span> <span class="st">"Death"</span>,</span>
 <span>  strIDCol <span class="op">=</span> <span class="st">"subjid"</span>,</span>
 <span>  strDeathCol <span class="op">=</span> <span class="st">"death"</span>,</span>
 <span>  strGroupCol <span class="op">=</span> <span class="st">"studyid"</span>,</span>
@@ -89,8 +92,28 @@ population — <code>gsm.mapping</code>'s <code>Mapped_SUBJ</code>. It is both t
 denominator.</p></dd>
 
 
+<dt id="arg-dfstudycompletion">dfStudyCompletion<a class="anchor" aria-label="anchor" href="#arg-dfstudycompletion"></a></dt>
+<dd><p><code>data.frame</code> or <code>NULL</code> Mapped study-completion
+domain, one row per completion record — <code>gsm.mapping</code>'s
+<code>Mapped_STUDCOMP</code>. When given, a participant whose <code>strReasonCol</code> is
+<code>strDeathReason</code> in any case and with surrounding spaces ignored counts as
+died. Default: <code>NULL</code>, the death domain alone. A single string, which is
+what a workflow step receives when the domain it names was not supplied,
+is read as <code>NULL</code>.</p></dd>
+
+
+<dt id="arg-strreasoncol">strReasonCol<a class="anchor" aria-label="anchor" href="#arg-strreasoncol"></a></dt>
+<dd><p><code>character</code> Discontinuation-reason column of
+<code>dfStudyCompletion</code>. Default: <code>"compreas"</code>.</p></dd>
+
+
+<dt id="arg-strdeathreason">strDeathReason<a class="anchor" aria-label="anchor" href="#arg-strdeathreason"></a></dt>
+<dd><p><code>character</code> The reason that means death, compared
+case-insensitively. Default: <code>"Death"</code>.</p></dd>
+
+
 <dt id="arg-stridcol">strIDCol<a class="anchor" aria-label="anchor" href="#arg-stridcol"></a></dt>
-<dd><p><code>character</code> Participant ID column, shared by both domains.
+<dd><p><code>character</code> Participant ID column, shared by every domain.
 Default: <code>"subjid"</code>.</p></dd>
 
 
@@ -119,10 +142,14 @@ participant — or zero rows when the death domain is empty.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>No clinical definition of death is written here. <code>Mapped_Death</code> is
-gsm.mapping's own union of the death domain and the study-completion
-domain's discontinuation reason (<code><a href="https://gilead-public.github.io/gsm.mapping/reference/complete_death.html" class="external-link">gsm.mapping::complete_death()</a></code>); this
-function counts the participants that union marks, and nothing else.</p>
+    <p>A participant has died if the death domain marks them, or, when
+<code>dfStudyCompletion</code> is given, if their discontinuation reason is death in
+any case (<code>"Death"</code>, <code>"DEATH"</code>, <code>"death"</code>). <code>Mapped_Death</code> is meant to be
+that union already (<code><a href="https://gilead-public.github.io/gsm.mapping/reference/complete_death.html" class="external-link">gsm.mapping::complete_death()</a></code>), but gsm.mapping 1.2.0
+compares the reason against <code>"DEATH"</code> exactly, and a study that writes
+<code>"Death"</code> loses those participants (#168). Reading the reason here keeps the
+count independent of how the mapping spells it. The reason has to equal the
+word: "Death of a relative" is not a death.</p>
     </div>
     <div class="section level2">
     <h2 id="absent-empty-and-zero-are-three-different-answers">Absent, empty, and zero are three different answers<a class="anchor" aria-label="anchor" href="#absent-empty-and-zero-are-three-different-answers"></a></h2>

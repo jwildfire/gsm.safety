@@ -63,9 +63,11 @@ lMapped <- suppressWarnings(suppressMessages({
   gsm.core::RunWorkflows(lWorkflows, gsm.mapping::Ingest(lSource, lSpec))
 }))
 dfMappedDeath <- lMapped$Mapped_Death
-nMappedDeaths <- length(unique(
+chrMappedDeaths <- unique(as.character(
   dfMappedDeath$subjid[!is.na(dfMappedDeath$death) & dfMappedDeath$death]
 ))
+nMappedDeaths <- length(chrMappedDeaths)
+nMappedEnrolled <- length(intersect(chrMappedDeaths, chrEnrolled))
 
 lResult <- suppressWarnings(suppressMessages(gsm.core::RunWorkflow(
   yaml::read_yaml(system.file(
@@ -78,7 +80,10 @@ dfSummary <- lResult$Analysis_Summary
 
 Rule("Route A - the standard mapping, then the saf0004 workflow")
 cat("Mapped_SUBJ rows (the enrolled population):", nrow(lMapped$Mapped_SUBJ), "\n")
-cat("Mapped_Death, participants marked died:    ", nMappedDeaths, "\n")
+cat("Mapped_Death, participants marked died:    ", nMappedDeaths,
+  " (", nMappedEnrolled, " enrolled)\n",
+  sep = ""
+)
 print(as.data.frame(dfSummary))
 
 Rule("Verdict")

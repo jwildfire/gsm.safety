@@ -2,10 +2,13 @@
 #'
 #' Reads one of the example datasets vendored with the package, matching the
 #' data used by the safety.viz demos. `adbds`, `adae`, and `adeg` are derived
-#' from pharmaverseadam (CDISC Pilot 01 ADaM); `adbds` additionally carries the
-#' synthetic `AKI-*` acute-kidney-injury cohort the safety.viz nep-explorer
-#' demo appends (the pilot population alone puts every participant in the
-#' KDIGO no-stage box), and `adbds_abnbl` is the purpose-built synthetic
+#' from pharmaverseadam (CDISC Pilot 01 ADaM); `adbds` additionally carries two
+#' synthetic cohorts the safety.viz demos append: the `CLD-*`
+#' chronic-liver-disease cohort (64 participants with abnormal baseline liver
+#' tests, for the hep-explorer's composite view, which the pilot's normal
+#' baselines cannot exercise) and the `AKI-*` acute-kidney-injury cohort for the
+#' nep-explorer (the pilot population alone puts every participant in the
+#' KDIGO no-stage box); `adbds_abnbl` is the purpose-built synthetic
 #' abnormal-baseline hepatic cohort for [Widget_HepWaterfall()] (the pilot
 #' data cannot form that figure — see the safety.viz demo's data note):
 #'

@@ -32,6 +32,8 @@ chrReleaseBullets <- function(strVersion, strHeading) {
 
 test_that("every v1.2.0 review-fix NEWS bullet links its issue and its pull request (#110)", {
   chrBullets <- chrReleaseBullets("1.2.0", "Also in this release")
+  # What is knowingly left out cites its issues and has no pull request yet.
+  chrBullets <- grep("knowingly not in this release", chrBullets, value = TRUE, invert = TRUE)
   chrCited <- grep("gsm.safety/issues/[0-9]+", chrBullets, value = TRUE)
   expect_gte(length(chrCited), 4)
 
@@ -103,4 +105,16 @@ test_that("dev carries one unreleased section, v1.2.0, in the release-notes shap
     "https://jwildfire.github.io/obot.roadmap/reports/gsm-safety-v1.2.0-demo/",
     fixed = TRUE
   )
+})
+
+test_that("every v1.2.0 What's new bullet links its hub requirement, and the toggle is counted right (#171)", {
+  chrNew <- chrReleaseBullets("1.2.0", "What's new")
+  for (strBullet in chrNew) {
+    expect_match(strBullet, "obot.roadmap/issues/[0-9]+", info = substr(strBullet, 1, 60))
+  }
+  # The hep waterfall's contract has no x_axis: four widgets take the toggle.
+  strToggle <- grep("Study day toggle", chrNew, value = TRUE)
+  expect_length(strToggle, 1)
+  expect_match(strToggle, "Four widgets", fixed = TRUE)
+  expect_no_match(strToggle, "hep waterfall, ", fixed = TRUE)
 })

@@ -126,8 +126,10 @@ test_that("a change in what a metric publishes moves the figure by exactly that 
       dfDisposition = dfNoDeathReason,
       dfDeath = dfDeath
     )))
-    # An empty death domain has measured nothing, so it publishes nothing.
-    nExpected <- if (nDeaths == 0) NA_real_ else as.numeric(nDeaths)
+    # An empty death domain beside a populated completion domain that names no
+    # death is a measurement: zero (#171). Both sources empty is covered in
+    # test-Input_Deaths.R.
+    nExpected <- as.numeric(nDeaths)
     expect_identical(CensusValue(lOut, "Deaths"), nExpected, info = nDeaths)
   }
 })

@@ -24,8 +24,8 @@
 #' | State | What the study said | What this returns |
 #' |---|---|---|
 #' | Absent | no death domain, or no `death` / ID column in it | an **error** |
-#' | Empty | a death domain with no rows at all | **no row**, and a warning |
-#' | Zero | a populated death domain marking nobody as died | a row reading **0** |
+#' | Empty | a death domain with no rows, and no completion domain with rows | **no row**, and a warning |
+#' | Zero | a populated source marking nobody as died | a row reading **0** |
 #'
 #' A zero is a measurement — the domain ran and the answer was none. Absence is
 #' not a measurement, and neither is a table with nothing in it, so neither is
@@ -53,13 +53,13 @@
 #'   domain, one row per completion record — `gsm.mapping`'s
 #'   `Mapped_STUDCOMP`. When given, a participant whose `strReasonCol` is
 #'   `strDeathReason` in any case and with surrounding spaces ignored counts as
-#'   died. Default: `NULL`, the death domain alone. A single string, which is
-#'   what a workflow step receives when the domain it names was not supplied,
-#'   is read as `NULL`.
+#'   died. Default: `NULL`, the death domain alone, which the log says. A
+#'   single string, which is what a workflow step receives when the domain it
+#'   names was not supplied, is read as `NULL`.
 #' @param strReasonCol `character` Discontinuation-reason column of
 #'   `dfStudyCompletion`. Default: `"compreas"`.
-#' @param strDeathReason `character` The reason that means death, compared
-#'   case-insensitively. Default: `"Death"`.
+#' @param strDeathReason `character` The reason, or reasons, that mean death,
+#'   compared case-insensitively. Default: `"Death"`.
 #' @param strIDCol `character` Participant ID column, shared by every domain.
 #'   Default: `"subjid"`.
 #' @param strDeathCol `character` Column of `dfDeath` marking a death. Read as
@@ -73,7 +73,7 @@
 #'
 #' @return `data.frame` conforming to `analyticsInput` (`SubjectID`, `GroupID`,
 #'   `GroupLevel`, `Numerator`, `Denominator`, `Metric`), one row per enrolled
-#'   participant — or zero rows when the death domain is empty.
+#'   participant — or zero rows when both sources are empty.
 #'
 #' @examples
 #' dfSubjects <- data.frame(subjid = c("S1", "S2"), studyid = "AA-AA-000-0000")
@@ -121,6 +121,18 @@ Input_Deaths <- function(
   if (is.character(dfStudyCompletion) && length(dfStudyCompletion) == 1L) {
     dfStudyCompletion <- NULL
   }
+  # Say which sources the count reads, so a domain that was not supplied
+  # cannot quietly shorten it (#171).
+  if (is.null(dfStudyCompletion)) {
+    gsm.core::LogMessage(
+      level = "info",
+      message = paste0(
+        "No study-completion domain was supplied, so the death count reads ",
+        "the death domain alone."
+      ),
+      cli_detail = "alert_info"
+    )
+  }
   if (!is.null(dfStudyCompletion)) {
     gsm.core::stop_if(
       cnd = !is.data.frame(dfStudyCompletion),
@@ -140,8 +152,11 @@ Input_Deaths <- function(
     drop = FALSE
   ]
 
-  # --- Empty. A table with no rows has measured nothing. ---------------------
-  if (nrow(dfDeath) == 0) {
+  # --- Empty. Sources with no rows have measured nothing. --------------------
+  # The count is a union, so an empty death domain is empty only when there is
+  # no completion domain with rows to read either (#171).
+  if (nrow(dfDeath) == 0 &&
+    (is.null(dfStudyCompletion) || nrow(dfStudyCompletion) == 0)) {
     gsm.core::LogMessage(
       level = "warn",
       message = paste0(
@@ -212,5 +227,5 @@ DeathFlagIsTrue <- function(x) {
 # case or surrounding spaces (#168). Missing reasons are not deaths.
 ReasonIsDeath <- function(x, strDeathReason = "Death") {
   chrReason <- toupper(trimws(as.character(x)))
-  !is.na(chrReason) & chrReason == toupper(trimws(strDeathReason))
+  !is.na(chrReason) & chrReason %in% toupper(trimws(strDeathReason))
 }

@@ -29,15 +29,15 @@ denominator.}
 domain, one row per completion record — \code{gsm.mapping}'s
 \code{Mapped_STUDCOMP}. When given, a participant whose \code{strReasonCol} is
 \code{strDeathReason} in any case and with surrounding spaces ignored counts as
-died. Default: \code{NULL}, the death domain alone. A single string, which is
-what a workflow step receives when the domain it names was not supplied,
-is read as \code{NULL}.}
+died. Default: \code{NULL}, the death domain alone, which the log says. A
+single string, which is what a workflow step receives when the domain it
+names was not supplied, is read as \code{NULL}.}
 
 \item{strReasonCol}{\code{character} Discontinuation-reason column of
 \code{dfStudyCompletion}. Default: \code{"compreas"}.}
 
-\item{strDeathReason}{\code{character} The reason that means death, compared
-case-insensitively. Default: \code{"Death"}.}
+\item{strDeathReason}{\code{character} The reason, or reasons, that mean death,
+compared case-insensitively. Default: \code{"Death"}.}
 
 \item{strIDCol}{\code{character} Participant ID column, shared by every domain.
 Default: \code{"subjid"}.}
@@ -56,7 +56,7 @@ different metric.}
 \value{
 \code{data.frame} conforming to \code{analyticsInput} (\code{SubjectID}, \code{GroupID},
 \code{GroupLevel}, \code{Numerator}, \code{Denominator}, \code{Metric}), one row per enrolled
-participant — or zero rows when the death domain is empty.
+participant — or zero rows when both sources are empty.
 }
 \description{
 The numerator step behind \code{saf0004}, the first of the census metrics. It
@@ -83,8 +83,8 @@ beside it reported \strong{zero} where a column was missing. So the three states
 are kept apart deliberately:\tabular{lll}{
    State \tab What the study said \tab What this returns \cr
    Absent \tab no death domain, or no \code{death} / ID column in it \tab an \strong{error} \cr
-   Empty \tab a death domain with no rows at all \tab \strong{no row}, and a warning \cr
-   Zero \tab a populated death domain marking nobody as died \tab a row reading \strong{0} \cr
+   Empty \tab a death domain with no rows, and no completion domain with rows \tab \strong{no row}, and a warning \cr
+   Zero \tab a populated source marking nobody as died \tab a row reading \strong{0} \cr
 }
 
 

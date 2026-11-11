@@ -118,3 +118,17 @@ test_that("every v1.2.0 What's new bullet links its hub requirement, and the tog
   expect_match(strToggle, "Four widgets", fixed = TRUE)
   expect_no_match(strToggle, "hep waterfall, ", fixed = TRUE)
 })
+
+test_that("the v1.2.0 notes credit the eDISH correction to the composite view, and say the JavaScript statistics ship (#174)", {
+  chrNew <- chrReleaseBullets("1.2.0", "What's new")
+  strLiver <- grep("Hy's Law", chrNew, value = TRUE)
+  expect_length(strLiver, 1)
+  expect_match(strLiver, "composite view", fixed = TRUE)
+  expect_match(strLiver, "/issues/165\\)")
+
+  chrAlso <- chrReleaseBullets("1.2.0", "Also in this release")
+  strLeft <- grep("safety.viz/issues/259", chrAlso, value = TRUE)
+  expect_length(strLeft, 1)
+  expect_match(strLeft, "ship", fixed = TRUE)
+})
+

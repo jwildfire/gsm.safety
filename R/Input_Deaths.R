@@ -16,8 +16,9 @@
 #'
 #' @section Absent, empty, and zero are three different answers:
 #'
-#' The defect this metric replaces reported **one** death on a study whose
-#' records hold thirteen, by text-matching a discontinuation reason. The defect
+#' The defect this metric replaces counted deaths by text-matching a
+#' discontinuation reason and never read the death domain: on the bundled
+#' study it reported 2 where the records hold 12 (gsm.core 1.3.2). The defect
 #' beside it reported **zero** where a column was missing. So the three states
 #' are kept apart deliberately:
 #'
@@ -133,6 +134,11 @@ Input_Deaths <- function(
       cli_detail = "alert_info"
     )
   }
+  gsm.core::stop_if(
+    cnd = !is.character(strDeathReason) || length(strDeathReason) == 0 ||
+      any(is.na(strDeathReason) | !nzchar(trimws(strDeathReason))),
+    message = "strDeathReason must name at least one reason, with no missing or empty value"
+  )
   if (!is.null(dfStudyCompletion)) {
     gsm.core::stop_if(
       cnd = !is.data.frame(dfStudyCompletion),
@@ -160,7 +166,12 @@ Input_Deaths <- function(
     gsm.core::LogMessage(
       level = "warn",
       message = paste0(
-        "The death domain is empty, so no death figure is published. ",
+        if (is.null(dfStudyCompletion)) {
+          "The death domain is empty"
+        } else {
+          "The death domain and the study-completion domain are both empty"
+        },
+        ", so no death figure is published. ",
         "An empty domain is not a count of zero."
       )
     )

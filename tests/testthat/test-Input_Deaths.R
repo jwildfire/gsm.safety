@@ -226,3 +226,21 @@ test_that("a death count read without a completion domain says so in the log (#1
     "death domain alone"
   )
 })
+
+test_that("no death reason at all is refused, not read as a zero (#174)", {
+  expect_error(
+    Input_Deaths(DEATH, SUBJ, dfStudyCompletion = COMP, strDeathReason = character(0)),
+    "strDeathReason"
+  )
+  expect_error(
+    Input_Deaths(DEATH, SUBJ, dfStudyCompletion = COMP, strDeathReason = NA_character_),
+    "strDeathReason"
+  )
+})
+
+test_that("the empty warning names both sources when a completion domain was supplied (#174)", {
+  expect_warning(
+    Input_Deaths(DEATH[0, , drop = FALSE], SUBJ, dfStudyCompletion = COMP[0, , drop = FALSE]),
+    "completion domain"
+  )
+})

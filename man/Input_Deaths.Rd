@@ -77,8 +77,9 @@ word: "Death of a relative" is not a death.
 \section{Absent, empty, and zero are three different answers}{
 
 
-The defect this metric replaces reported \strong{one} death on a study whose
-records hold thirteen, by text-matching a discontinuation reason. The defect
+The defect this metric replaces counted deaths by text-matching a
+discontinuation reason and never read the death domain: on the bundled
+study it reported 2 where the records hold 12 (gsm.core 1.3.2). The defect
 beside it reported \strong{zero} where a column was missing. So the three states
 are kept apart deliberately:\tabular{lll}{
    State \tab What the study said \tab What this returns \cr

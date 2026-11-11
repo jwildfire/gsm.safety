@@ -52,8 +52,8 @@ name from its caller. Supplying one warns and changes nothing; they are
 kept so that existing calls keep working (D0023.5, approved).}
 
 \item{dfDeath}{\code{data.frame} or \code{NULL} Mapped death domain (\code{Mapped_Death}).
-The death count is this domain joined to the disposition domain's
-discontinuation reason of death, in any case (#168). Without it the death
+The death count is the union of this domain and the disposition
+domain's discontinuation reason of death, in any case (#168). Without it the death
 count is absent: the reason column alone is how the count was wrong
 before.}
 

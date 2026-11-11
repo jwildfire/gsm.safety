@@ -30,7 +30,7 @@ runs one requirement per session
   every renderer it exports must have a `Widget_*.R` or a cited deferral
   in `.github/parity-allowlist.yaml`. The offline half is
   `tests/testthat/test-safety-viz-parity.R`.
-- [`gsm.utils::build_assets()`](https://rdrr.io/pkg/gsm.utils/man/build_assets.html)
+- [`gsm.utils::build_assets()`](https://gilead-public.github.io/gsm.utils/reference/build_assets.html)
   — renders the `Example_*.Rmd` pages into `pkgdown/assets/examples/`
   for the site.
 

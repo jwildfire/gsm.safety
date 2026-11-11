@@ -42,9 +42,9 @@ MakeParticipantInput(
 
 Every metric therefore emits one row per **assessed** participant with
 `Numerator` = the tier and `Denominator` = 1, so
-[`gsm.core::Transform_Rate()`](https://rdrr.io/pkg/gsm.core/man/Transform_Rate.html)
+[`gsm.core::Transform_Rate()`](https://gilead-public.github.io/gsm.core/reference/Transform_Rate.html)
 carries the tier through to `Metric` unchanged and
-[`gsm.core::Analyze_Identity()`](https://rdrr.io/pkg/gsm.core/man/Analyze_Identity.html)
+[`gsm.core::Analyze_Identity()`](https://gilead-public.github.io/gsm.core/reference/Analyze_Identity.html)
 copies it to `Score`. A participant with no assessable data gets no row
 at all: "not assessed" is absence, never a reassuring zero. The row
 count is the metric's own coverage denominator.

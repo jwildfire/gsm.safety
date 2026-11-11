@@ -32,7 +32,10 @@ columns otherwise.
 
 - `adbds`: long-format BDS labs and vitals results, one record per
   measurement (`USUBJID`, `SITE`, `SITEID`, `SEX`, `RACE`, `ARM`,
-  `VISIT`, `VISITNUM`, `TEST`, `STRESU`, `STRESN`, `STNRLO`, `STNRHI`).
+  `VISIT`, `VISITNUM`, `TEST`, `STRESU`, `STRESN`, `STNRLO`, `STNRHI`,
+  `DY`, `ABLFL`). `DY` is the ADaM study day of the measurement and
+  `ABLFL` is `"Y"` on the baseline record, so a chart can plot real days
+  with `x_axis` and read the baseline with `baseline_col`.
 
 - `adae`: adverse events, one record per event (`USUBJID`, `ARM`,
   `AESEQ`, `AEBODSYS`, `AEDECOD`, `AETERM`, `AESEV`, `AESER`, `ASTDY`,
@@ -46,7 +49,7 @@ columns otherwise.
 - `adeg`: long-format ECG results, one record per measurement
   (`USUBJID`, `SITE`, `SITEID`, `SEX`, `RACE`, `AGE`, `ARM`, `VISIT`,
   `VISITNUM`, `PARAMCD`, `TEST`, `STRESU`, `STRESN`, `BASE`, `CHG`,
-  `ABLFL`), carrying QTcF, QTcB, and Heart Rate for
+  `ABLFL`, `DY`), carrying QTcF, QTcB, and Heart Rate for
   [`Widget_QtExplorer()`](https://jwildfire.github.io/gsm.safety/dev/reference/Widget_QtExplorer.md).
 
 - `adbds_abnbl`: long-format labs for 80 synthetic abnormal-baseline
@@ -67,18 +70,18 @@ dfResults <- ExampleData("adbds")
 head(dfResults)
 #>       USUBJID              SITE SITEID SEX  RACE     ARM    VISIT VISITNUM
 #> 1 01-701-1015 Clinical Site 701    701   F WHITE Placebo Baseline        0
-#> 2 01-701-1015 Clinical Site 701    701   F WHITE Placebo   Week 2        4
-#> 3 01-701-1015 Clinical Site 701    701   F WHITE Placebo   Week 4        5
-#> 4 01-701-1015 Clinical Site 701    701   F WHITE Placebo   Week 6        7
+#> 2 01-701-1015 Clinical Site 701    701   F WHITE Placebo   Week 2        2
+#> 3 01-701-1015 Clinical Site 701    701   F WHITE Placebo   Week 4        4
+#> 4 01-701-1015 Clinical Site 701    701   F WHITE Placebo   Week 6        6
 #> 5 01-701-1015 Clinical Site 701    701   F WHITE Placebo   Week 8        8
-#> 6 01-701-1015 Clinical Site 701    701   F WHITE Placebo  Week 12        9
-#>      TEST STRESU STRESN STNRLO STNRHI
-#> 1 Albumin    g/L     38     33     49
-#> 2 Albumin    g/L     39     33     49
-#> 3 Albumin    g/L     38     33     49
-#> 4 Albumin    g/L     37     33     49
-#> 5 Albumin    g/L     38     33     49
-#> 6 Albumin    g/L     38     33     49
+#> 6 01-701-1015 Clinical Site 701    701   F WHITE Placebo  Week 12       12
+#>      TEST STRESU STRESN STNRLO STNRHI DY ABLFL
+#> 1 Albumin    g/L     38     33     49 -7     Y
+#> 2 Albumin    g/L     39     33     49 15      
+#> 3 Albumin    g/L     38     33     49 29      
+#> 4 Albumin    g/L     37     33     49 42      
+#> 5 Albumin    g/L     38     33     49 63      
+#> 6 Albumin    g/L     38     33     49 84      
 
 dfAE <- ExampleData("adae")
 head(dfAE)
@@ -120,13 +123,13 @@ head(dfEG)
 #> 4 01-701-1015 Clinical Site 701    701   F WHITE  63 Placebo   Week 6        6
 #> 5 01-701-1015 Clinical Site 701    701   F WHITE  63 Placebo   Week 8        8
 #> 6 01-701-1015 Clinical Site 701    701   F WHITE  63 Placebo  Week 12       12
-#>   PARAMCD TEST STRESU STRESN  BASE  CHG ABLFL
-#> 1    QTCF QTcF   msec  328.4 328.4  0.0     Y
-#> 2    QTCF QTcF   msec  332.2 328.4  3.8      
-#> 3    QTCF QTcF   msec  381.9 328.4 53.5      
-#> 4    QTCF QTcF   msec  320.6 328.4 -7.8      
-#> 5    QTCF QTcF   msec  395.2 328.4 66.8      
-#> 6    QTCF QTcF   msec  393.9 328.4 65.5      
+#>   PARAMCD TEST STRESU STRESN  BASE  CHG ABLFL DY
+#> 1    QTCF QTcF   msec  328.4 328.4  0.0     Y  1
+#> 2    QTCF QTcF   msec  332.2 328.4  3.8       15
+#> 3    QTCF QTcF   msec  381.9 328.4 53.5       29
+#> 4    QTCF QTcF   msec  320.6 328.4 -7.8       42
+#> 5    QTCF QTcF   msec  395.2 328.4 66.8       63
+#> 6    QTCF QTcF   msec  393.9 328.4 65.5       84
 
 dfSL <- ExampleData("adsl")
 head(dfSL)

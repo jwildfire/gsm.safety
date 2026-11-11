@@ -3,7 +3,7 @@
 The numerator step behind `saf0008` and `saf0009`, the two person-time
 figures. It sums a day column of the enrolled population — `timeonstudy`
 or `timeontreatment` — and hands
-[`gsm.core::Transform_Rate()`](https://rdrr.io/pkg/gsm.core/man/Transform_Rate.html)
+[`gsm.core::Transform_Rate()`](https://gilead-public.github.io/gsm.core/reference/Transform_Rate.html)
 an ordinary `analyticsInput` frame whose `Numerator` is the total days
 and whose `Denominator` is the participants who contributed them.
 

@@ -141,3 +141,45 @@ test_that("a study with a populated death domain and no deaths publishes zero (#
   expect_identical(dfSummary$Numerator, 0)
   expect_identical(dfSummary$Denominator, 4)
 })
+
+test_that("the death metric reads a death discontinuation in any case from the completion domain (#168)", {
+  lData <- DEATH_DATA()
+  nDeathDomain <- RunDeath(lData)$Analysis_Summary$Numerator
+
+  # S4 has no death record; their discontinuation reason is death, spelled
+  # the way gsm.core 1.3.2's study spells it and the way gsm.mapping 1.2.0
+  # looks for it.
+  for (strReason in c("Death", "DEATH")) {
+    lData$Mapped_STUDCOMP <- data.frame(
+      subjid = c("S3", "S4"),
+      compreas = c("Withdrew Consent", strReason),
+      stringsAsFactors = FALSE
+    )
+    expect_identical(
+      RunDeath(lData)$Analysis_Summary$Numerator,
+      nDeathDomain + 1,
+      label = strReason
+    )
+  }
+})
+
+test_that("the death metric still runs on a study that supplies no completion domain (#168)", {
+  # The completion domain is optional: a study with a death domain and no
+  # disposition domain still publishes its death count, from the death domain.
+  lWorkflow <- DeathWorkflow()
+  expect_false("Mapped_STUDCOMP" %in% names(lWorkflow$spec))
+
+  lData <- DEATH_DATA()
+  expect_false("Mapped_STUDCOMP" %in% names(lData))
+  dfSummary <- RunDeath(lData)$Analysis_Summary
+  expect_identical(nrow(dfSummary), 1L)
+  expect_identical(dfSummary$Numerator, 2)
+})
+
+test_that("SafetyCensus publishes the death count with no disposition domain (#168)", {
+  dfSubjects <- data.frame(subjid = c("S1", "S2"), studyid = "AA-AA-000-0000", stringsAsFactors = FALSE)
+  lCensus <- suppressWarnings(suppressMessages(
+    SafetyCensus(dfSubjects, dfDeath = data.frame(subjid = "S2", death = TRUE))
+  ))
+  expect_identical(lCensus$Census$Value[lCensus$Census$Label == "Deaths"], 1)
+})

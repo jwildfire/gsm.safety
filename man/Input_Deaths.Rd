@@ -7,6 +7,9 @@
 Input_Deaths(
   dfDeath,
   dfSubjects,
+  dfStudyCompletion = NULL,
+  strReasonCol = "compreas",
+  strDeathReason = "Death",
   strIDCol = "subjid",
   strDeathCol = "death",
   strGroupCol = "studyid",
@@ -22,7 +25,21 @@ progressive-disease date, say) have \code{death} missing rather than \code{TRUE}
 population — \code{gsm.mapping}'s \code{Mapped_SUBJ}. It is both the anchor and the
 denominator.}
 
-\item{strIDCol}{\code{character} Participant ID column, shared by both domains.
+\item{dfStudyCompletion}{\code{data.frame} or \code{NULL} Mapped study-completion
+domain, one row per completion record — \code{gsm.mapping}'s
+\code{Mapped_STUDCOMP}. When given, a participant whose \code{strReasonCol} is
+\code{strDeathReason} in any case and with surrounding spaces ignored counts as
+died. Default: \code{NULL}, the death domain alone. A single string, which is
+what a workflow step receives when the domain it names was not supplied,
+is read as \code{NULL}.}
+
+\item{strReasonCol}{\code{character} Discontinuation-reason column of
+\code{dfStudyCompletion}. Default: \code{"compreas"}.}
+
+\item{strDeathReason}{\code{character} The reason that means death, compared
+case-insensitively. Default: \code{"Death"}.}
+
+\item{strIDCol}{\code{character} Participant ID column, shared by every domain.
 Default: \code{"subjid"}.}
 
 \item{strDeathCol}{\code{character} Column of \code{dfDeath} marking a death. Read as
@@ -48,10 +65,14 @@ anchored to the enrolled population, and hands
 \code{gsm.core::Transform_Rate()} an ordinary \code{analyticsInput} frame.
 }
 \details{
-No clinical definition of death is written here. \code{Mapped_Death} is
-gsm.mapping's own union of the death domain and the study-completion
-domain's discontinuation reason (\code{gsm.mapping::complete_death()}); this
-function counts the participants that union marks, and nothing else.
+A participant has died if the death domain marks them, or, when
+\code{dfStudyCompletion} is given, if their discontinuation reason is death in
+any case (\code{"Death"}, \code{"DEATH"}, \code{"death"}). \code{Mapped_Death} is meant to be
+that union already (\code{gsm.mapping::complete_death()}), but gsm.mapping 1.2.0
+compares the reason against \code{"DEATH"} exactly, and a study that writes
+\code{"Death"} loses those participants (#168). Reading the reason here keeps the
+count independent of how the mapping spells it. The reason has to equal the
+word: "Death of a relative" is not a death.
 }
 \section{Absent, empty, and zero are three different answers}{
 

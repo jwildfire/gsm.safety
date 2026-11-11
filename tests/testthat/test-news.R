@@ -104,7 +104,8 @@ test_that("dev carries one unreleased section, v1.2.0, that leads with the two c
     )
   )
   # The corrections keep their measured figures: the table of what moves and the eDISH counts.
-  expect_true(any(grepl("^\\| Deaths \\| 4 \\| \\*\\*13\\*\\* \\|", chrSection)))
+  # The census figures are gsm.core 1.3.2's since the re-qualification (#168).
+  expect_true(any(grepl("^\\| Deaths \\| 2 \\| \\*\\*12\\*\\* \\|", chrSection)))
   expect_true(any(grepl("293 participants with 71 excluded", chrSection, fixed = TRUE)))
   expect_match(
     grep("^\\*\\*See it move:\\*\\*", chrSection, value = TRUE)[1],

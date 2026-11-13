@@ -3,8 +3,8 @@
 # Sourced by each Example_*.Rmd; never rendered as a page of its own, because
 # gsm.utils::build_assets() globs *.Rmd non-recursively in the menu directory.
 #
-# Everything the pages have in common is generated here rather than pasted nine
-# times: the navigation is derived from the sibling pages' own front matter, and
+# Everything the pages have in common is generated here rather than pasted
+# thirteen times: the navigation is derived from the sibling pages' own front matter, and
 # the workflow listing is read from the installed package. Adding a chart wires
 # itself into every other page's navigation, and neither the nav ring nor the
 # displayed YAML can drift from what actually ships.

@@ -4,7 +4,7 @@
 \alias{ExampleData}
 \title{Example safety data}
 \usage{
-ExampleData(strDataset = c("adbds", "adae", "adeg"))
+ExampleData(strDataset = c("adbds", "adae", "adeg", "adbds_abnbl", "adsl"))
 }
 \arguments{
 \item{strDataset}{\code{character} Name of the example dataset to read. Default:
@@ -15,15 +15,26 @@ A \code{data.frame} with numeric result/range/day columns and character
 columns otherwise.
 }
 \description{
-Reads one of the example datasets vendored with the package. All three are
-derived from pharmaverseadam (CDISC Pilot 01 ADaM) and match the data used
-by the safety.viz demos:
+Reads one of the example datasets vendored with the package, matching the
+data used by the safety.viz demos. \code{adbds}, \code{adae}, and \code{adeg} are derived
+from pharmaverseadam (CDISC Pilot 01 ADaM); \code{adbds} additionally carries two
+synthetic cohorts the safety.viz demos append: the \verb{CLD-*}
+chronic-liver-disease cohort (64 participants with abnormal baseline liver
+tests, for the hep-explorer's composite view, which the pilot's normal
+baselines cannot exercise) and the \verb{AKI-*} acute-kidney-injury cohort for the
+nep-explorer (the pilot population alone puts every participant in the
+KDIGO no-stage box); \code{adbds_abnbl} is the purpose-built synthetic
+abnormal-baseline hepatic cohort for \code{\link[=Widget_HepWaterfall]{Widget_HepWaterfall()}} (the pilot
+data cannot form that figure — see the safety.viz demo's data note):
 }
 \details{
 \itemize{
 \item \code{adbds}: long-format BDS labs and vitals results, one record per
 measurement (\code{USUBJID}, \code{SITE}, \code{SITEID}, \code{SEX}, \code{RACE}, \code{ARM}, \code{VISIT},
-\code{VISITNUM}, \code{TEST}, \code{STRESU}, \code{STRESN}, \code{STNRLO}, \code{STNRHI}).
+\code{VISITNUM}, \code{TEST}, \code{STRESU}, \code{STRESN}, \code{STNRLO}, \code{STNRHI}, \code{DY},
+\code{ABLFL}). \code{DY} is the ADaM study day of the measurement and \code{ABLFL} is
+\code{"Y"} on the baseline record, so a chart can plot real days with
+\code{x_axis} and read the baseline with \code{baseline_col}.
 \item \code{adae}: adverse events, one record per event (\code{USUBJID}, \code{ARM}, \code{AESEQ},
 \code{AEBODSYS}, \code{AEDECOD}, \code{AETERM}, \code{AESEV}, \code{AESER}, \code{ASTDY}, \code{AENDY}),
 plus one placeholder row per participant with no adverse events. A
@@ -33,8 +44,16 @@ population (254 participants, 217 of them with events) rather than only
 participants who reported an event.
 \item \code{adeg}: long-format ECG results, one record per measurement (\code{USUBJID},
 \code{SITE}, \code{SITEID}, \code{SEX}, \code{RACE}, \code{AGE}, \code{ARM}, \code{VISIT}, \code{VISITNUM},
-\code{PARAMCD}, \code{TEST}, \code{STRESU}, \code{STRESN}, \code{BASE}, \code{CHG}, \code{ABLFL}), carrying
-QTcF, QTcB, and Heart Rate for \code{\link[=Widget_QtExplorer]{Widget_QtExplorer()}}.
+\code{PARAMCD}, \code{TEST}, \code{STRESU}, \code{STRESN}, \code{BASE}, \code{CHG}, \code{ABLFL}, \code{DY}),
+carrying QTcF, QTcB, and Heart Rate for \code{\link[=Widget_QtExplorer]{Widget_QtExplorer()}}.
+\item \code{adbds_abnbl}: long-format labs for 80 synthetic abnormal-baseline
+participants (\verb{ABL-*}), same columns as \code{adbds}, for
+\code{\link[=Widget_HepWaterfall]{Widget_HepWaterfall()}}.
+\item \code{adsl}: one row per participant (\code{USUBJID}, \code{ARM}, \code{EOSDY}, \code{EOSSTT}) —
+the analysis population, its treatment arm, and the follow-up-end study
+day at which an event-free participant is censored. This is
+\code{\link[=Widget_TimeToEvent]{Widget_TimeToEvent()}}'s denominator: the events frame says who had an
+event and when, and this says who was at risk and for how long.
 }
 }
 \examples{
@@ -46,5 +65,8 @@ head(dfAE)
 
 dfEG <- ExampleData("adeg")
 head(dfEG)
+
+dfSL <- ExampleData("adsl")
+head(dfSL)
 
 }

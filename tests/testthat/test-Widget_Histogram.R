@@ -55,3 +55,30 @@ test_that("Widget_Histogram renders standalone HTML with the SafetyViz bundle an
   expect_match(strHTML, "01-701-1015", fixed = TRUE)
   expect_match(strHTML, "\"group_by\":\"ARM\"", fixed = TRUE)
 })
+
+test_that("no shipped histogram settings pass the two settings safety.viz v1.10.0 removed (#158)", {
+  # safety.viz v1.10.0 removed the histogram's `test_normality` and
+  # `compare_distributions` (safety.viz#188): the chart draws no p-value and
+  # warns in the console when given either. The package must not ship them in
+  # its workflow, examples or help.
+  chrRemoved <- c("test_normality", "compare_distributions")
+
+  lWorkflow <- yaml::read_yaml(system.file(
+    "workflow", "4_modules", "safety_histogram.yaml",
+    package = "gsm.safety"
+  ))
+  expect_length(intersect(names(lWorkflow$meta$lSettings), chrRemoved), 0)
+
+  strRoot <- testthat::test_path("..", "..")
+  chrSources <- file.path(strRoot, c(
+    "R/Widget_Histogram.R",
+    "inst/examples/histogram.R",
+    "pkgdown/menus/examples/Example_Histogram.Rmd"
+  ))
+  for (strSource in chrSources[file.exists(chrSources)]) {
+    strText <- paste(readLines(strSource, warn = FALSE), collapse = "\n")
+    for (strSetting in chrRemoved) {
+      expect_no_match(strText, strSetting, fixed = TRUE, info = basename(strSource))
+    }
+  }
+})

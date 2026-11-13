@@ -53,9 +53,16 @@ dfResults <- ExampleData("adbds")
 Widget_HepExplorer(
   dfResults,
   lSettings = list(
-    studyday_col = "VISITNUM",
     visit_col = "VISIT",
     visitn_col = "VISITNUM",
+    x_axis = list(
+      options = list(
+        list(key = "visit", col = "VISITNUM", label_col = "VISIT"),
+        list(key = "day", col = "DY")
+      ),
+      default = "day"
+    ),
+    baseline_col = "ABLFL",
     measure_values = list(
       ALT = "Alanine Aminotransferase",
       AST = "Aspartate Aminotransferase",

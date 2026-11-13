@@ -24,7 +24,16 @@ QTc intervals.}
 
 \item{lSettings}{\code{list} safety.viz qt-explorer settings overrides; merged
 onto the module's \code{DEFAULT_SETTINGS} client-side, so only overrides are
-needed. Set \code{placebo_arm} to enable the placebo-corrected (ΔΔ) view.}
+needed. Set \code{placebo_arm} to enable the placebo-corrected (ΔΔ) view.
+
+\code{x_axis} is the Visit | Study day toggle, the setting every safety.viz chart
+that shows change over time takes. It is a list of \code{options}, one per view
+(\code{key} \code{"visit"} with the visit-number \code{col} and the visit-name
+\code{label_col}; \code{key} \code{"day"} with the study-day \code{col}), and the \code{default}
+view the participant drill-down opens on (\code{"visit"} when unset). Without it the chart builds the
+same toggle from \code{visitn_col}, \code{visit_col} and \code{studyday_col}, whose
+defaults are \code{VISITNUM}, \code{VISIT} and \code{DY}.
+The chart's own views are unchanged.}
 
 \item{width}{\code{character} Width of the widget as a CSS unit. Default: \code{NULL}.}
 
@@ -57,6 +66,13 @@ Widget_QtExplorer(
   dfResults,
   lSettings = list(
     placebo_arm = "Placebo",
+    x_axis = list(
+      options = list(
+        list(key = "visit", col = "VISITNUM", label_col = "VISIT"),
+        list(key = "day", col = "DY")
+      ),
+      default = "visit"
+    ),
     filters = list(
       list(value_col = "SEX", label = "Sex"),
       list(value_col = "RACE", label = "Race"),

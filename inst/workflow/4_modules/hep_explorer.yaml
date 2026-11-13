@@ -5,9 +5,17 @@ meta:
   Name: Hepatic Safety Explorer Report
   Description: Interactive safety.viz eDISH hepatic safety explorer with Hy's Law quadrants and participant drill-down.
   lSettings:
-    studyday_col: VISITNUM
     visit_col: VISIT
     visitn_col: VISITNUM
+    x_axis:
+      options:
+        - key: visit
+          col: VISITNUM
+          label_col: VISIT
+        - key: day
+          col: DY
+      default: day
+    baseline_col: ABLFL
     measure_values:
       ALT: Alanine Aminotransferase
       AST: Aspartate Aminotransferase
@@ -33,6 +41,14 @@ spec:
       type: numeric
     STNRHI:
       type: numeric
+    VISIT:
+      type: character
+    VISITNUM:
+      type: numeric
+    DY:
+      type: numeric
+    ABLFL:
+      type: character
 steps:
   - output: strOutputDir
     name: getwd

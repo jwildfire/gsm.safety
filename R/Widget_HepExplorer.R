@@ -14,6 +14,17 @@
 #' @param lSettings `list` safety.viz hep-explorer settings overrides; merged
 #'   onto the module's `DEFAULT_SETTINGS` client-side, so only overrides are
 #'   needed.
+#'
+#'   `x_axis` is the Visit | Study day toggle, the setting every safety.viz chart
+#'   that shows change over time takes. It is a list of `options`, one per view
+#'   (`key` `"visit"` with the visit-number `col` and the visit-name
+#'   `label_col`; `key` `"day"` with the study-day `col`), and the `default`
+#'   view the time slider beneath the scatter opens on (`"day"` when unset). Without it the chart builds the
+#'   same toggle from `visitn_col`, `visit_col` and `studyday_col`, whose
+#'   defaults are `VISITNUM`, `VISIT` and `DY`.
+#'   The day option's column is the study day the 30-day timing test reads, in
+#'   either view. `baseline_col` names the baseline-flag column (`ABLFL` in the
+#'   bundled data).
 #' @param width `character` Width of the widget as a CSS unit. Default: `NULL`.
 #' @param height `character` Height of the widget as a CSS unit. Default:
 #'   `NULL`.
@@ -28,9 +39,16 @@
 #' Widget_HepExplorer(
 #'   dfResults,
 #'   lSettings = list(
-#'     studyday_col = "VISITNUM",
 #'     visit_col = "VISIT",
 #'     visitn_col = "VISITNUM",
+#'     x_axis = list(
+#'       options = list(
+#'         list(key = "visit", col = "VISITNUM", label_col = "VISIT"),
+#'         list(key = "day", col = "DY")
+#'       ),
+#'       default = "day"
+#'     ),
+#'     baseline_col = "ABLFL",
 #'     measure_values = list(
 #'       ALT = "Alanine Aminotransferase",
 #'       AST = "Aspartate Aminotransferase",

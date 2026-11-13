@@ -12,6 +12,16 @@
 #' @param lSettings `list` safety.viz outlier-explorer settings overrides;
 #'   merged onto the module's `DEFAULT_SETTINGS` client-side, so only overrides
 #'   are needed.
+#'
+#'   `x_axis` is the Visit | Study day toggle, the setting every safety.viz chart
+#'   that shows change over time takes. It is a list of `options`, one per view
+#'   (`key` `"visit"` with the visit-number `col` and the visit-name
+#'   `label_col`; `key` `"day"` with the study-day `col`), and the `default`
+#'   view the main chart opens on (`"visit"` when unset). Without it the chart builds the
+#'   same toggle from `visitn_col`, `visit_col` and `studyday_col`, whose
+#'   defaults are `VISITNUM`, `VISIT` and `DY`.
+#'   With neither a visit nor a study day in the data, the chart shows a
+#'   message instead of a chart.
 #' @param width `character` Width of the widget as a CSS unit. Default: `NULL`.
 #' @param height `character` Height of the widget as a CSS unit. Default:
 #'   `NULL`.
@@ -26,6 +36,13 @@
 #' Widget_OutlierExplorer(
 #'   dfResults,
 #'   lSettings = list(
+#'     x_axis = list(
+#'       options = list(
+#'         list(key = "visit", col = "VISITNUM", label_col = "VISIT"),
+#'         list(key = "day", col = "DY")
+#'       ),
+#'       default = "visit"
+#'     ),
 #'     filters = list(
 #'       list(value_col = "SITEID", label = "Site ID"),
 #'       list(value_col = "SEX", label = "Sex"),

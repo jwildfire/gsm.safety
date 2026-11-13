@@ -22,17 +22,55 @@ Interactive safety.viz charts as htmlwidgets.
   : Hepatic Safety Explorer (eDISH) Widget
 - [`Widget_QtExplorer()`](https://jwildfire.github.io/gsm.safety/reference/Widget_QtExplorer.md)
   : QT Safety Explorer Widget
+- [`Widget_HepWaterfall()`](https://jwildfire.github.io/gsm.safety/reference/Widget_HepWaterfall.md)
+  : Hepatic ALT Waterfall Widget
+- [`Widget_NepExplorer()`](https://jwildfire.github.io/gsm.safety/reference/Widget_NepExplorer.md)
+  : Nephrotoxicity Explorer Widget
+- [`Widget_TimeToEvent()`](https://jwildfire.github.io/gsm.safety/reference/Widget_TimeToEvent.md)
+  : Time-to-Event Widget
+- [`Widget_ParticipantProfile()`](https://jwildfire.github.io/gsm.safety/reference/Widget_ParticipantProfile.md)
+  : Participant Profile Widget
 
 ## Data
 
 - [`ExampleData()`](https://jwildfire.github.io/gsm.safety/reference/ExampleData.md)
   : Example safety data
 
+## FDA reference criteria
+
+Appendix Tables 56 to 60 of the FDA Standard Safety Tables and Figures
+Integrated Guide (v2.0, April 2025) as package data: the level 1, 2 and
+3 abnormality criteria and the extreme values suggestive of error that
+the Derive\_\* functions apply (obot.roadmap#9).
+
+- [`FDA_AbnormalityLevels`](https://jwildfire.github.io/gsm.safety/reference/FDA_AbnormalityLevels.md)
+  : FDA abnormality level criteria for laboratory results
+- [`FDA_ExtremeValues`](https://jwildfire.github.io/gsm.safety/reference/FDA_ExtremeValues.md)
+  : FDA extreme laboratory and vital sign values suggestive of error
+
+## FDA derivations
+
+The guide’s normative rules applied once, in R, over long-format results
+in the shape of ExampleData(“adbds”): each Derive\_\* function returns
+the input frame with its derived columns added, never an aggregate, so a
+static figure and its interactive twin read the same derived values
+(obot.roadmap#9, requirements/fda-stf.md FDA-RULE-001 to -005).
+
+- [`Derive_ULNMultiple()`](https://jwildfire.github.io/gsm.safety/reference/Derive_ULNMultiple.md)
+  : Express a result as a multiple of its upper limit of normal
+- [`Derive_AbnormalityLevel()`](https://jwildfire.github.io/gsm.safety/reference/Derive_AbnormalityLevel.md)
+  : Grade a result against the FDA abnormality level criteria
+- [`Derive_ExtremeValueFlag()`](https://jwildfire.github.io/gsm.safety/reference/Derive_ExtremeValueFlag.md)
+  : Flag results beyond the FDA extreme-value thresholds
+
 ## Metric steps
 
-The steps behind the metric definitions in inst/workflow/2_metrics/:
-each turns a domain into the participant-level tier that its flagging
-metric counts.
+The steps behind the metric definitions in inst/workflow/2_metrics/.
+Input_HysLaw, Input_QtProlongation and Input_SafetyAE feed the three
+participant-level flagging metrics; Input_Deaths, Input_Participants and
+Input_ParticipantDays feed the descriptive census metrics, which publish
+a number, carry no threshold, and call Flag_None where a flagging metric
+calls gsm.core::Flag().
 
 - [`Input_HysLaw()`](https://jwildfire.github.io/gsm.safety/reference/Input_HysLaw.md)
   : Participant-level Hy's Law candidate tier from liver chemistry
@@ -40,15 +78,40 @@ metric counts.
   : Participant-level QTc prolongation tier from ECG data
 - [`Input_SafetyAE()`](https://jwildfire.github.io/gsm.safety/reference/Input_SafetyAE.md)
   : Participant-level serious / related / discontinuation AE tier
+- [`Input_Deaths()`](https://jwildfire.github.io/gsm.safety/reference/Input_Deaths.md)
+  : Study-level count of participants who died
+- [`Input_Participants()`](https://jwildfire.github.io/gsm.safety/reference/Input_Participants.md)
+  : Study-level count of the participants a domain names
+- [`Input_ParticipantDays()`](https://jwildfire.github.io/gsm.safety/reference/Input_ParticipantDays.md)
+  : Study-level total of participant-days
+- [`Flag_None()`](https://jwildfire.github.io/gsm.safety/reference/Flag_None.md)
+  : Publish a metric's rows without a flag
 
 ## Study census
 
-The safety overview’s denominators, exposure and data coverage.
+The safety overview’s denominators, rebuilt on the metric steps above
+(obot.roadmap#274): SafetyCensus() runs the census metric workflows over
+the domains it is given and reads the figures they published, computing
+nothing of its own.
 
 - [`SafetyCensus()`](https://jwildfire.github.io/gsm.safety/reference/SafetyCensus.md)
-  : Study census, exposure and data coverage for a safety overview
+  : Study census, exposure and follow-up for a safety overview
 
 ## Reports
 
+The steps behind the report definitions in inst/workflow/4_modules/.
+SaveWidgetReport writes a widget module; the Report_Census\* helpers and
+Report_SafetyCensus assemble and render the safety census, reading the
+figures the census metrics published and computing nothing of their own
+(obot.roadmap#274).
+
 - [`SaveWidgetReport()`](https://jwildfire.github.io/gsm.safety/reference/SaveWidgetReport.md)
   : Save a safety widget as a standalone HTML report
+- [`Report_CensusFigures()`](https://jwildfire.github.io/gsm.safety/reference/Report_CensusFigures.md)
+  : The census figures, as the report presents them
+- [`Report_CensusCoverage()`](https://jwildfire.github.io/gsm.safety/reference/Report_CensusCoverage.md)
+  : The data-coverage rows, as the report presents them
+- [`Report_CensusProvenance()`](https://jwildfire.github.io/gsm.safety/reference/Report_CensusProvenance.md)
+  : What each census metric published, verbatim
+- [`Report_SafetyCensus()`](https://jwildfire.github.io/gsm.safety/reference/Report_SafetyCensus.md)
+  : Render the census report

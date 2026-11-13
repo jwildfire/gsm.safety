@@ -2,10 +2,11 @@
 
 `gsm.safety` provides R bindings for the
 [safety.viz](https://github.com/jwildfire/safety.viz) JavaScript chart
-library: nine interactive clinical safety displays as htmlwidgets — one
-for every renderer the library ships — plus bundled example data and
-report workflows for Good Statistical Monitoring. It mirrors the
-`gsm.kri` / `gsm.viz` architecture.
+library: thirteen interactive clinical safety displays as htmlwidgets —
+tracking the renderers the library ships (vendored at safety.viz
+v1.12.0; see `Config/safetyviz/version` in DESCRIPTION) — plus bundled
+example data and report workflows for Good Statistical Monitoring. It
+mirrors the `gsm.kri` / `gsm.viz` architecture.
 
 ## Gallery
 
@@ -27,6 +28,10 @@ bundled demo data.
 | [`Widget_AeExplorer()`](https://jwildfire.github.io/gsm.safety/reference/Widget_AeExplorer.md) | aeExplorer | `adae` | [`ae_explorer.yaml`](https://jwildfire.github.io/gsm.safety/inst/workflow/4_modules/ae_explorer.yaml) |
 | [`Widget_HepExplorer()`](https://jwildfire.github.io/gsm.safety/reference/Widget_HepExplorer.md) | hepExplorer | `adbds` | [`hep_explorer.yaml`](https://jwildfire.github.io/gsm.safety/inst/workflow/4_modules/hep_explorer.yaml) |
 | [`Widget_QtExplorer()`](https://jwildfire.github.io/gsm.safety/reference/Widget_QtExplorer.md) | qtExplorer | `adeg` | [`qt_explorer.yaml`](https://jwildfire.github.io/gsm.safety/inst/workflow/4_modules/qt_explorer.yaml) |
+| [`Widget_HepWaterfall()`](https://jwildfire.github.io/gsm.safety/reference/Widget_HepWaterfall.md) | hepWaterfall | `adbds_abnbl` | [`hep_waterfall.yaml`](https://jwildfire.github.io/gsm.safety/inst/workflow/4_modules/hep_waterfall.yaml) |
+| [`Widget_NepExplorer()`](https://jwildfire.github.io/gsm.safety/reference/Widget_NepExplorer.md) | nepExplorer | `adbds` | [`nep_explorer.yaml`](https://jwildfire.github.io/gsm.safety/inst/workflow/4_modules/nep_explorer.yaml) |
+| [`Widget_TimeToEvent()`](https://jwildfire.github.io/gsm.safety/reference/Widget_TimeToEvent.md) | timeToEvent | `adae` + `adsl` | [`time_to_event.yaml`](https://jwildfire.github.io/gsm.safety/inst/workflow/4_modules/time_to_event.yaml) |
+| [`Widget_ParticipantProfile()`](https://jwildfire.github.io/gsm.safety/reference/Widget_ParticipantProfile.md) | participantProfile | `adbds` + `adae` | [`participant_profile.yaml`](https://jwildfire.github.io/gsm.safety/inst/workflow/4_modules/participant_profile.yaml) |
 
 Each widget validates its data and settings against the module’s
 vendored JSON data contract (`inst/schema/`) before rendering, so
@@ -64,9 +69,9 @@ names.
 the gsm.safety counterpart to gsm.kri’s site- and country-level KRIs.
 Each scores one row per participant with an ordinal tier, follows the
 `pat0015.yaml` precedent (`GroupLevel: Subject`, `Model: Identity`,
-[`gsm.core::Analyze_Identity()`](https://rdrr.io/pkg/gsm.core/man/Analyze_Identity.html)
+[`gsm.core::Analyze_Identity()`](https://gilead-public.github.io/gsm.core/reference/Analyze_Identity.html)
 plus deterministic
-[`gsm.core::Flag()`](https://rdrr.io/pkg/gsm.core/man/Flag.html)
+[`gsm.core::Flag()`](https://gilead-public.github.io/gsm.core/reference/Flag.html)
 thresholds), and emits the standard `analyticsSummary` contract.
 
 | Metric | ID | Score | Cut-points |
@@ -95,7 +100,7 @@ moves a site’s risk score.
 
 Report workflows under `inst/workflow/4_modules/` render each widget
 end-to-end via
-[`gsm.core::RunWorkflow()`](https://rdrr.io/pkg/gsm.core/man/RunWorkflow.html).
+[`gsm.core::RunWorkflow()`](https://gilead-public.github.io/gsm.core/reference/RunWorkflow.html).
 Matching runner scripts live in `inst/examples/`:
 
 ``` sh

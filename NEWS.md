@@ -5,7 +5,7 @@ work accumulates under a vX.Y.Z (Upcoming) heading that loses the suffix when
 the release is cut; the GitHub release publishes from the section verbatim.
 -->
 
-# gsm.safety v1.2.0 (Upcoming)
+# gsm.safety v1.2.0
 
 **See it move:** the [annotated v1.2.0 demo](https://jwildfire.github.io/obot.roadmap/reports/gsm-safety-v1.2.0-demo/) has captures, try-it steps and the detail behind everything below.
 
